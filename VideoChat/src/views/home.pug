@@ -10,12 +10,11 @@ html(lang="en")
         header
             h1 Video Chat
         main
-            h2 Welcome to VideoChat Minor Project!
-            form#nickForm
-                input(type="text", placeholder="Nickname", required)
-                button Save
-            ul
-            form#msgForm
-                input(type="text", placeholder="Write a Message", required)
-                button Send
+            div#welcome
+                form
+                    input(type="text", placeholder="room name", required)
+                    button Enter Room
+        //- SocketIO install    
+        script(src="/socket.io/socket.io.js") 
+        //- Frontend Javascript
         script(src="/public/javascript/app.js")

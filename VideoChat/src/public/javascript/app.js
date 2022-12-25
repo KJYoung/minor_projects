@@ -1,44 +1,17 @@
-const msgList = document.querySelector("ul");
-const msgForm = document.querySelector("#msgForm");
-const nickForm = document.querySelector("#nickForm");
+const socket = io();
 
-const socket = new WebSocket(`ws://${window.location.host}`);
+const welcomeDiv = document.getElementById("welcome");
+const welcomeForm = welcomeDiv.querySelector("form");
 
-const makeMessage = (type, payload) => {
-    return JSON.stringify({
-        type: type,
-        payload: payload
+welcomeForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = welcomeForm.querySelector("input");
+
+    // event type, payloads, callback - called by server(executed in front-end)
+    // callback should be the last argument if any.
+    socket.emit("enter_room", input.value, (msg) => {
+        console.log(msg);
     });
-}
 
-socket.addEventListener("open", () => {
-    console.log("CONNECTED to Server!");
-});
-
-socket.addEventListener("message", (message) => {
-    const li = document.createElement("li");
-    li.innerText = message.data;
-    msgList.append(li);
-});
-
-socket.addEventListener("close", () => {
-    console.log("DISCONNECTED to Server!");
-});
-
-nickForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const input = nickForm.querySelector("input");
-    socket.send(makeMessage("nickname", input.value));
-});
-
-msgForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const input = msgForm.querySelector("input");
-    socket.send(makeMessage("message", input.value));
     input.value = "";
-
-    // My Message.
-    const li = document.createElement("li");
-    li.innerText = `You : ${input.value}`;
-    msgList.append(li);
 });
