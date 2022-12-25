@@ -17,11 +17,26 @@ const listenLogger = () => console.log(`Listening on http://localhost:3000`);
 
 const server = http.createServer(app);
 
+const registeredSockets = [];
+
 const wss = new WebSocket.Server({ server });
 wss.on("connection", (socket) => {
-    socket.send("hello from Backend");
+    socket["nickname"] = "익명의 사용자";
+    registeredSockets.push(socket);
     socket.on("close", () => console.log("Disconnected to Browser"));
-    socket.on("message", (message) => console.log(message.toString('utf8')));
+    socket.on("message", (message) => {
+        const msg = JSON.parse(message.toString('utf8'));
+        switch(msg.type){
+            case "message":
+                registeredSockets.forEach(soc => soc.send(`${socket.nickname} : ${msg.payload}`));
+                break;
+            case "nickname":
+                socket["nickname"] = msg.payload;
+                break;
+            default:
+                break;
+        }
+    });
     console.log("Connected to Browser");
 });
 

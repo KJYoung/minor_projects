@@ -11,4 +11,11 @@ html(lang="en")
             h1 Video Chat
         main
             h2 Welcome to VideoChat Minor Project!
+            form#nickForm
+                input(type="text", placeholder="Nickname", required)
+                button Save
+            ul
+            form#msgForm
+                input(type="text", placeholder="Write a Message", required)
+                button Send
         script(src="/public/javascript/app.js")
