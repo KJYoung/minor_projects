@@ -21,32 +21,22 @@ const server = http.createServer(app);
 const io = SocketIO(server);
 
 io.on("connection", socket => {
+    socket["nickname"] = "익명의 사용자";
     socket.on("enter_room", (roomName, doneCallback) => {
-        console.log(roomName);
-        doneCallback("backend Job Done");
-    })
+        socket.join(roomName);
+        doneCallback();
+        socket.to(roomName).emit("join", socket.nickname);
+    });
+    socket.on("disconnecting", () => {
+        socket.rooms.forEach(room => socket.to(room).emit("left", socket.nickname));
+    });
+    socket.on("new_message", (roomName, msg, done) => {
+        socket.to(roomName).emit("new_message", socket.nickname, msg);
+        done();
+    });
+    socket.on("nickname", nickname => {
+        socket["nickname"] = nickname;
+    });
 });
-// const registeredSockets = [];
-
-// const wss = new WebSocket.Server({ server });
-// wss.on("connection", (socket) => {
-//     socket["nickname"] = "익명의 사용자";
-//     registeredSockets.push(socket);
-//     socket.on("close", () => console.log("Disconnected to Browser"));
-//     socket.on("message", (message) => {
-//         const msg = JSON.parse(message.toString('utf8'));
-//         switch(msg.type){
-//             case "message":
-//                 registeredSockets.forEach(soc => soc.send(`${socket.nickname} : ${msg.payload}`));
-//                 break;
-//             case "nickname":
-//                 socket["nickname"] = msg.payload;
-//                 break;
-//             default:
-//                 break;
-//         }
-//     });
-//     console.log("Connected to Browser");
-// });
 
 server.listen(3000, listenLogger);
