@@ -3,6 +3,7 @@ const socket = io();
 const welcomeDiv = document.getElementById("welcome");
 const welcomeForm = welcomeDiv.querySelector("form");
 const roomDiv = document.getElementById("room");
+const roomListWrapper = document.getElementById("roomListWrapper");
 
 roomDiv.hidden = true;
 
@@ -62,4 +63,14 @@ socket.on("left", (nickname) => {
 });
 socket.on("new_message", (nickname, msg) => {
     addMessage(`${nickname} : ${msg}`);
-})
+});
+socket.on("room_list", (room_list) => {
+    const ul = document.createElement("ul");
+    room_list.forEach(room => {
+        const li = document.createElement("li");
+        li.innerText = room;
+        ul.appendChild(li);
+    });
+    roomListWrapper.innerHTML = '';
+    roomListWrapper.append(ul);
+});

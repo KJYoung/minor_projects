@@ -17,19 +17,34 @@ const listenLogger = () => console.log(`Listening on http://localhost:3000`);
 
 const server = http.createServer(app);
 
-
 const io = SocketIO(server);
+
+const getPublicRooms = () => {
+    const sids = io.sockets.adapter.sids;
+    const rooms = io.sockets.adapter.rooms;
+    const publicRooms = [];
+    rooms.forEach((_, key) => {
+        if(sids.get(key) === undefined)
+            publicRooms.push(key);
+    });
+    return publicRooms;
+};
 
 io.on("connection", socket => {
     socket["nickname"] = "익명의 사용자";
+    socket.emit("room_list", getPublicRooms());
     socket.on("enter_room", (roomName, doneCallback) => {
         socket.join(roomName);
         doneCallback();
         socket.to(roomName).emit("join", socket.nickname);
+        io.sockets.emit("room_list", getPublicRooms());
     });
     socket.on("disconnecting", () => {
         socket.rooms.forEach(room => socket.to(room).emit("left", socket.nickname));
     });
+    socket.on("disconnect", () => {
+        io.sockets.emit("room_list", getPublicRooms());
+    })
     socket.on("new_message", (roomName, msg, done) => {
         socket.to(roomName).emit("new_message", socket.nickname, msg);
         done();
