@@ -30,14 +30,14 @@ welcomeForm.addEventListener("submit", (event) => {
 
     // event type, payloads, callback - called by server(executed in front-end)
     // callback should be the last argument if any.
-    socket.emit("enter_room", input.value, () => {
+    socket.emit("enter_room", input.value, (roomCount) => {
         welcomeDiv.hidden = true;
         roomDiv.hidden = false;
 
         const roomTitle = roomDiv.querySelector("h3");
+        roomTitle.innerText = `Room ${roomName} : ${roomCount} people`;
+
         const roomForm = document.getElementById("chatForm");
-        
-        roomTitle.innerText = `Room ${roomName}`;
         
         roomForm.addEventListener("submit", (event) => {
             event.preventDefault();
@@ -54,11 +54,14 @@ welcomeForm.addEventListener("submit", (event) => {
 });
 
 
-
-socket.on("join", (nickname) => {
+socket.on("join", (nickname, roomCount) => {
+    const roomTitle = roomDiv.querySelector("h3");
+    roomTitle.innerText = `Room ${roomName} : ${roomCount} people`;
     addMessage(`새로운 사람(${nickname})이 입장했습니다!`);
 });
-socket.on("left", (nickname) => {
+socket.on("left", (nickname, roomCount) => {
+    const roomTitle = roomDiv.querySelector("h3");
+    roomTitle.innerText = `Room ${roomName} : ${roomCount} people`;
     addMessage(`사용자(${nickname})가 퇴장했습니다.`);
 });
 socket.on("new_message", (nickname, msg) => {

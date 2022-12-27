@@ -30,17 +30,21 @@ const getPublicRooms = () => {
     return publicRooms;
 };
 
+const roomSize = (roomName) => {
+    return io.sockets.adapter.rooms.get(roomName)?.size;
+};
+
 io.on("connection", socket => {
     socket["nickname"] = "익명의 사용자";
     socket.emit("room_list", getPublicRooms());
     socket.on("enter_room", (roomName, doneCallback) => {
         socket.join(roomName);
-        doneCallback();
-        socket.to(roomName).emit("join", socket.nickname);
+        doneCallback(roomSize(roomName));
+        socket.to(roomName).emit("join", socket.nickname, roomSize(roomName));
         io.sockets.emit("room_list", getPublicRooms());
     });
     socket.on("disconnecting", () => {
-        socket.rooms.forEach(room => socket.to(room).emit("left", socket.nickname));
+        socket.rooms.forEach(room => socket.to(room).emit("left", socket.nickname, roomSize(room) - 1));
     });
     socket.on("disconnect", () => {
         io.sockets.emit("room_list", getPublicRooms());
