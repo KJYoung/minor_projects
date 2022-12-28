@@ -1,5 +1,6 @@
 import http from "http";
-import SocketIO from "socket.io";
+import { Server } from "socket.io";
+import { instrument } from "@socket.io/admin-ui";
 import express from "express";
 
 const app = express();
@@ -15,9 +16,17 @@ app.get('/*', (req, res) => res.redirect('/'));
 
 const listenLogger = () => console.log(`Listening on http://localhost:3000`);
 
-const server = http.createServer(app);
+const httpServer = http.createServer(app);
 
-const io = SocketIO(server);
+const io = new Server(httpServer, {
+    cors: {
+        origin: ["https://admin.socket.io"],
+        credentials: true,
+    }
+});
+instrument(io, {
+    auth: false
+});
 
 const getPublicRooms = () => {
     const sids = io.sockets.adapter.sids;
@@ -58,4 +67,4 @@ io.on("connection", socket => {
     });
 });
 
-server.listen(3000, listenLogger);
+httpServer.listen(3000, listenLogger);
