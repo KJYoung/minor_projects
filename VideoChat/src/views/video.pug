@@ -1,0 +1,22 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet", href="https://unpkg.com/mvp.css")
+        title VideoChat
+    body 
+        header
+            h3 Video Chat
+            a(href="/") Back to Home
+        main
+            div#myFaceWrapper
+                video#myFace(autoplay, playsinline, width="400", height="400")
+                button#myAudio UnMute
+                button#myVideo Video On
+                select#videos
+        //- SocketIO install    
+        script(src="/socket.io/socket.io.js") 
+        //- Frontend Javascript
+        script(src="/public/javascript/video.js")
