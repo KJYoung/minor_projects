@@ -11,11 +11,16 @@ html(lang="en")
             h3 Video Chat
             a(href="/") Back to Home
         main
-            div#myFaceWrapper
-                video#myFace(autoplay, playsinline, width="400", height="400")
-                button#myAudio UnMute
-                button#myVideo Video On
-                select#videos
+            div#welcome
+                form
+                    input(type="text", placeholder="room name", required)
+                    button Enter Room
+            div#roomWrapper
+                div#myFaceWrapper
+                    video#myFace(autoplay, playsinline, width="400", height="400")
+                    button#myAudio UnMute
+                    button#myVideo Video On
+                    select#videos
         //- SocketIO install    
         script(src="/socket.io/socket.io.js") 
         //- Frontend Javascript

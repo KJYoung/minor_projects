@@ -7,6 +7,26 @@ const myAudio = document.getElementById("myAudio");
 const myVideo = document.getElementById("myVideo");
 const videos  = document.getElementById("videos");
 
+const welcomeDiv = document.getElementById("welcome");
+const welcomeForm = welcomeDiv.querySelector("form");
+const roomWrapperDiv = document.getElementById("roomWrapper");
+
+let roomName = "";
+
+roomWrapperDiv.hidden = true;
+
+welcomeForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = welcomeForm.querySelector("input");
+    socket.emit("video_join_room", input.value, startMedia);
+    roomName = input.value;
+    input.value = "";
+});
+
+socket.on("video_welcome", () => {
+
+});
+
 myAudio.addEventListener("click", () => {
     if(muted){
         myAudio.innerText = 'Mute';
@@ -28,6 +48,12 @@ myVideo.addEventListener("click", () => {
 videos.addEventListener("input", async () => {
     await getMedia(videos.value);
 });
+
+const startMedia = () => {
+    welcomeDiv.hidden = true;
+    roomWrapperDiv.hidden = false;
+    getMedia();
+};
 
 const getVideoDevices = async () => {
     try {
@@ -66,7 +92,3 @@ const getMedia = async (videoDevId) => {
         console.log(e);
     }
 };
-
-
-
-getMedia();

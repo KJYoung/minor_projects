@@ -66,6 +66,13 @@ io.on("connection", socket => {
     socket.on("nickname", nickname => {
         socket["nickname"] = nickname;
     });
+
+    // VIDEO
+    socket.on("video_join_room", (roomName, doneCallback) => {
+        socket.join(roomName);
+        doneCallback();
+        socket.to(roomName).emit("video_welcome");
+    });
 });
 
 httpServer.listen(3000, listenLogger);
