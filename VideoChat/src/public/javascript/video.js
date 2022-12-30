@@ -1,4 +1,7 @@
-let myStream, muted = true, videoOff = true;
+let myStream; 
+/** @type {RTCPeerConnection} */
+let myPeerConnection;
+let muted = true, videoOff = true;
 
 const socket = io();
 
@@ -15,16 +18,34 @@ let roomName = "";
 
 roomWrapperDiv.hidden = true;
 
-welcomeForm.addEventListener("submit", (event) => {
+welcomeForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const input = welcomeForm.querySelector("input");
-    socket.emit("video_join_room", input.value, startMedia);
+    await startMedia();
+    socket.emit("video_join_room", input.value);
     roomName = input.value;
     input.value = "";
 });
 
-socket.on("video_welcome", () => {
-
+// Host
+socket.on("video_welcome", async () => {
+    const offer = await myPeerConnection.createOffer();
+    myPeerConnection.setLocalDescription(offer);
+    socket.emit("video_offer", roomName, offer);
+});
+socket.on("video_answer", (answer) => {
+    myPeerConnection.setRemoteDescription(answer);
+});
+// Guest
+socket.on("video_offer", async (offer) => {
+    myPeerConnection.setRemoteDescription(offer);
+    const answer = await myPeerConnection.createAnswer();
+    myPeerConnection.setLocalDescription(answer);
+    socket.emit("video_answer", roomName, answer);
+});
+// Both
+socket.on("video_ice", (ice) => {
+    myPeerConnection.addIceCandidate(ice);
 });
 
 myAudio.addEventListener("click", () => {
@@ -49,10 +70,11 @@ videos.addEventListener("input", async () => {
     await getMedia(videos.value);
 });
 
-const startMedia = () => {
+const startMedia = async () => {
     welcomeDiv.hidden = true;
     roomWrapperDiv.hidden = false;
-    getMedia();
+    await getMedia();
+    makeConnection();
 };
 
 const getVideoDevices = async () => {
@@ -92,3 +114,17 @@ const getMedia = async (videoDevId) => {
         console.log(e);
     }
 };
+
+// WebRTC
+const makeConnection = () => {
+    myPeerConnection = new RTCPeerConnection(); // Create a peer connection.
+    myPeerConnection.addEventListener("icecandidate", (data) => {
+        socket.emit("video_ice", roomName, data.candidate);
+    });
+    myPeerConnection.addEventListener("addstream", (data) => {
+        const peerVideoWrapper = document.getElementById("peerFaceWrapper");
+        const peerVideo = peerVideoWrapper.querySelector("video");
+        peerVideo.srcObject = data.stream;
+    });
+    myStream.getTracks().forEach(track => myPeerConnection.addTrack(track, myStream));
+}

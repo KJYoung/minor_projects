@@ -68,11 +68,19 @@ io.on("connection", socket => {
     });
 
     // VIDEO
-    socket.on("video_join_room", (roomName, doneCallback) => {
+    socket.on("video_join_room", (roomName) => {
         socket.join(roomName);
-        doneCallback();
         socket.to(roomName).emit("video_welcome");
     });
+    socket.on("video_offer", (roomName, offer) => {
+        socket.to(roomName).emit("video_offer", offer);
+    });
+    socket.on("video_answer", (roomName, answer) => {
+        socket.to(roomName).emit("video_answer", answer);
+    });
+    socket.on("video_ice", (roomName, ice) => {
+        socket.to(roomName).emit("video_ice", ice);
+    })
 });
 
 httpServer.listen(3000, listenLogger);
