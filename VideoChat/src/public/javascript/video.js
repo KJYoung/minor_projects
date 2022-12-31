@@ -68,6 +68,11 @@ myVideo.addEventListener("click", () => {
 });
 videos.addEventListener("input", async () => {
     await getMedia(videos.value);
+    if(myPeerConnection){
+        const videoSender = myPeerConnection.getSenders().find(sender => sender.track.kind === "video");
+        const videoTrack = myStream.getVideoTracks()[0];
+        videoSender.replaceTrack(videoTrack);
+    }
 });
 
 const startMedia = async () => {
@@ -100,6 +105,12 @@ const getVideoDevices = async () => {
 }
 
 const getMedia = async (videoDevId) => {
+    if(muted && videoOff){
+        // myStream = undefined;
+        // myFace.srcObject = myStream;
+        // await getVideoDevices();
+        // return;
+    }
     const constraints = {
         audio: true,
         video: (videoDevId) ? { deviceId: { exact : videoDevId } } : { facingMode: "user" },
@@ -117,7 +128,19 @@ const getMedia = async (videoDevId) => {
 
 // WebRTC
 const makeConnection = () => {
-    myPeerConnection = new RTCPeerConnection(); // Create a peer connection.
+    myPeerConnection = new RTCPeerConnection({
+        iceServers: [
+            {
+                urls: [
+                    "stun:stun.l.google.com:19302",
+                    "stun:stun1.l.google.com:19302",
+                    "stun:stun2.l.google.com:19302",
+                    "stun:stun3.l.google.com:19302",
+                    "stun:stun4.l.google.com:19302", // STUN server for test
+                ],
+            },
+        ],
+    }); // Create a peer connection.
     myPeerConnection.addEventListener("icecandidate", (data) => {
         socket.emit("video_ice", roomName, data.candidate);
     });
