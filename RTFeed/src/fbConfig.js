@@ -1,7 +1,8 @@
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
-import "firebase/compat/firestore";
-import "firebase/compat/storage";
+import { initializeApp } from "firebase/app";
+import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+
+// import "firebase/compat/firestore";
+// import "firebase/compat/storage";
 
 // RTFeed's Firebase configuration
 const firebaseConfig = {
@@ -13,6 +14,14 @@ const firebaseConfig = {
     appId: process.env.REACT_APP_APP_ID,
   };
 
-firebase.initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
-export const authService = firebase.auth();
+export const authService = getAuth(app);
+export const authCreateUser = createUserWithEmailAndPassword;
+export const authLogIn = signInWithEmailAndPassword;
+export const onAuthChange = onAuthStateChanged;
+
+// Social Login
+export const authGoogleProvider = GoogleAuthProvider;
+export const authGithubProvider = GithubAuthProvider;
+export const authSignUpWithPopUp = signInWithPopup;
