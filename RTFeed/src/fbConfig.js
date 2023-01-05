@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
 
 // import "firebase/compat/firestore";
 // import "firebase/compat/storage";
@@ -25,3 +25,6 @@ export const onAuthChange = onAuthStateChanged;
 export const authGoogleProvider = GoogleAuthProvider;
 export const authGithubProvider = GithubAuthProvider;
 export const authSignUpWithPopUp = signInWithPopup;
+
+// Log Out
+export const authLogOut = signOut;
