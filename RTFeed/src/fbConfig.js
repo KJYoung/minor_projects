@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 
 // import "firebase/compat/firestore";
 // import "firebase/compat/storage";
@@ -28,3 +29,8 @@ export const authSignUpWithPopUp = signInWithPopup;
 
 // Log Out
 export const authLogOut = signOut;
+
+// Database(Cloud Firestore)
+export const dbService = getFirestore(app);
+export const dbCollection = collection;
+export const dbAddDoc = addDoc;
