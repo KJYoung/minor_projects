@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
-import { addDoc, collection, getFirestore } from "firebase/firestore";
+import { addDoc, collection, getDocs, getFirestore, onSnapshot, orderBy, query } from "firebase/firestore";
 
 // import "firebase/compat/firestore";
 // import "firebase/compat/storage";
@@ -34,3 +34,9 @@ export const authLogOut = signOut;
 export const dbService = getFirestore(app);
 export const dbCollection = collection;
 export const dbAddDoc = addDoc;
+export const dbGetDocs = getDocs;
+export const dbQuery = query;
+export const dbOrderBy = orderBy;
+
+// Realtime Listener
+export const rtOnSnapshot = onSnapshot;
