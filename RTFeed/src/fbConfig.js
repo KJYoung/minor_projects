@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
-import { addDoc, collection, getDocs, getFirestore, onSnapshot, orderBy, query } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, orderBy, query, updateDoc } from "firebase/firestore";
 
 // import "firebase/compat/firestore";
 // import "firebase/compat/storage";
@@ -37,6 +37,9 @@ export const dbAddDoc = addDoc;
 export const dbGetDocs = getDocs;
 export const dbQuery = query;
 export const dbOrderBy = orderBy;
+export const dbDoc = doc;
+export const dbDeleteDoc = deleteDoc;
+export const dbUpdateDoc = updateDoc;
 
 // Realtime Listener
 export const rtOnSnapshot = onSnapshot;

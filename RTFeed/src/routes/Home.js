@@ -1,3 +1,4 @@
+import Tweet from "components/Tweet";
 import { dbAddDoc, dbCollection, dbGetDocs, dbOrderBy, dbQuery, dbService, rtOnSnapshot } from "fbConfig";
 import React, { useEffect, useState } from "react";
 
@@ -28,7 +29,7 @@ const Home = ({ userObj }) => {
             setTweetList(tweetArr);
         });
     }, []);
-    
+
     return <div>
         <form onSubmit={async (e) =>{
             e.preventDefault();
@@ -48,9 +49,7 @@ const Home = ({ userObj }) => {
             <input type="submit" value="create" />
         </form>
         <div>
-            {tweetList.map(tweet => <div key={tweet.id}>
-                    <span>{tweet.text}</span>
-                </div>)}
+            {tweetList.map(tweet => <Tweet tweet={tweet} key={tweet.id} isAuthor={tweet.author_uid === userObj.uid} />)}
         </div>
     </div>
 };
