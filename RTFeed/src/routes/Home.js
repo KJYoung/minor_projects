@@ -1,21 +1,13 @@
 import Tweet from "components/Tweet";
-import { dbAddDoc, dbCollection, dbGetDocs, dbOrderBy, dbQuery, dbService, rtOnSnapshot } from "fbConfig";
-import React, { useEffect, useState } from "react";
+import { dbAddDoc, dbCollection, dbOrderBy, dbQuery, dbService, rtOnSnapshot } from "fbConfig";
+import React, { useEffect, useRef, useState } from "react";
 
 const Home = ({ userObj }) => {
     const [tweet, setTweet] = useState("");
     const [tweetList, setTweetList] = useState([]);
-    const getTweets = async () => {
-        const q = dbQuery(dbCollection(dbService, "tweets"));
-        const qSnapshot = await dbGetDocs(q);
-        qSnapshot.forEach(doc => {
-            const tweetObj = {
-                ...doc.data(),
-                id: doc.id,
-            };
-            setTweetList((prev) => [tweetObj, ...prev]);
-        });
-    }
+    const [imagePreview, setImagePreview] = useState(null);
+    const imageInput = useRef();
+
     useEffect(() => {
         const q = dbQuery(
             dbCollection(dbService, "tweets"),
@@ -30,11 +22,28 @@ const Home = ({ userObj }) => {
         });
     }, []);
 
+    const onImageChange = (event) => {
+        const {target : {files}} = event; // files : file list
+        if(files.length > 1){
+            window.alert("한 개의 사진만 선택하세요.");
+            return;
+        }else if(files.length === 0){
+            return; // No image selected.
+        }
+        // Here : One Image File is Successfully Selected.
+        const image = files[0];
+        const fileReader = new FileReader();
+        fileReader.onloadend = (fEvent) => {
+            setImagePreview(fEvent.currentTarget.result);
+        };
+        fileReader.readAsDataURL(image);
+    };
+
     return <div>
         <form onSubmit={async (e) =>{
             e.preventDefault();
             try{
-                const docRef = await dbAddDoc(dbCollection(dbService, "tweets"), {
+                await dbAddDoc(dbCollection(dbService, "tweets"), {
                     text: tweet,
                     createdAt: Date.now(),
                     author_uid: userObj.uid,
@@ -46,6 +55,14 @@ const Home = ({ userObj }) => {
         }}>
             <input type="text" placeholder="Type your thought!" maxLength={100}
                    value={tweet} onChange={(e) => setTweet(e.target.value)}/>
+            <input type="file" accept="image/*" ref={imageInput} onChange={onImageChange} />
+            {imagePreview && <div>
+                <img src={imagePreview} width="50px" height="50px" alt="preview" /> 
+                <button onClick={() => {
+                    setImagePreview(null);
+                    imageInput.current.value = "";
+                }}>Clear Photo</button>
+            </div>}
             <input type="submit" value="create" />
         </form>
         <div>
