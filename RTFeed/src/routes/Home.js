@@ -1,6 +1,7 @@
 import Tweet from "components/Tweet";
-import { dbAddDoc, dbCollection, dbOrderBy, dbQuery, dbService, rtOnSnapshot } from "fbConfig";
+import { dbAddDoc, dbCollection, dbOrderBy, dbQuery, dbService, rtOnSnapshot, storageGetDownloadURL, storageRef, storageService, storageUploadString } from "fbConfig";
 import React, { useEffect, useRef, useState } from "react";
+import { v4 } from "uuid";
 
 const Home = ({ userObj }) => {
     const [tweet, setTweet] = useState("");
@@ -42,13 +43,25 @@ const Home = ({ userObj }) => {
     return <div>
         <form onSubmit={async (e) =>{
             e.preventDefault();
+
+            let imgURL = "";
+            // 1. Upload the photo if any.
+            if(imagePreview !== null){
+                const fileRef = storageRef(storageService, `${userObj.uid}/${v4()}`);
+                const response = await storageUploadString(fileRef, imagePreview, "data_url");
+                imgURL = await storageGetDownloadURL(response.ref);
+            }
+            // 2. Create a new tweet.
             try{
                 await dbAddDoc(dbCollection(dbService, "tweets"), {
                     text: tweet,
                     createdAt: Date.now(),
                     author_uid: userObj.uid,
+                    img_url: imgURL, // "" if there was no photo.
                 });
                 setTweet("");
+                setImagePreview(null);
+                imageInput.current.value = "";
             } catch(error) {
                 console.log(error);
             }

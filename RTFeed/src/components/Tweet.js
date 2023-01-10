@@ -31,6 +31,7 @@ const Tweet = ({tweet, isAuthor}) => {
                 <button onClick={toggleEdit}>Cancel</button>
             </> : <>
                 <span>{tweet.text}</span>
+                {tweet.img_url && <img src={tweet.img_url} width="50px" height="50px" alt="tweetAttachment" />}
                 {isAuthor && <>
                     <button onClick={toggleEdit}>Edit</button>
                     <button onClick={onDelete}>Delete</button>
