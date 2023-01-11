@@ -1,4 +1,4 @@
-import { dbDeleteDoc, dbDoc, dbService, dbUpdateDoc } from "fbConfig";
+import { dbDeleteDoc, dbDoc, dbService, dbUpdateDoc, storageDeleteObj, storageRef, storageService } from "fbConfig";
 import React, { useState } from "react";
 
 const Tweet = ({tweet, isAuthor}) => {
@@ -12,6 +12,11 @@ const Tweet = ({tweet, isAuthor}) => {
         if(ok){
             const tweetRef = dbDoc(dbService, "tweets", `${tweet.id}`);
             await dbDeleteDoc(tweetRef);
+
+            // Delete Photo if any
+            if(tweet.img_url && tweet.img_url !== ""){
+                await storageDeleteObj(storageRef(storageService, tweet.img_url));
+            }
         }
     };
     const onEdit = async (event) => {

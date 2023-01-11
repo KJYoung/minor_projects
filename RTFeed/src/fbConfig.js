@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
 import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, orderBy, query, updateDoc } from "firebase/firestore";
-import { getDownloadURL, getStorage, ref, uploadString } from "firebase/storage";
+import { deleteObject, getDownloadURL, getStorage, ref, uploadString } from "firebase/storage";
 
 // RTFeed's Firebase configuration
 const firebaseConfig = {
@@ -47,3 +47,5 @@ export const storageService = getStorage(app);
 export const storageRef = ref;
 export const storageUploadString = uploadString;
 export const storageGetDownloadURL = getDownloadURL;
+// RefFromURL is gone.
+export const storageDeleteObj = deleteObject;
