@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
-import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, orderBy, query, updateDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { deleteObject, getDownloadURL, getStorage, ref, uploadString } from "firebase/storage";
 
 // RTFeed's Firebase configuration
@@ -19,6 +19,7 @@ export const authService = getAuth(app);
 export const authCreateUser = createUserWithEmailAndPassword;
 export const authLogIn = signInWithEmailAndPassword;
 export const onAuthChange = onAuthStateChanged;
+export const authUpdateProfile = updateProfile;
 
 // Social Login
 export const authGoogleProvider = GoogleAuthProvider;
@@ -38,6 +39,7 @@ export const dbOrderBy = orderBy;
 export const dbDoc = doc;
 export const dbDeleteDoc = deleteDoc;
 export const dbUpdateDoc = updateDoc;
+export const dbWhere = where;
 
 // Realtime Listener
 export const rtOnSnapshot = onSnapshot;

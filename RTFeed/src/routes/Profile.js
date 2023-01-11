@@ -1,16 +1,44 @@
-import { authLogOut, authService } from "fbConfig";
-import React from "react";
+import { authLogOut, authService, authUpdateProfile, dbCollection, dbGetDocs, dbOrderBy, dbQuery, dbService, dbWhere } from "fbConfig";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Profile = () => {
+const Profile = ({ userObj }) => {
+    const [dpName, setDPName] = useState(userObj.displayName);
     const navigate = useNavigate();
     const onLogOut = async () => {
         await authLogOut(authService);
         navigate("/");
     }
-    return <div>
+    const getOwnTweets = async () => {
+        const q = dbQuery(
+            dbCollection(dbService, "tweets"),
+            dbWhere("author_uid", "==", userObj.uid),
+            dbOrderBy("createdAt", "desc")
+        );
+        const qSnapshot = await dbGetDocs(q);
+        qSnapshot.forEach((doc) => {
+            // console.log(doc.id, " => ", doc.data());
+        });
+    };
+    useEffect(() => {
+        getOwnTweets();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+    return <>
+        <form onSubmit={async (e) => {
+            e.preventDefault();
+            if(userObj.displayName !== dpName){
+                // Name Change Occurred!
+                await authUpdateProfile(userObj, { displayName : dpName });
+                // Maybe we have to refresh to reflect changes immediately.
+            }
+        }}>
+            <input type="text" placeholder="Display name"
+                   value={dpName} onChange={e => setDPName(e.target.value)}/>
+            <input type="submit" />
+        </form>
         <button onClick={onLogOut}>Log Out</button>
         Profile
-    </div>;
+    </>;
 }
 export default Profile;
