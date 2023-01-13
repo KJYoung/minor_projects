@@ -2,7 +2,7 @@ import { authLogOut, authService, authUpdateProfile, dbCollection, dbGetDocs, db
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Profile = ({ userObj }) => {
+const Profile = ({ userObj, refreshUser }) => {
     const [dpName, setDPName] = useState(userObj.displayName);
     const navigate = useNavigate();
     const onLogOut = async () => {
@@ -29,8 +29,9 @@ const Profile = ({ userObj }) => {
             e.preventDefault();
             if(userObj.displayName !== dpName){
                 // Name Change Occurred!
-                await authUpdateProfile(userObj, { displayName : dpName });
+                await userObj.updateProfile(dpName);
                 // Maybe we have to refresh to reflect changes immediately.
+                refreshUser();
             }
         }}>
             <input type="text" placeholder="Display name"

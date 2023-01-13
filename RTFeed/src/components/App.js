@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import MyRouter from "components/Router";
-import { authService } from "fbConfig";
+import { authService, authUpdateProfile } from "fbConfig";
 import { onAuthChange } from "../fbConfig";
 
 function App() {
@@ -10,16 +10,28 @@ function App() {
   useEffect(() => {
     onAuthChange(authService, (user) => {
       if(user){
-        setUserObj(user);
+        setUserObj({
+          displayName: user.displayName,
+          uid: user.uid,
+          updateProfile: (name) => authUpdateProfile(user, { displayName: name }),
+        });
       }else{
         setUserObj(null);
       }
       setInit(true);
     });
   }, []);
+  const refreshUser = () => {
+    const user = authService.currentUser;
+    setUserObj({
+      displayName: user.displayName,
+      uid: user.uid,
+      updateProfile: (name) => authUpdateProfile(user, { displayName: name }),
+    });
+  };
   return (
     <>
-      {init ? <MyRouter isLoggedIn={userObj !== null} userObj={userObj} /> : "Loading Firebase..."}
+      {init ? <MyRouter refreshUser={refreshUser} isLoggedIn={userObj !== null} userObj={userObj} /> : "Loading Firebase..."}
       <footer>&copy; RTFeed. 2023 Jan.</footer>
     </>
   );
