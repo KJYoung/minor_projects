@@ -1,5 +1,6 @@
 ## Firebase 관련 연습 겸 Twitter 느낌의 SNS 구현
 
+- STACK : Javascript, React, Firebase   
 - Firebase는 본래 Database였다. 현재 Firebase는 확장되어 다양한 서비스를 제공하고 있다. AWS Amplify를 참고해볼 수 있다.
 - Firebase를 실제 프로젝트에서 사용하는 것은 Dependency를 가중시키기 때문에, 바람직하지 않다. Prototype으로 적합하다.
 - Firebase의 Cloud Firestore는 NoSQL 기반이다. Collection, Document를 가진다. 각 Collection은 Documents를 가진다. 즉, collection = group of documents.   

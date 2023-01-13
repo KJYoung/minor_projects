@@ -1,4 +1,4 @@
-import { authLogOut, authService, authUpdateProfile, dbCollection, dbGetDocs, dbOrderBy, dbQuery, dbService, dbWhere } from "fbConfig";
+import { authLogOut, authService, dbCollection, dbGetDocs, dbOrderBy, dbQuery, dbService, dbWhere } from "fbConfig";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
