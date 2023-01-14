@@ -6,7 +6,7 @@ import Navigation from "components/Navigation";
 import Profile from "routes/Profile";
 
 const MyRouter = ({ isLoggedIn, userObj, refreshUser })  => {
-    return <Router>
+    return <Router base="/rtfeed">
         {isLoggedIn && <Navigation userObj={userObj} />}
         <div style={{ 
               maxWidth: 890,
