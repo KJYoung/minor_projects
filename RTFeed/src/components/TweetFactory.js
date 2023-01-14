@@ -1,3 +1,5 @@
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { dbAddDoc, dbCollection, dbService, storageGetDownloadURL, storageRef, storageService, storageUploadString } from "fbConfig";
 import React, { useRef, useState } from "react";
 import { v4 } from "uuid";
@@ -27,6 +29,9 @@ const TweetFactory = ({ userObj }) => {
     return <form onSubmit={async (e) =>{
         e.preventDefault();
 
+        if(tweet === ""){
+            return;
+        }
         let imgURL = "";
         // 1. Upload the photo if any.
         if(imagePreview !== null){
@@ -48,18 +53,29 @@ const TweetFactory = ({ userObj }) => {
         } catch(error) {
             console.log(error);
         }
-    }}>
-        <input type="text" placeholder="Type your thought!" maxLength={100}
-               value={tweet} onChange={(e) => setTweet(e.target.value)}/>
-        <input type="file" accept="image/*" ref={imageInput} onChange={onImageChange} />
-        {imagePreview && <div>
-            <img src={imagePreview} width="50px" height="50px" alt="preview" /> 
-            <button onClick={() => {
+    }} className="factoryForm">
+        <div className="factoryInput__container">
+            <input type="text" placeholder="Type your thought!" maxLength={100}
+                value={tweet} onChange={(e) => setTweet(e.target.value)}
+                className="factoryInput__input" />
+            <input type="submit" value="&rarr;" className="factoryInput__arrow" />
+        </div>
+        <label htmlFor="attach-file" className="factoryInput__label">
+            <span>Add photos</span>
+            <FontAwesomeIcon icon={faPlus} />
+        </label>
+        <input id="attach-file" type="file" accept="image/*" ref={imageInput} onChange={onImageChange} style={{ opacity: 0 }}/>
+        {imagePreview && <div className="factoryForm__attachment" >
+            <img src={imagePreview} alt="preview" style={{ backgroundImage: imagePreview }}/>
+            <div onClick={() => {
                 setImagePreview(null);
                 imageInput.current.value = "";
-            }}>Clear Photo</button>
+            }} className="factoryForm__clear">
+                <span>Clear</span>
+                <FontAwesomeIcon icon={faTimes} />
+            </div>
         </div>}
-        <input type="submit" value="create" />
+        
     </form>
 };
 

@@ -24,7 +24,7 @@ const Profile = ({ userObj, refreshUser }) => {
         getOwnTweets();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    return <>
+    return <div className="container">
         <form onSubmit={async (e) => {
             e.preventDefault();
             if(userObj.displayName !== dpName){
@@ -33,13 +33,13 @@ const Profile = ({ userObj, refreshUser }) => {
                 // Maybe we have to refresh to reflect changes immediately.
                 refreshUser();
             }
-        }}>
+        }} className="profileForm">
             <input type="text" placeholder="Display name"
-                   value={dpName} onChange={e => setDPName(e.target.value)}/>
-            <input type="submit" />
+                   value={dpName} onChange={e => setDPName(e.target.value)}
+                   autoFocus required className="formInput"/>
+            <input type="submit" value="Update Name" className="formBtn" style={{ marginTop: 10 }}/>
         </form>
-        <button onClick={onLogOut}>Log Out</button>
-        Profile
-    </>;
+        <span onClick={onLogOut} className="formBtn cancelBtn logOut">Log Out</span>
+    </div>;
 }
 export default Profile;

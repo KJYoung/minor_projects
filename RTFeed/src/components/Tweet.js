@@ -1,3 +1,5 @@
+import { faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { dbDeleteDoc, dbDoc, dbService, dbUpdateDoc, storageDeleteObj, storageRef, storageService } from "fbConfig";
 import React, { useState } from "react";
 
@@ -27,20 +29,24 @@ const Tweet = ({tweet, isAuthor}) => {
     };
     
     return (
-        <div>
+        <div className="nweet">
             {isEditing ? <>
-                <form onSubmit={onEdit}>
-                    <input type="text" value={text} onChange={e => setText(e.target.value)} required />
-                    <input type="submit" value="confirm" />
+                <form onSubmit={onEdit} className="container nweetEdit">
+                    <input type="text" value={text} onChange={e => setText(e.target.value)} required autoFocus className="formInput" />
+                    <input type="submit" value="confirm" className="formBtn"/>
                 </form>
-                <button onClick={toggleEdit}>Cancel</button>
+                <span onClick={toggleEdit} className="formBtn cancelBtn">Cancel</span>
             </> : <>
-                <span>{tweet.text}</span>
-                {tweet.img_url && <img src={tweet.img_url} width="50px" height="50px" alt="tweetAttachment" />}
-                {isAuthor && <>
-                    <button onClick={toggleEdit}>Edit</button>
-                    <button onClick={onDelete}>Delete</button>
-                </>}
+                <h4>{tweet.text}</h4>
+                {tweet.img_url && <img src={tweet.img_url} alt="tweetAttachment" />}
+                {isAuthor && <div className="nweet__actions">
+                    <span onClick={toggleEdit}>
+                        <FontAwesomeIcon icon={faPencilAlt} />
+                    </span>
+                    <span onClick={onDelete}>
+                        <FontAwesomeIcon icon={faTrash} />
+                    </span>
+                </div>}
             </>}
             
         </div>

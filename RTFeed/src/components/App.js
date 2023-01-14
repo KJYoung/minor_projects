@@ -32,7 +32,7 @@ function App() {
   return (
     <>
       {init ? <MyRouter refreshUser={refreshUser} isLoggedIn={userObj !== null} userObj={userObj} /> : "Loading Firebase..."}
-      <footer>&copy; RTFeed. 2023 Jan.</footer>
+      <footer style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: 30}}>RTFeed. 2023 Jan.</footer>
     </>
   );
 }

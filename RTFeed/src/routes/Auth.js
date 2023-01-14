@@ -1,3 +1,5 @@
+import { faGithub, faGoogle, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthForm from "components/AuthForm";
 import React from "react";
 import { authService, authGoogleProvider, authGithubProvider, authSignUpWithPopUp } from "../fbConfig";
@@ -19,11 +21,16 @@ const Auth = () => {
     await authSignUpWithPopUp(authService, provider);
   }
   return (
-    <div>
+    <div className="authContainer">
+        <FontAwesomeIcon icon={faTwitter} color={"#04AAFF"} size="3x" style={{ marginBottom: 30 }} />
         <AuthForm />
-        <div>
-            <button name="google" onClick={onSocialLogin}>Continue with Google</button>
-            <button name="github" onClick={onSocialLogin}>Continue with Github</button>
+        <div className="authBtns">
+            <button name="google" onClick={onSocialLogin} className="authBtn">
+              Continue with Google <FontAwesomeIcon icon={faGoogle} />
+            </button>
+            <button name="github" onClick={onSocialLogin} className="authBtn">
+              Continue with Github <FontAwesomeIcon icon={faGithub} />
+            </button>
         </div>
     </div>)
   };
