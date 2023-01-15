@@ -1,6 +1,6 @@
 import Tweet from "components/Tweet";
 import TweetFactory from "components/TweetFactory";
-import { dbCollection, dbOrderBy, dbQuery, dbService, rtOnSnapshot } from "fbConfig";
+import { authService, dbCollection, dbOrderBy, dbQuery, dbService, onAuthChange, rtOnSnapshot } from "fbConfig";
 import React, { useEffect, useState } from "react";
 
 const Home = ({ userObj }) => {
@@ -11,13 +11,17 @@ const Home = ({ userObj }) => {
             dbCollection(dbService, "tweets"),
             dbOrderBy("createdAt", "desc")
         );
-        rtOnSnapshot(q, (snapshot) => {
+        const unsubscribe = rtOnSnapshot(q, (snapshot) => {
             const tweetArr = snapshot.docs.map((document) => ({
                 id: document.id,
                 ...document.data(),
             }));
             setTweetList(tweetArr);
         });
+        onAuthChange(authService, (user) => {
+            if(user === null)
+                unsubscribe();
+        }, []);
     }, []);
 
     return <div className="container">

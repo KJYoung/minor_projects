@@ -5,7 +5,8 @@
 - Firebase를 실제 프로젝트에서 사용하는 것은 Dependency를 가중시키기 때문에, 바람직하지 않다. Prototype으로 적합하다.
 - Firebase의 Cloud Firestore는 NoSQL 기반이다. Collection, Document를 가진다. 각 Collection은 Documents를 가진다. 즉, collection = group of documents.   
 - 본 구현을 조금 변형하면 WebSocket을 이용하지 않고도 Chatting Prototype을 수월하게 만들 수 있을 것이다.   
-- 
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
