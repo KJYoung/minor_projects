@@ -7,7 +7,7 @@ You can checkout [HERE](https://KJYoung.github.io/minor_projects)
 - [ ] [VideoChat(WebRTC와 WebSocket을 이용한 화상통화 구현)](https://github.com/KJYoung/minor_projects/tree/main/VideoChat)
 - [X] [RTFeed(Firebase 관련 연습 겸 Twitter 느낌의 SNS 구현)](https://github.com/KJYoung/minor_projects/tree/main/RTFeed)
 - [ ] [Rust]
-- [ ] [Dart]
+- [ ] [DartBasics](https://github.com/KJYoung/minor_projects/tree/main/DartBasics)
 - [ ] [Flutter]
 - [ ] [Kotlin]
 - [ ] [Java Android]
