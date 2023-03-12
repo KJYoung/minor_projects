@@ -29,4 +29,17 @@ void main() {
   final String varFin = 'varFin';
   final varFin2 = "varFin2";
   print("Final " + varFin + varFin2);
+
+  // -- 1.5 Late Variables.
+  late var hay;
+  late final varLateFinal;
+  final varLateFinal2;
+  // print(varLateFinal + varLateFinal2); // ERROR for both.
+  varLateFinal = "New Value";
+  varLateFinal2 = "New Value2";
+  print(varLateFinal + varLateFinal2);
+  // The difference between 'late final', 'final' will appear in Class Instance Variable.
+
+  // -- 1.6 Constant Variables.
+  const name = 'VKJY'; // Compile-time known values.
 }
