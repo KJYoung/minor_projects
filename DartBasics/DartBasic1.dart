@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 void main() {
   // --- Variable.  --------------------------------------------
   var variable1 = "Hey! ";
