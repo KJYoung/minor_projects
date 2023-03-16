@@ -9,4 +9,12 @@ void main() {
   bool boolean = true;
   num generalNumber1 = 3;
   num generalNumber2 = 3.4;
+
+  // Lists.
+  var numbers = [1, 2, 3, 4, 5];
+  numbers.add(332);
+  List<bool> bools = [true, true, false];
+  var giveMeThree = true;
+  var numberCollectionIF = [1, 2, if (giveMeThree) 3, 4]; // Collection IF.
+  print(numberCollectionIF);
 }
