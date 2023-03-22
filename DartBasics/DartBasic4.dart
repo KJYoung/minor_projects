@@ -22,9 +22,12 @@ class PlayerShortCut {
 
 class PlayerNamedParams {
   String name;
+  int age;
+  GRADE grade;
 
   // Named Params Constructor.
-  PlayerNamedParams({required this.name});
+  PlayerNamedParams(
+      {required this.name, required this.age, required this.grade});
 }
 
 class PlayerNamedConst {
@@ -38,6 +41,8 @@ class PlayerNamedConst {
       : this.name = name;
 }
 
+enum GRADE { A, B }
+
 void main() {
   // --- 4. Classes.  --------------------------------------------
   var p1 = Player('VKJY');
@@ -45,4 +50,11 @@ void main() {
 
   var p2 = PlayerNamedConst(name: 'jason');
   var p3 = PlayerNamedConst.createWithState(name: 'juhe', state: 1);
+
+  var p4 = PlayerNamedParams(name: 'JY', age: 23, grade: GRADE.A)
+    // p4.name = 'KJY';
+    // p4.age = 24;
+    ..name = 'KJY'
+    ..age = 22;
+  // CASCADE NOTATION!
 }
