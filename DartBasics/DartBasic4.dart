@@ -1,6 +1,13 @@
 // ignore_for_file: unused_local_variable
 
-class Player {
+abstract class Human {
+  void breathe();
+  void walk();
+  void eat();
+  void drink();
+}
+
+class Player extends Human {
   late String name; // Should be 'LATE' var!
 
   // Constructor.
@@ -10,6 +17,22 @@ class Player {
 
   void printIntro() {
     print("Hi. I am $name"); // Instead of this.name
+  }
+
+  void breathe() {
+    print("Whoo..");
+  }
+
+  void walk() {
+    print("!");
+  }
+
+  void eat() {
+    print("Yammy");
+  }
+
+  void drink() {
+    print("Yummy");
   }
 }
 
