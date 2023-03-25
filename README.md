@@ -8,6 +8,6 @@ You can checkout [HERE](https://KJYoung.github.io/minor_projects)
 - [X] [RTFeed(Firebase 관련 연습 겸 Twitter 느낌의 SNS 구현)](https://github.com/KJYoung/minor_projects/tree/main/RTFeed)
 - [ ] [Rust]
 - [ ] [DartBasics](https://github.com/KJYoung/minor_projects/tree/main/DartBasics)
-- [ ] [Flutter]
+- [ ] [FlutterBasics](https://github.com/KJYoung/minor_projects/tree/main/FlutterBasics)
 - [ ] [Kotlin]
 - [ ] [Java Android]
