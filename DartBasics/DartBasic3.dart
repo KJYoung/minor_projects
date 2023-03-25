@@ -1,4 +1,5 @@
 // ignore_for_file: unused_local_variable
+// ignore_for_file: dead_null_aware_expression
 
 void printFn(String content) {
   print(content);
