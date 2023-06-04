@@ -4,10 +4,16 @@
 
 Checkbox indicates current deployed sub-project.   
 You can checkout [HERE](https://KJYoung.github.io/minor_projects)   
+
+### Learning & Education
 - [ ] [VideoChat(WebRTC와 WebSocket을 이용한 화상통화 구현)](https://github.com/KJYoung/minor_projects/tree/main/VideoChat)
 - [X] [RTFeed(Firebase 관련 연습 겸 Twitter 느낌의 SNS 구현)](https://github.com/KJYoung/minor_projects/tree/main/RTFeed)
-- [ ] [Rust]
 - [ ] [DartBasics](https://github.com/KJYoung/minor_projects/tree/main/DartBasics)
 - [ ] [FlutterBasics](https://github.com/KJYoung/minor_projects/tree/main/FlutterBasics)
+   
+- [ ] [Rust]
 - [ ] [Kotlin]
-- [ ] [Java Android]
+- [ ] [Java-Android]   
+
+### Minor Projects for myself
+- [ ] [LivingSolo(자취(독립) 재고 관리 및 가계부 정산)](https://github.com/KJYoung/minor_projects/tree/main/LivingSolo)
