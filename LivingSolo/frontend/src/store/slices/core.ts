@@ -25,8 +25,8 @@ export const coreSlice = createSlice({
         state.name = '';
     },
     getCoresSuccess: (state, { payload }) => {
-        state.id = 10;
-        state.name = 'hi';
+        state.id = payload.elements[0].id;
+        state.name = payload.elements[0].name;
     },
     getCoresFailure: (state, { payload }) => {
         state.id = -1;
