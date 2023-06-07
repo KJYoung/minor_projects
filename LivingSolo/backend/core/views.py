@@ -7,31 +7,31 @@ from core.models import Core
 
 from json.decoder import JSONDecodeError
 
+
 @require_http_methods(['GET', 'POST'])
 def general_core(request):
     """
     GET : get element list
     POST : create element
     """
-    print("Called")
     if request.method == 'GET':
         result = []
-        for gr_obj in Core.objects.all():
+        for core_element in Core.objects.all():
             result.append(
                 {
-                    "id": gr_obj.id,
-                    "name": gr_obj.group_name,
+                    "id": core_element.id,
+                    "name": core_element.name,
                 }
             )
         return JsonResponse({"elements": result}, safe=False)
     else:  ## post
         try:
             req_data = json.loads(request.body.decode())
-           
-            group = Core(
+
+            element = Core(
                 name=req_data["name"],
             )
-            group.save()
+            element.save()
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
-        return JsonResponse({"id": group.id}, status=201)
+        return JsonResponse({"id": element.id}, status=201)

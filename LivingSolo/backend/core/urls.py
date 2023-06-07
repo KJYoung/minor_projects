@@ -4,5 +4,5 @@ from core.views import (
 )
 
 urlpatterns = [
-    path('', general_core, name="groups"),
+    path('', general_core, name="core"),
 ]
