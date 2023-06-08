@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from core.models import Core
 
 from json.decoder import JSONDecodeError
@@ -34,4 +34,36 @@ def general_core(request):
             element.save()
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
-        return JsonResponse({"id": element.id}, status=201)
+        return JsonResponse({"id": element.id, "name": element.name}, status=201)
+
+
+@require_http_methods(['PUT', 'DELETE'])
+def detail_core(request, element_id):
+    """
+    PUT : edit element's content
+    DELETE : delete element
+    """
+    if request.method == 'PUT':
+        try:
+            data = json.loads(request.body.decode())
+            core_id = int(element_id)
+            core_obj = Core.objects.get(pk=core_id)
+
+            core_obj.name = data["name"]
+            core_obj.save()
+            return JsonResponse({"message": "success"}, status=200)
+        except Core.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception:
+            return HttpResponseBadRequest()
+    else:  ## delete
+        try:
+            core_id = int(element_id)
+            core_obj = Core.objects.get(pk=core_id)
+
+            core_obj.delete()
+            return JsonResponse({"message": "success"}, status=200)
+        except Core.DoesNotExist:
+            return HttpResponseNotFound()
+        except Exception:
+            return HttpResponseBadRequest()
