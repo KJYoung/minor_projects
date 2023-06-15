@@ -1,9 +1,7 @@
-import { combineReducers } from '@reduxjs/toolkit';
-import coreSaga, { coreSlice } from './slices/core';
+import { configureStore } from '@reduxjs/toolkit';
+import coreReducer from "./slices/core";
 
-export const rootReducer = combineReducers({
-  core: coreSlice.reducer,
-});
-export function* rootSaga() {
-  yield all([fork(coreSaga)]);
-}
+export const store = configureStore({ reducer : { core: coreReducer }});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
