@@ -21,7 +21,7 @@ function App() {
       <button onClick={() => { dispatch(coreActions.getElements()); }}>FETCH!</button>
       <input value={name} onChange={(e) => {setName(e.target.value)}}/><button disabled={name===""} onClick={() => { dispatch(coreActions.createCore({name})); setName(""); }}>SEND</button>
       {coreElements && coreElements.map((e, index) => 
-        <div>
+        <div key={index}>
           {editID === e.id ? 
             <>
               <input value={editName} onChange={(e) => setEditName(e.target.value)}/>
