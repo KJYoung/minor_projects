@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import * as CoreAPI from '../apis/core';
 import client from '../apis/client';
 import { RootState } from '..';
 
