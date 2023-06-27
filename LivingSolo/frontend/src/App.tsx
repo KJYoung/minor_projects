@@ -9,8 +9,9 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
 import { styled } from 'styled-components';
+import NavDrawer from './components/general/NavDrawer';
 
-enum TabState { DEPRECATED, Home, Transaction, Calendar, Stockpile };
+export enum TabState { DEPRECATED, Home, Transaction, Calendar, Stockpile };
 const tab2Str = (e: TabState) => {
   switch (e) {
     case TabState.Home:
@@ -26,7 +27,6 @@ const tab2Str = (e: TabState) => {
   }
 }
 
-
 function App() {
   const [tabState, setTabState] = useState<TabState>(TabState.Home);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
@@ -37,18 +37,6 @@ function App() {
       if(newTabState) setTabState(newTabState); // Set New Tab State.
       setIsDrawerOpen(open);
     };
-
-  const DrawerDiv = () => (
-    <Box  role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}
-          sx={{ width: 250 }}>
-      <Button onClick={toggleDrawer(false)}>닫기</Button>
-      <Button onClick={toggleDrawer(false, TabState.Home)}>Home</Button>
-      <Button onClick={toggleDrawer(false, TabState.Transaction)}>Transaction</Button>
-      <Button onClick={toggleDrawer(false, TabState.Calendar)}>Calendar</Button>
-      <Button onClick={toggleDrawer(false, TabState.Stockpile)}>Stockpile</Button>
-    </Box>
-  );
-  // Drawer End.
 
   return (
       <AppDiv>
@@ -79,13 +67,8 @@ function App() {
         {tabState === TabState.Calendar && <span>Calendar</span>}
         {tabState === TabState.Stockpile && <span>Stockpile</span>}
         
-        <Drawer
-          anchor={'left'}
-          open={isDrawerOpen}
-          onClose={toggleDrawer(false)}
-          sx={{ marginTop: 64 }}
-        >
-          {DrawerDiv()}
+        <Drawer open={isDrawerOpen}>
+          <NavDrawer toggleDrawer={toggleDrawer}/>
         </Drawer>
       </AppDiv>
       );
