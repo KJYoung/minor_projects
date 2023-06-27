@@ -1,0 +1,23 @@
+:root {
+    --ls-blue: #1876D1;
+    
+    /* --ls-back: #eef5fd;
+    --ls-back-darker: #dae1e8;
+    --ls-white: #ffffff;
+    --ls-gray: #333333; */
+
+    /* Custom Image Slider */
+    /* --ls-blue: #4e8cff;
+    --ls-blue-active: #2873ff;
+    --ls-lightblue: #74C0FC;
+    --ls-red: #ff4e4e;
+    --ls-modal-background: rgba(0, 0, 0, 0.3); */
+    /* Text Color */
+    /* --ls-text: #111111;
+    --ls-subtext: #333333;
+    --ls-text-blue: #4e8cff;
+
+    --ls-footer: #474747;
+    --ls-header-left: #ff777783;
+    --ls-header-right: #777cffc5; */
+}

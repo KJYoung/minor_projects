@@ -5,6 +5,7 @@ import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import { store } from './store';
 import App from './App';
+import './styles/color.css';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
