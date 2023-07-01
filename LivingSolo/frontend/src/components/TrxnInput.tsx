@@ -5,8 +5,13 @@ import { AppDispatch } from '../store';
 import { ERRORSTATE, createCore, fetchCores, selectCore } from '../store/slices/core';
 import { styled } from 'styled-components';
 
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
+
 function TrxnInput() {
   const [memo, setMemo] = useState("");
+  const [startDate, setStartDate] = useState<Date>(new Date());
 
   const dispatch = useDispatch<AppDispatch>();
   const { elements, errorState }  = useSelector(selectCore);
@@ -16,10 +21,13 @@ function TrxnInput() {
       dispatch(fetchCores());
     }
   }, [elements, errorState, dispatch]);
+
   return (
     <TraxionInputDiv>
         <div></div>
-        <TextField label="날짜" variant="outlined"/>
+        <div>
+          <DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
+        </div>
         <TextField label="주기" variant="outlined" />
         <TextField label="타입" variant="outlined" />
         <TextField label="금액" variant="outlined" />
