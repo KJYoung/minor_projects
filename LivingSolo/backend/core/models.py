@@ -8,3 +8,13 @@ class Core(models.Model):
 
     class Meta:
         ordering = ("-id",)
+
+
+class AbstractTimeStampedModel(models.Model):
+    """Abstract Model with Time Stamps"""
+
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
