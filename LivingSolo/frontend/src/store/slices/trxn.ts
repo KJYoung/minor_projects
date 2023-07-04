@@ -1,0 +1,91 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import client from '../apis/client';
+import { RootState } from '..';
+
+export enum ERRORSTATE {
+  DEFAULT, NORMAL, SUCCESS, PENDING, ERROR
+  // DESIGN CHOICE: Normal is for the SUCCESS of the get Elements.
+};
+
+type TypeElement = {
+  id: number,
+  name: string,
+  color: string
+};
+
+type TrxnElement = {
+  id: number,
+  date: string,
+  memo: string,
+  type: TypeElement[],
+};
+
+interface TrxnState {
+  elements: TrxnElement[],
+  errorState: ERRORSTATE,
+};
+
+export const initialState: TrxnState = {
+  elements: [],
+  errorState: ERRORSTATE.DEFAULT
+};
+
+export const fetchTrxns = createAsyncThunk(
+  "trxn/fetchTrxns",
+  async () => {
+    const response = await client.get(`/api/trxn/`);
+    return response.data;
+  }
+);
+export const createTrxn = createAsyncThunk(
+  "trxn/createTrxn",
+  async (TrxnName: String, { dispatch }) => {
+      const response = await client.post("/api/trxn/", {name : TrxnName});
+      dispatch(TrxnActions.createTrxn(response.data));
+  }
+);
+
+export const editTrxn = createAsyncThunk(
+  "trxn/editTrxn",
+  async (editTrxnObj: TrxnElement, { dispatch }) => {
+      const response = await client.put(`/api/trxn/${editTrxnObj.id}/`, {name : editTrxnObj.memo});
+      dispatch(TrxnActions.editTrxn(response.data));
+  }
+);
+export const deleteTrxn = createAsyncThunk(
+  "trxn/deleteTrxn",
+  async (TrxnID: String | Number, { dispatch }) => {
+      const response = await client.delete(`/api/Trxn/${TrxnID}/`);
+      dispatch(TrxnActions.deleteTrxn(response.data));
+  }
+);
+
+export const TrxnSlice = createSlice({
+  name: "trxn",
+  initialState,
+  reducers: {
+    createTrxn: (state, action: PayloadAction<{}>) => {},
+    editTrxn: (state, action: PayloadAction<{}>) => {},
+    deleteTrxn: (state, action: PayloadAction<{}>) => {},
+  },
+  extraReducers(builder) {
+    builder.addCase(fetchTrxns.fulfilled, (state, action) => {
+      state.elements = action.payload.elements;
+      state.errorState = ERRORSTATE.DEFAULT;
+    }); 
+    builder.addCase(createTrxn.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
+    }); 
+    builder.addCase(editTrxn.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
+    }); 
+    builder.addCase(deleteTrxn.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
+    }); 
+  },
+});
+
+export const TrxnActions = TrxnSlice.actions;
+export const selectTrxn = (state: RootState) => state.trxn;
+export default TrxnSlice.reducer;
