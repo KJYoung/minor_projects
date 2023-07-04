@@ -6,7 +6,7 @@ from transactions.models import Transaction, TransactionType
 class TransactionAdmin(admin.ModelAdmin):
     """Transaction admin definition"""
 
-    list_display = ("pk", "date", "type", "amount", "memo")
+    list_display = ("pk", "date", "amount", "memo")
 
 
 @admin.register(TransactionType)

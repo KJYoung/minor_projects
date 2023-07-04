@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import now
 
 # Create your models here.
 class Core(models.Model):
@@ -13,7 +14,8 @@ class Core(models.Model):
 class AbstractTimeStampedModel(models.Model):
     """Abstract Model with Time Stamps"""
 
-    created = models.DateTimeField(auto_now_add=True, editable=False)
+    # created = models.DateTimeField(auto_now_add=True, editable=False)
+    created = models.DateTimeField(default=now, editable=False)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
