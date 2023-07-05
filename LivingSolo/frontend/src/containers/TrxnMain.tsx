@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@mui/material';
 import { AppDispatch } from '../store';
-import { ERRORSTATE, deleteTrxn, fetchTrxns, selectTrxn } from '../store/slices/trxn';
+import { ERRORSTATE } from '../store/slices/core';
+import { deleteTrxn, fetchTrxns, selectTrxn } from '../store/slices/trxn';
 import TrxnInput from '../components/TrxnInput';
 import { TagBubbleCompact } from '../components/general/TypeBubble';
 
@@ -22,7 +23,7 @@ function TrxnMain() {
     <div className="App">
       <TrxnInput />
       <Button variant={"contained"} onClick={() => { dispatch(fetchTrxns()); }}>FETCH!</Button>
-      <span>ID | DATE | TYPE | MEMO</span>
+      <span>ID | DATE | AMOUNT | TYPE | MEMO | PERIOD</span>
       {elements && 
         elements.map((e, index) => 
         <div key={index}>
@@ -35,9 +36,9 @@ function TrxnMain() {
               }}>수정 완료</Button>
             </>
             : 
-            <span>{e.id} | {e.date} | {e.memo} | {e.type.map((ee) => {
-              return <TagBubbleCompact color={ee.color}>{ee.name}</TagBubbleCompact>
-            })}</span>
+            <span>
+              {e.id} | {e.date} | {e.amount} | {e.memo} | {e.type.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)} | {e.period > 0 ? e.period : '-'}
+            </span>
           }
             {/* {editID !== e.id && <Button onClick={async () => { setEditID(e.id); setEditName(e.name)}} variant={"contained"}>수정</Button>} */}
             <Button onClick={async () => dispatch(deleteTrxn(e.id))} variant={"contained"}>삭제</Button>

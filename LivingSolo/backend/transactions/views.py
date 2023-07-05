@@ -30,7 +30,9 @@ def general_transaction(request):
                     "id": tr_elem.id,
                     "memo": tr_elem.memo,
                     "date": tr_elem.date,
-                    "type": types
+                    "type": types,
+                    "period": tr_elem.period,
+                    "amount": tr_elem.amount,
                 }
             )
         return JsonResponse({"elements": result}, safe=False)
@@ -39,12 +41,15 @@ def general_transaction(request):
             req_data = json.loads(request.body.decode())
 
             element = Transaction(
-                name=req_data["name"],
+                memo=req_data["memo"],
+                amount=req_data["amount"],
+                period=req_data["period"],
+                date=req_data["date"],
             )
             element.save()
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
-        return JsonResponse({"id": element.id, "name": element.name}, status=201)
+        return JsonResponse({"id": element.id, "memo": element.memo}, status=201)
 
 
 @require_http_methods(['PUT', 'DELETE'])

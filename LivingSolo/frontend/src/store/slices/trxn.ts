@@ -2,11 +2,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import client from '../apis/client';
 import { RootState } from '..';
-
-export enum ERRORSTATE {
-  DEFAULT, NORMAL, SUCCESS, PENDING, ERROR
-  // DESIGN CHOICE: Normal is for the SUCCESS of the get Elements.
-};
+import { ERRORSTATE } from './core';
 
 type TypeElement = {
   id: number,
@@ -19,6 +15,16 @@ type TrxnElement = {
   date: string,
   memo: string,
   type: TypeElement[],
+  period: number,
+  amount: number,
+};
+
+export interface TrxnCreateReqType {
+  date: string,
+  memo: string,
+  type: TypeElement[],
+  period: number,
+  amount: number,
 };
 
 interface TrxnState {
@@ -40,8 +46,8 @@ export const fetchTrxns = createAsyncThunk(
 );
 export const createTrxn = createAsyncThunk(
   "trxn/createTrxn",
-  async (TrxnName: String, { dispatch }) => {
-      const response = await client.post("/api/trxn/", {name : TrxnName});
+  async (trxnCreateObj: TrxnCreateReqType, { dispatch }) => {
+      const response = await client.post("/api/trxn/", trxnCreateObj);
       dispatch(TrxnActions.createTrxn(response.data));
   }
 );
@@ -49,15 +55,15 @@ export const createTrxn = createAsyncThunk(
 export const editTrxn = createAsyncThunk(
   "trxn/editTrxn",
   async (editTrxnObj: TrxnElement, { dispatch }) => {
-      const response = await client.put(`/api/trxn/${editTrxnObj.id}/`, {name : editTrxnObj.memo});
-      dispatch(TrxnActions.editTrxn(response.data));
+      // const response = await client.put(`/api/trxn/${editTrxnObj.id}/`, {name : editTrxnObj.memo});
+      // dispatch(TrxnActions.editTrxn(response.data));
   }
 );
 export const deleteTrxn = createAsyncThunk(
   "trxn/deleteTrxn",
   async (TrxnID: String | Number, { dispatch }) => {
-      const response = await client.delete(`/api/Trxn/${TrxnID}/`);
-      dispatch(TrxnActions.deleteTrxn(response.data));
+      // const response = await client.delete(`/api/trxn/${TrxnID}/`);
+      // dispatch(TrxnActions.deleteTrxn(response.data));
   }
 );
 
