@@ -28,7 +28,7 @@ const tab2Str = (e: TabState) => {
 }
 
 function App() {
-  const [tabState, setTabState] = useState<TabState>(TabState.Home);
+  const [tabState, setTabState] = useState<TabState>(TabState.Transaction);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   const toggleDrawer = (open: boolean, newTabState?: TabState) =>

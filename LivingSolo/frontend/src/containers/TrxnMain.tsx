@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 import { AppDispatch } from '../store';
 import { ERRORSTATE } from '../store/slices/core';
 import { deleteTrxn, fetchTrxns, selectTrxn } from '../store/slices/trxn';
-import TrxnInput from '../components/TrxnInput';
+import TrxnInput from '../components/Trxn/TrxnInput';
 import { TagBubbleCompact } from '../components/general/TypeBubble';
 
 function TrxnMain() {
