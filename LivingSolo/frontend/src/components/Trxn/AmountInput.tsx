@@ -25,17 +25,19 @@ function AmountInput({amount, setAmount}: AmountInputProps) {
                 console.log("NaN" + e.target.value);
             };  
             }} pattern="[0-9]+" min={0}/>
-            <RoundButton onClick={() => setExtended((e) => !e)}>{extended ? '-' : '+'}</RoundButton>
+            <AmountShortCutWrapper>
+                <RoundButton onClick={() => setExtended((e) => !e)}>{extended ? '-' : '+'}</RoundButton>
+                {extended && <AmountShortCutDiv>
+                    <button onClick={() => addAmount(1000)}>+1000</button>
+                    <button onClick={() => addAmount(-1000)} disabled={amount <= 0}>-1000</button>
+                    <button onClick={() => addAmount(+10000)}>+10000</button>
+                    <button onClick={() => addAmount(-10000)} disabled={amount <= 0}>-10000</button>
+                    <button onClick={() => addAmount(+5000)}>+5000</button>
+                    <button onClick={() => addAmount(-5000)} disabled={amount <= 0}>-5000</button>
+                    <button onClick={() => setAmount(0)}>Clear</button>
+                </AmountShortCutDiv>}
+            </AmountShortCutWrapper>
         </div>
-        {extended && <div>
-            <button onClick={() => addAmount(1000)}>+1000</button>
-            <button onClick={() => addAmount(-1000)} disabled={amount <= 0}>-1000</button>
-            <button onClick={() => addAmount(+10000)}>+10000</button>
-            <button onClick={() => addAmount(-10000)} disabled={amount <= 0}>-10000</button>
-            <button onClick={() => addAmount(+5000)}>+5000</button>
-            <button onClick={() => addAmount(-5000)} disabled={amount <= 0}>-5000</button>
-            <button onClick={() => setAmount(0)}>Clear</button>
-        </div>}
     </AmountInputDiv>
   );
 }
@@ -56,5 +58,26 @@ const AmountInputDiv = styled.div`
 const AmountEditText = styled(EditTextInput)`
     margin-right: 10px;
     height: 35px;
+`;
+const AmountShortCutWrapper = styled.div`
+    position: relative;
+
+    z-index: 2;
+`;
+const AmountShortCutDiv = styled.div`
+    background-color: var(--ls-white);
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+
+    width: 200px;
+    height: 300px;
+    position: absolute;
+    top: 35px;
+    left: -100px;
+
+    button {
+        margin: 5px;
+        /* background-color: aliceblue; */
+    }
 `;
 export default AmountInput;
