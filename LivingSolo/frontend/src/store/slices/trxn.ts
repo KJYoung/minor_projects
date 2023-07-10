@@ -10,7 +10,7 @@ type TypeElement = {
   color: string
 };
 
-type TrxnElement = {
+export type TrxnElement = {
   id: number,
   date: string,
   memo: string,
