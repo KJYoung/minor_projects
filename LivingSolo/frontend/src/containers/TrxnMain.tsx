@@ -4,7 +4,7 @@ import { AppDispatch } from '../store';
 import { ERRORSTATE } from '../store/slices/core';
 import { fetchTrxns, selectTrxn } from '../store/slices/trxn';
 import TrxnInput from '../components/Trxn/TrxnInput';
-import { TrxnGridHeader, TrxnGridItem } from '../components/Trxn/TrxnGrid';
+import { TrxnGridHeader, TrxnGridItem, TrxnGridSearcher } from '../components/Trxn/TrxnGrid';
 
 function TrxnMain() {
 
@@ -21,8 +21,9 @@ function TrxnMain() {
   return (
     <div className="App">
       <TrxnInput />
+      <TrxnGridSearcher />
       <TrxnGridHeader />
-      {elements && elements.map((e, index) => <TrxnGridItem item={e} isEditing={editID === e.id} setEditID={setEditID}/>)}
+      {elements && elements.map((e, index) => <TrxnGridItem key={e.id} item={e} isEditing={editID === e.id} setEditID={setEditID}/>)}
     </div>
   );
 }

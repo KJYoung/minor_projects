@@ -53,7 +53,7 @@ def general_transaction(request):
 
 
 @require_http_methods(['PUT', 'DELETE'])
-def detail_transaction(request, element_id):
+def detail_transaction(request, trxn_id):
     """
     PUT : edit element's content
     DELETE : delete element
@@ -61,11 +61,12 @@ def detail_transaction(request, element_id):
     if request.method == 'PUT':
         try:
             data = json.loads(request.body.decode())
-            core_id = int(element_id)
-            core_obj = Transaction.objects.get(pk=core_id)
+            trxn_id = int(trxn_id)
+            trxn_obj = Transaction.objects.get(pk=trxn_id)
 
-            core_obj.name = data["name"]
-            core_obj.save()
+            trxn_obj.memo = data["memo"]
+            trxn_obj.amount = data["amount"]
+            trxn_obj.save()
             return JsonResponse({"message": "success"}, status=200)
         except Transaction.DoesNotExist:
             return HttpResponseNotFound()
@@ -73,10 +74,10 @@ def detail_transaction(request, element_id):
             return HttpResponseBadRequest()
     else:  ## delete
         try:
-            core_id = int(element_id)
-            core_obj = Transaction.objects.get(pk=core_id)
+            trxn_id = int(trxn_id)
+            trxn_obj = Transaction.objects.get(pk=trxn_id)
 
-            core_obj.delete()
+            trxn_obj.delete()
             return JsonResponse({"message": "success"}, status=200)
         except Transaction.DoesNotExist:
             return HttpResponseNotFound()

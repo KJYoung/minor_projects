@@ -10,8 +10,8 @@ import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { GetDateTimeFormat2Django } from '../../utils/DateTime';
-import AmountInput from './AmountInput';
 import TypeInput from './TypeInput';
+import { NewAmountInput } from './AmountInput';
 
 function TrxnInput() {
   const [memo, setMemo] = useState<string>("");
@@ -53,7 +53,7 @@ function TrxnInput() {
             }} pattern="[0-9]+" min={0} disabled={!isPeriodic}/>
         </div>
         <TypeInput />
-        <AmountInput amount={amount} setAmount={setAmount}/>
+        <NewAmountInput amount={amount} setAmount={setAmount}/>
       </Trxn1stRowDiv>
       <Trxn2ndRowDiv>
         <TextField label="메모" variant="outlined" value={memo} onChange={(e) => setMemo(e.target.value)}/>

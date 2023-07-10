@@ -55,15 +55,15 @@ export const createTrxn = createAsyncThunk(
 export const editTrxn = createAsyncThunk(
   "trxn/editTrxn",
   async (editTrxnObj: TrxnElement, { dispatch }) => {
-      // const response = await client.put(`/api/trxn/${editTrxnObj.id}/`, {name : editTrxnObj.memo});
-      // dispatch(TrxnActions.editTrxn(response.data));
+      const response = await client.put(`/api/trxn/${editTrxnObj.id}/`, editTrxnObj);
+      dispatch(TrxnActions.editTrxn(response.data));
   }
 );
 export const deleteTrxn = createAsyncThunk(
   "trxn/deleteTrxn",
   async (TrxnID: String | Number, { dispatch }) => {
-      // const response = await client.delete(`/api/trxn/${TrxnID}/`);
-      // dispatch(TrxnActions.deleteTrxn(response.data));
+      const response = await client.delete(`/api/trxn/${TrxnID}/`);
+      dispatch(TrxnActions.deleteTrxn(response.data));
   }
 );
 
