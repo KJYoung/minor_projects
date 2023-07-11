@@ -10,5 +10,7 @@ export const RoundButton = styled.button`
 
     font-size: 26px;
     text-align: center;
+
+    cursor: pointer;
 `;
 

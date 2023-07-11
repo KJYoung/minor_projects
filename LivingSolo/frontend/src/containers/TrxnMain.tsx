@@ -14,7 +14,7 @@ function TrxnMain() {
   const { elements, errorState }  = useSelector(selectTrxn);
 
   useEffect(() => {
-    if(errorState === ERRORSTATE.SUCCESS){
+    if(errorState === ERRORSTATE.SUCCESS || errorState === ERRORSTATE.DEFAULT){
       dispatch(fetchTrxns());
     }
   }, [elements, errorState, dispatch]);

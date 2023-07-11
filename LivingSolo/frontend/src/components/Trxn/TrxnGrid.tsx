@@ -15,10 +15,11 @@ interface TrxnGridItemProps {
 };
 
 export function TrxnGridSearcher() {
-    const dispatch = useDispatch<AppDispatch>();
-    return <>
-        <Button variant={"contained"} onClick={() => { dispatch(fetchTrxns()); }}>FETCH!</Button>
-    </>
+    // const dispatch = useDispatch<AppDispatch>();
+    // return <>
+    //     <Button variant={"contained"} onClick={() => { dispatch(fetchTrxns()); }}>FETCH!</Button>
+    // </>
+    return <></>
 };
 
 export function TrxnGridHeader() {

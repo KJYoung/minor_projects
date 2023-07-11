@@ -78,7 +78,7 @@ export const TrxnSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(fetchTrxns.fulfilled, (state, action) => {
       state.elements = action.payload.elements;
-      state.errorState = ERRORSTATE.DEFAULT;
+      state.errorState = ERRORSTATE.NORMAL;
     }); 
     builder.addCase(createTrxn.fulfilled, (state, action) => {
       state.errorState = ERRORSTATE.SUCCESS;
