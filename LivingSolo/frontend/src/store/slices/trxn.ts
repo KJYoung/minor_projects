@@ -4,7 +4,7 @@ import client from '../apis/client';
 import { RootState } from '..';
 import { ERRORSTATE } from './core';
 
-type TypeElement = {
+export type TypeBubbleElement = {
   id: number,
   name: string,
   color: string
@@ -14,7 +14,7 @@ export type TrxnElement = {
   id: number,
   date: string,
   memo: string,
-  type: TypeElement[],
+  type: TypeBubbleElement[],
   period: number,
   amount: number,
 };
@@ -22,7 +22,7 @@ export type TrxnElement = {
 export interface TrxnCreateReqType {
   date: string,
   memo: string,
-  type: TypeElement[],
+  type: TypeBubbleElement[],
   period: number,
   amount: number,
 };
@@ -51,7 +51,6 @@ export const createTrxn = createAsyncThunk(
       dispatch(TrxnActions.createTrxn(response.data));
   }
 );
-
 export const editTrxn = createAsyncThunk(
   "trxn/editTrxn",
   async (editTrxnObj: TrxnElement, { dispatch }) => {
@@ -79,7 +78,7 @@ export const TrxnSlice = createSlice({
     builder.addCase(fetchTrxns.fulfilled, (state, action) => {
       state.elements = action.payload.elements;
       state.errorState = ERRORSTATE.NORMAL;
-    }); 
+    });
     builder.addCase(createTrxn.fulfilled, (state, action) => {
       state.errorState = ERRORSTATE.SUCCESS;
     }); 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import { Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { TrxnElement, deleteTrxn, editTrxn, fetchTrxns } from '../../store/slices/trxn';
+import { TrxnElement, deleteTrxn, editTrxn } from '../../store/slices/trxn';
 import { AppDispatch } from '../../store';
 import { TagBubbleCompact } from '../general/TypeBubble';
 import { GetDateTimeFormatFromDjango } from '../../utils/DateTime';
@@ -15,10 +15,6 @@ interface TrxnGridItemProps {
 };
 
 export function TrxnGridSearcher() {
-    // const dispatch = useDispatch<AppDispatch>();
-    // return <>
-    //     <Button variant={"contained"} onClick={() => { dispatch(fetchTrxns()); }}>FETCH!</Button>
-    // </>
     return <></>
 };
 

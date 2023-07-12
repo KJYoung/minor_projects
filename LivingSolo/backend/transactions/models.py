@@ -1,12 +1,18 @@
 from django.db import models
 from core.models import AbstractTimeStampedModel
 
+class TransactionTypeClass(AbstractTimeStampedModel):
+    """Transaction Type Class definition"""
+
+    name = models.CharField(max_length=30, null=False)
+    color = models.CharField(max_length=7, null=False)
 
 class TransactionType(AbstractTimeStampedModel):
     """Transaction Type definition"""
 
     name = models.CharField(max_length=30, null=False)
     color = models.CharField(max_length=7, null=False)
+    type_class = models.ForeignKey('TransactionTypeClass', related_name='type', on_delete=models.CASCADE, null=True)
 
 
 # Create your models here.

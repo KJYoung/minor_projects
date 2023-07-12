@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import coreReducer from "./slices/core";
 import trxnReducer from "./slices/trxn";
+import trxnTypeReducer from "./slices/trxnType";
 
 export const store = configureStore({ 
     reducer : { 
         core: coreReducer,
         trxn: trxnReducer,
+        trxnType: trxnTypeReducer,
     }
 });
 

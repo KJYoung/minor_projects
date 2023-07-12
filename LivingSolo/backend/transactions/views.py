@@ -2,7 +2,7 @@ import json
 
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
-from transactions.models import Transaction, TransactionType
+from transactions.models import Transaction, TransactionType, TransactionTypeClass
 
 from json.decoder import JSONDecodeError
 
@@ -93,15 +93,26 @@ def general_trxn_type(request):
     POST : create new type
     """
     if request.method == 'GET':
-        result = []
-        for tr_elem in TransactionType.objects.all():
-            result.append(
-                {
-                    "id": tr_elem.id,
-                    "name": tr_elem.name,
-                }
-            )
-        return JsonResponse({"elements": result}, safe=False)
+        try:
+            result = []
+            for tr_elem in TransactionType.objects.all():
+                class_elem = tr_elem.type_class # tr_elem.type_class(FK field) : TrxnTypeClass Object
+                result.append(
+                    {
+                        "id": tr_elem.id,
+                        "name": tr_elem.name,
+                        "color": tr_elem.color,
+                        "type_class": {
+                            "id": class_elem.id,
+                            "name": class_elem.name,
+                            "color": class_elem.color
+                        }
+                    }
+                )
+            return JsonResponse({"elements": result}, safe=False)
+        except (KeyError, JSONDecodeError, TransactionTypeClass.DoesNotExist):
+            print("ERROR from general_trxn_type")
+            return HttpResponseBadRequest()
     else:  ## post
         try:
             req_data = json.loads(request.body.decode())
