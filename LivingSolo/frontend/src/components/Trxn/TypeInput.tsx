@@ -22,7 +22,17 @@ interface TypeDialogProps {
   initialTags?: TypeBubbleElement[]
 }
 
+const DEFAULT_OPTION = '$NONE$';
+// const NEW_OPTION = '$NEW$';
+// const SEARCH_OPTION = '$SEARCH$';
+
 const TypeDialog = ({open, handleClose, initialTags} : TypeDialogProps) => {
+  const { elements } = useSelector(selectTrxnType);
+
+  const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
+  const [tagSelect, setTagSelect] = useState(DEFAULT_OPTION); // Tag select value
+  // const [currentTagClass, setCurrentTagClass] = useState<TagClass | null>(null);
+
   return <div>
     <BootstrapDialog
       onClose={handleClose}
@@ -40,6 +50,30 @@ const TypeDialog = ({open, handleClose, initialTags} : TypeDialogProps) => {
           </Typography>
           <Typography gutterBottom>
             태그 목록.
+            <select data-testid="tagSelect" value={tagClassSelect} onChange={(e) => setTagClassSelect(e.target.value)}>
+              <option disabled value={DEFAULT_OPTION}>
+                - 태그 클래스 -
+              </option>
+              {elements.map(tag => {
+                  return (
+                    <option value={tag.id} key={tag.id}>
+                      {tag.name}
+                    </option>
+                  );
+                })}
+            </select>
+            <select data-testid="tagSelect2" value={tagSelect} onChange={(e) => setTagSelect(e.target.value)}>
+              <option disabled value={DEFAULT_OPTION}>
+                - 태그 이름 -
+              </option>
+              {elements.filter(tagClass => tagClass.id === Number(tagClassSelect))[0]?.types?.map(tag => {
+                return (
+                  <option value={tag.id} key={tag.id}>
+                    {tag.name}
+                  </option>
+                );
+              })}
+            </select>
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -103,7 +137,7 @@ function TypeInput() {
   const [tags, setTags] = useState<TypeBubbleElement[]>([]);
 
   useEffect(() => {
-    setTags(elements);
+    setTags([]);
   }, [elements]);
 
   const handleClickOpen = () => {
@@ -116,7 +150,7 @@ function TypeInput() {
   return (
     <TypeInputDiv>
         <RoundButton onClick={handleClickOpen}>+</RoundButton>
-        {elements.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
+        {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
         <TypeDialog open={open} handleClose={handleClose} initialTags={tags} />
     </TypeInputDiv>
   );

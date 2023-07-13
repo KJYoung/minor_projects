@@ -25,8 +25,8 @@ interface TrxnGridNavProps {
 }
 export function TrxnGridNav({viewMode, setViewMode} : TrxnGridNavProps) {
     return <TrxnGridNavWrapper>
-        <TrxnGridNavSpan active={viewMode === ViewMode.Detail} onClick={() => setViewMode(ViewMode.Detail)}>Detailed</TrxnGridNavSpan>
-        <TrxnGridNavSpan active={viewMode === ViewMode.Graph} onClick={() => setViewMode(ViewMode.Graph)}>Graphic</TrxnGridNavSpan>
+        <TrxnGridNavSpan active={(viewMode === ViewMode.Detail).toString()} onClick={() => setViewMode(ViewMode.Detail)}>Detailed</TrxnGridNavSpan>
+        <TrxnGridNavSpan active={(viewMode === ViewMode.Graph).toString()} onClick={() => setViewMode(ViewMode.Graph)}>Graphic</TrxnGridNavSpan>
     </TrxnGridNavWrapper>
 };
 
@@ -37,9 +37,9 @@ const TrxnGridNavWrapper = styled.div`
     
     margin-bottom: 15px;
 `;
-const TrxnGridNavSpan = styled.span<{ active: boolean }>`
+const TrxnGridNavSpan = styled.span<{ active: string }>`
     font-size: 22px;
-    color: ${props => (props.active ? 'var(--ls-blue)' : 'var(--ls-gray)')};
+    color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
     margin-left: 20px;
 `;
 

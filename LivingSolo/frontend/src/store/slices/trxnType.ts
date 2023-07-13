@@ -13,18 +13,19 @@ export type TypeBubbleElement = {
 export type TrxnTypeClassElement = {
   id: number,
   name: string,
-  color: string
+  color: string,
+  types?: TrxnTypeElement[]
 };
 
 export type TrxnTypeElement = {
   id: number,
   name: string,
   color: string,
-  type_class: TrxnTypeElement
+  type_class?: TrxnTypeElement
 };
 
 interface TrxnTypeState {
-  elements: TrxnTypeElement[],
+  elements: TrxnTypeClassElement[],
   errorState: ERRORSTATE,
 };
 
@@ -36,7 +37,7 @@ export const initialState: TrxnTypeState = {
 export const fetchTrxnTypes = createAsyncThunk(
   "trxn/fetchTrxnTypes",
   async () => {
-    const response = await client.get(`/api/trxn/type/`);
+    const response = await client.get(`/api/trxn/type_class/`);
     return response.data;
   }
 );

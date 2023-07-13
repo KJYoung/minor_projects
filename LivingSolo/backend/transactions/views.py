@@ -1,10 +1,9 @@
 import json
+from json.decoder import JSONDecodeError
 
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from transactions.models import Transaction, TransactionType, TransactionTypeClass
-
-from json.decoder import JSONDecodeError
 
 
 @require_http_methods(['GET', 'POST'])
@@ -85,18 +84,50 @@ def detail_transaction(request, trxn_id):
             return HttpResponseBadRequest()
 
 
+## Transaction Type Class
+@require_http_methods(['GET'])
+def general_trxn_type_class(request):
+    """
+    GET : get trxn type class list
+    """
+    if request.method == 'GET':
+        try:
+            result = []
+            for trc_elem in TransactionTypeClass.objects.all():
+                types_list = []
+                for types in list(trc_elem.type.all().values()):
+                    # print(types)
+                    # {'id': 1, 'created': datetime.datetime(2023, 7, 12, 22, 43, 56, 23036), 'updated': datetime.datetime(2023, 7, 12, 22, 43, 56, 27034), 'name': '클1타1', 'color': '#000000', 'type_class_id': 1}
+                    types_list.append(
+                        {"id": types['id'], "name": types['name'], "color": types['color']}
+                    )
+                result.append(
+                    {
+                        "id": trc_elem.id,
+                        "name": trc_elem.name,
+                        "color": trc_elem.color,
+                        "types": types_list,
+                    }
+                )
+            return JsonResponse({"elements": result}, safe=False)
+        except (TransactionTypeClass.DoesNotExist):
+            print("ERROR from general_trxn_type_class")
+            return HttpResponseBadRequest()
+
+
 ## Transaction Type
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET'])
 def general_trxn_type(request):
     """
     GET : get trxn type list
-    POST : create new type
     """
     if request.method == 'GET':
         try:
             result = []
             for tr_elem in TransactionType.objects.all():
-                class_elem = tr_elem.type_class # tr_elem.type_class(FK field) : TrxnTypeClass Object
+                class_elem = (
+                    tr_elem.type_class
+                )  # tr_elem.type_class(FK field) : TrxnTypeClass Object
                 result.append(
                     {
                         "id": tr_elem.id,
@@ -105,22 +136,11 @@ def general_trxn_type(request):
                         "type_class": {
                             "id": class_elem.id,
                             "name": class_elem.name,
-                            "color": class_elem.color
-                        }
+                            "color": class_elem.color,
+                        },
                     }
                 )
             return JsonResponse({"elements": result}, safe=False)
         except (KeyError, JSONDecodeError, TransactionTypeClass.DoesNotExist):
             print("ERROR from general_trxn_type")
             return HttpResponseBadRequest()
-    else:  ## post
-        try:
-            req_data = json.loads(request.body.decode())
-
-            element = TransactionType(
-                name=req_data["name"],
-            )
-            element.save()
-        except (KeyError, JSONDecodeError):
-            return HttpResponseBadRequest()
-        return JsonResponse({"id": element.id, "name": element.name}, status=201)
