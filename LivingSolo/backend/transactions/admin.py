@@ -8,14 +8,16 @@ class TransactionAdmin(admin.ModelAdmin):
 
     list_display = ("pk", "date", "amount", "memo")
 
+
 @admin.register(TransactionTypeClass)
 class TransactionTypeClassAdmin(admin.ModelAdmin):
     """Transaction Type Class admin definition"""
 
-    list_display = ("pk", "created", "name", "color")
+    list_display = ("name", "color", "pk")
+
 
 @admin.register(TransactionType)
 class TransactionTypeAdmin(admin.ModelAdmin):
     """Transaction Type admin definition"""
 
-    list_display = ("pk", "created", "name", "color", "type_class")
+    list_display = ("name", "color", "type_class", "pk")
