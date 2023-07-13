@@ -26,11 +26,13 @@ export type TrxnTypeElement = {
 
 interface TrxnTypeState {
   elements: TrxnTypeClassElement[],
+  index: TrxnTypeElement[],
   errorState: ERRORSTATE,
 };
 
 export const initialState: TrxnTypeState = {
   elements: [],
+  index: [],
   errorState: ERRORSTATE.DEFAULT
 };
 
@@ -38,6 +40,13 @@ export const fetchTrxnTypes = createAsyncThunk(
   "trxn/fetchTrxnTypes",
   async () => {
     const response = await client.get(`/api/trxn/type_class/`);
+    return response.data;
+  }
+);
+export const fetchTrxnTypesIndex = createAsyncThunk(
+  "trxn/fetchTrxnTypesIndex",
+  async () => {
+    const response = await client.get(`/api/trxn/type/`);
     return response.data;
   }
 );
@@ -49,6 +58,10 @@ export const TrxnTypeSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(fetchTrxnTypes.fulfilled, (state, action) => {
       state.elements = action.payload.elements;
+      state.errorState = ERRORSTATE.NORMAL;
+    }); 
+    builder.addCase(fetchTrxnTypesIndex.fulfilled, (state, action) => {
+      state.index = action.payload.elements;
       state.errorState = ERRORSTATE.NORMAL;
     }); 
   },

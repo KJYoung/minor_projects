@@ -5,7 +5,7 @@ import { ERRORSTATE } from '../store/slices/core';
 import { fetchTrxns, selectTrxn } from '../store/slices/trxn';
 import TrxnInput from '../components/Trxn/TrxnInput';
 import { TrxnGridHeader, TrxnGridItem, TrxnGridNav} from '../components/Trxn/TrxnGrid';
-import { fetchTrxnTypes } from '../store/slices/trxnType';
+import { fetchTrxnTypes, fetchTrxnTypesIndex } from '../store/slices/trxnType';
 
 export enum ViewMode {
   Detail, Graph
@@ -22,6 +22,7 @@ function TrxnMain() {
     if(errorState === ERRORSTATE.SUCCESS || errorState === ERRORSTATE.DEFAULT){
       dispatch(fetchTrxns());
       dispatch(fetchTrxnTypes());
+      dispatch(fetchTrxnTypesIndex());
     }
   }, [elements, errorState, dispatch]);
   return (

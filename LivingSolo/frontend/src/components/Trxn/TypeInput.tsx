@@ -19,15 +19,16 @@ import { selectTrxnType } from '../../store/slices/trxnType';
 interface TypeDialogProps {
   open: boolean,
   handleClose: () => void,
-  initialTags?: TypeBubbleElement[]
+  initialTags?: TypeBubbleElement[],
+  setTags: React.Dispatch<React.SetStateAction<TypeBubbleElement[]>>
 }
 
 const DEFAULT_OPTION = '$NONE$';
 // const NEW_OPTION = '$NEW$';
 // const SEARCH_OPTION = '$SEARCH$';
 
-const TypeDialog = ({open, handleClose, initialTags} : TypeDialogProps) => {
-  const { elements } = useSelector(selectTrxnType);
+const TypeDialog = ({open, handleClose, initialTags, setTags} : TypeDialogProps) => {
+  const { elements, index } = useSelector(selectTrxnType);
 
   const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
   const [tagSelect, setTagSelect] = useState(DEFAULT_OPTION); // Tag select value
@@ -62,7 +63,15 @@ const TypeDialog = ({open, handleClose, initialTags} : TypeDialogProps) => {
                   );
                 })}
             </select>
-            <select data-testid="tagSelect2" value={tagSelect} onChange={(e) => setTagSelect(e.target.value)}>
+            <select data-testid="tagSelect2" value={tagSelect} onChange={(e) => {
+              const matchedElem = index.find((elem) => {
+                // console.log(`${elem.id.toString()} vs ${e.target.value}`);
+                return elem.id.toString() === e.target.value;
+              });
+              if(matchedElem)
+                setTags((array) => [...array, matchedElem]);
+              setTagSelect(DEFAULT_OPTION);
+            }}>
               <option disabled value={DEFAULT_OPTION}>
                 - 태그 이름 -
               </option>
@@ -151,7 +160,7 @@ function TypeInput() {
     <TypeInputDiv>
         <RoundButton onClick={handleClickOpen}>+</RoundButton>
         {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
-        <TypeDialog open={open} handleClose={handleClose} initialTags={tags} />
+        <TypeDialog open={open} handleClose={handleClose} initialTags={tags} setTags={setTags} />
     </TypeInputDiv>
   );
 }
