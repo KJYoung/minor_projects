@@ -11,10 +11,9 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import { TypeBubbleElement } from '../../store/slices/trxn';
 import { TagBubbleCompact } from '../general/TypeBubble';
 import { useSelector } from 'react-redux';
-import { selectTrxnType } from '../../store/slices/trxnType';
+import { TypeBubbleElement, selectTrxnType } from '../../store/slices/trxnType';
 
 interface TypeDialogProps {
   open: boolean,
@@ -87,7 +86,7 @@ const TypeDialog = ({open, handleClose, initialTags, setTags} : TypeDialogProps)
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose}>
-            Save changes
+            닫기
           </Button>
         </DialogActions>
       </DialogBody>
@@ -138,16 +137,19 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
   );
 }
 
+interface TypeInputProps {
+  tags: TypeBubbleElement[],
+  setTags: React.Dispatch<React.SetStateAction<TypeBubbleElement[]>>
+}
 // Type Input Container.
-function TypeInput() {
+function TypeInput({ tags, setTags }: TypeInputProps) {
   const { elements }  = useSelector(selectTrxnType);
 
   const [open, setOpen] = React.useState<boolean>(false);
-  const [tags, setTags] = useState<TypeBubbleElement[]>([]);
-
+  
   useEffect(() => {
     setTags([]);
-  }, [elements]);
+  }, [elements, setTags]);
 
   const handleClickOpen = () => {
     setOpen(true);

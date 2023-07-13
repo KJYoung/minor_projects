@@ -135,14 +135,14 @@ const TrxnGridDetailTemplate = styled.div`
 `;
 const TrxnGridDetailHeaderDiv = styled(TrxnGridDetailTemplate)`
     > span {
-        border: 1px solid red;
+        /* border: 1px solid red; */
         text-align: center;
         font-size: 22px;
     }
 `;
 const TrxnGridDetailItemDiv = styled(TrxnGridDetailTemplate)`
     > span {
-        border: 1px solid red;
+        /* border: 1px solid red; */
         text-align: center;
         font-size: 22px;
     }
@@ -161,14 +161,14 @@ const TrxnGridGraphicTemplate = styled.div`
 `;
 const TrxnGridGraphicHeaderDiv = styled(TrxnGridGraphicTemplate)`
     > span {
-        border: 1px solid red;
+        /* border: 1px solid red; */
         text-align: center;
         font-size: 22px;
     }
 `;
 const TrxnGridGraphicItemDiv = styled(TrxnGridGraphicTemplate)`
     > span {
-        border: 1px solid red;
+        /* border: 1px solid red; */
         text-align: center;
         font-size: 22px;
     }

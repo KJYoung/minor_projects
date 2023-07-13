@@ -3,12 +3,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import client from '../apis/client';
 import { RootState } from '..';
 import { ERRORSTATE } from './core';
-
-export type TypeBubbleElement = {
-  id: number,
-  name: string,
-  color: string
-};
+import { TypeBubbleElement } from './trxnType';
 
 export type TrxnElement = {
   id: number,

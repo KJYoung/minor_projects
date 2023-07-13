@@ -12,12 +12,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import { GetDateTimeFormat2Django } from '../../utils/DateTime';
 import TypeInput from './TypeInput';
 import { NewAmountInput } from './AmountInput';
+import { TypeBubbleElement } from '../../store/slices/trxnType';
 
 function TrxnInput() {
   const [memo, setMemo] = useState<string>("");
   const [trxnDate, setTrxnDate] = useState<Date>(new Date());
   const [realDate, setRealDate] = useState<Date>(new Date());
   const [amount, setAmount] = useState<number>(0);
+  const [tags, setTags] = useState<TypeBubbleElement[]>([]);
   const [isPeriodic, setIsPeriodic] = useState<boolean>(false); // is periodic transaction?
   const [hasDiffTime, setHasDiffTime] = useState<boolean>(false); // 값을 지출한 날과 그 값을 실제로 소비한 날이 다른가?
   const [period, setPeriod] = useState<number>(0);
@@ -52,7 +54,7 @@ function TrxnInput() {
               };  
             }} pattern="[0-9]+" min={0} disabled={!isPeriodic}/>
         </div>
-        <TypeInput />
+        <TypeInput tags={tags} setTags={setTags}/>
         <NewAmountInput amount={amount} setAmount={setAmount}/>
       </Trxn1stRowDiv>
       <Trxn2ndRowDiv>
@@ -63,9 +65,9 @@ function TrxnInput() {
               amount,
               period,
               date: GetDateTimeFormat2Django(trxnDate),
-              type: []
+              type: tags
             }));
-            setMemo(""); setAmount(0); setPeriod(0);
+            setMemo(""); setAmount(0); setPeriod(0); setTags([]);
         }}>기입</Button>
       </Trxn2ndRowDiv>
     </TrxnInputDiv>

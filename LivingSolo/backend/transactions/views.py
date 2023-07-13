@@ -38,7 +38,6 @@ def general_transaction(request):
     else:  ## post
         try:
             req_data = json.loads(request.body.decode())
-
             element = Transaction(
                 memo=req_data["memo"],
                 amount=req_data["amount"],
@@ -46,6 +45,12 @@ def general_transaction(request):
                 date=req_data["date"],
             )
             element.save()
+
+            # Set Types
+            type_bubble_list = req_data["type"]
+            for type_bubble in type_bubble_list:
+                type_elem = TransactionType.objects.get(pk=type_bubble["id"])
+                element.type.add(type_elem)
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
         return JsonResponse({"id": element.id, "memo": element.memo}, status=201)
