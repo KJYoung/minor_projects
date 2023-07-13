@@ -4,11 +4,16 @@ import { AppDispatch } from '../store';
 import { ERRORSTATE } from '../store/slices/core';
 import { fetchTrxns, selectTrxn } from '../store/slices/trxn';
 import TrxnInput from '../components/Trxn/TrxnInput';
-import { TrxnGridHeader, TrxnGridItem, TrxnGridSearcher } from '../components/Trxn/TrxnGrid';
+import { TrxnGridHeader, TrxnGridItem, TrxnGridNav} from '../components/Trxn/TrxnGrid';
 import { fetchTrxnTypes } from '../store/slices/trxnType';
+
+export enum ViewMode {
+  Detail, Graph
+};
 
 function TrxnMain() {
   const [editID, setEditID] = useState(-1);
+  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Detail);
 
   const dispatch = useDispatch<AppDispatch>();
   const { elements, errorState }  = useSelector(selectTrxn);
@@ -22,9 +27,9 @@ function TrxnMain() {
   return (
     <div className="App">
       <TrxnInput />
-      <TrxnGridSearcher />
-      <TrxnGridHeader />
-      {elements && elements.map((e, index) => <TrxnGridItem key={e.id} item={e} isEditing={editID === e.id} setEditID={setEditID}/>)}
+      <TrxnGridNav viewMode={viewMode} setViewMode={setViewMode}/>
+      <TrxnGridHeader viewMode={viewMode}/>
+      {elements && elements.map((e, index) => <TrxnGridItem key={e.id} item={e} isEditing={editID === e.id} setEditID={setEditID} viewMode={viewMode}/>)}
     </div>
   );
 }

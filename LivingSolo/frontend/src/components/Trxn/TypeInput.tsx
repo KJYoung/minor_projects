@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import { styled as styledMUI } from '@mui/material/styles';
 import { RoundButton } from '../../utils/Button';
@@ -97,14 +97,14 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 
 // Type Input Container.
 function TypeInput() {
-  const { elements, errorState }  = useSelector(selectTrxnType);
+  const { elements }  = useSelector(selectTrxnType);
 
   const [open, setOpen] = React.useState<boolean>(false);
-  const [tags, setTags] = useState<TypeBubbleElement[]>([{
-    id: 1,
-    name: 'Typesss',
-    color: '#11df7b',
-  }]);
+  const [tags, setTags] = useState<TypeBubbleElement[]>([]);
+
+  useEffect(() => {
+    setTags(elements);
+  }, [elements]);
 
   const handleClickOpen = () => {
     setOpen(true);
