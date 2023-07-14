@@ -19,17 +19,19 @@ interface TypeDialogProps {
   open: boolean,
   handleClose: () => void,
   initialTags?: TypeBubbleElement[],
-  setTags: React.Dispatch<React.SetStateAction<TypeBubbleElement[]>>
+  setTags: React.Dispatch<React.SetStateAction<TypeBubbleElement[]>>,
+  tagClassSelect: string,
+  setTagClassSelect: React.Dispatch<React.SetStateAction<string>>,
 }
 
 const DEFAULT_OPTION = '$NONE$';
 // const NEW_OPTION = '$NEW$';
 // const SEARCH_OPTION = '$SEARCH$';
 
-const TypeDialog = ({open, handleClose, initialTags, setTags} : TypeDialogProps) => {
+const TypeDialog = ({open, handleClose, initialTags, setTags, tagClassSelect, setTagClassSelect} : TypeDialogProps) => {
   const { elements, index } = useSelector(selectTrxnType);
 
-  const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
+  
   const [tagSelect, setTagSelect] = useState(DEFAULT_OPTION); // Tag select value
   // const [currentTagClass, setCurrentTagClass] = useState<TagClass | null>(null);
 
@@ -144,7 +146,7 @@ interface TypeInputProps {
 // Type Input Container.
 function TypeInput({ tags, setTags }: TypeInputProps) {
   const { elements }  = useSelector(selectTrxnType);
-
+  const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
   const [open, setOpen] = React.useState<boolean>(false);
   
   useEffect(() => {
@@ -157,19 +159,41 @@ function TypeInput({ tags, setTags }: TypeInputProps) {
   const handleClose = () => {
     setOpen(false);
   };
+  const clearTagInput = () => {
+    setTags([]);
+    setTagClassSelect(DEFAULT_OPTION);
+  }
 
   return (
     <TypeInputDiv>
+        <div>
+          {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
+        </div>
+        <TypeInputClearSpan onClick={() => clearTagInput()}active={(tags.length !== 0).toString()}>Clear</TypeInputClearSpan>
         <RoundButton onClick={handleClickOpen}>+</RoundButton>
-        {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
-        <TypeDialog open={open} handleClose={handleClose} initialTags={tags} setTags={setTags} />
+        <TypeDialog open={open} handleClose={handleClose} initialTags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} />
     </TypeInputDiv>
   );
 }
 
 const TypeInputDiv = styled.div`
-    background-color: var(--ls-blue);
+    background-color: var(--ls-gray_lighter2);
+    border: 1px solid var(--ls-gray_lighter);
+    padding: 5px;
     border-radius: 5px;
+    
+    display: grid;
+    place-items: center;
+    grid-template-columns: 6fr 1fr 1fr;
+`;
+
+const TypeInputClearSpan = styled.span<{ active: string }>`
+    margin-top: 3px;
+    font-size: 17px;
+    color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
+    background-color: transparent;
+    cursor: ${props => ((props.active === 'true') ? 'pointer' : 'default')};;
+    margin-left: 20px;
 `;
 
 export default TypeInput;
