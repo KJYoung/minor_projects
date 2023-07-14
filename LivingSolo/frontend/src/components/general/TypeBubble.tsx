@@ -85,3 +85,7 @@ export const TagBubbleCompact = styled.button<IPropsTagBubble>`
       color: ${getContrastYIQ(color)}
     `}
 `;
+
+export const TagBubbleCompactPointer = styled(TagBubbleCompact)`
+  cursor: pointer;
+`;

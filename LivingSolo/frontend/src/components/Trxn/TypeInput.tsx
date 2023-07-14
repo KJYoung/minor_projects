@@ -10,15 +10,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
-import { TagBubbleCompact } from '../general/TypeBubble';
+import { TagBubbleCompact, TagBubbleCompactPointer } from '../general/TypeBubble';
 import { useSelector } from 'react-redux';
 import { TypeBubbleElement, selectTrxnType } from '../../store/slices/trxnType';
 
 interface TypeDialogProps {
   open: boolean,
   handleClose: () => void,
-  initialTags?: TypeBubbleElement[],
+  tags: TypeBubbleElement[],
   setTags: React.Dispatch<React.SetStateAction<TypeBubbleElement[]>>,
   tagClassSelect: string,
   setTagClassSelect: React.Dispatch<React.SetStateAction<string>>,
@@ -28,12 +27,11 @@ const DEFAULT_OPTION = '$NONE$';
 // const NEW_OPTION = '$NEW$';
 // const SEARCH_OPTION = '$SEARCH$';
 
-const TypeDialog = ({open, handleClose, initialTags, setTags, tagClassSelect, setTagClassSelect} : TypeDialogProps) => {
+const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClassSelect} : TypeDialogProps) => {
   const { elements, index } = useSelector(selectTrxnType);
-
   
-  const [tagSelect, setTagSelect] = useState(DEFAULT_OPTION); // Tag select value
-  // const [currentTagClass, setCurrentTagClass] = useState<TagClass | null>(null);
+  const [unfoldView, setUnfoldView] = useState<boolean>(false);
+  const [tagSelect, setTagSelect] = useState<string>(DEFAULT_OPTION); // Tag select value
 
   return <div>
     <BootstrapDialog
@@ -46,45 +44,65 @@ const TypeDialog = ({open, handleClose, initialTags, setTags, tagClassSelect, se
           Tag for Transaction
         </BootstrapDialogTitle>
         <DialogContent dividers>
-          <Typography gutterBottom>
-            현재 설정된 태그:
-            <span>{initialTags?.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</span>
-          </Typography>
-          <Typography gutterBottom>
-            태그 목록.
-            <select data-testid="tagSelect" value={tagClassSelect} onChange={(e) => setTagClassSelect(e.target.value)}>
-              <option disabled value={DEFAULT_OPTION}>
-                - 태그 클래스 -
-              </option>
-              {elements.map(tag => {
-                  return (
-                    <option value={tag.id} key={tag.id}>
-                      {tag.name}
-                    </option>
-                  );
-                })}
-            </select>
-            <select data-testid="tagSelect2" value={tagSelect} onChange={(e) => {
-              const matchedElem = index.find((elem) => {
-                // console.log(`${elem.id.toString()} vs ${e.target.value}`);
-                return elem.id.toString() === e.target.value;
-              });
-              if(matchedElem)
-                setTags((array) => [...array, matchedElem]);
-              setTagSelect(DEFAULT_OPTION);
-            }}>
-              <option disabled value={DEFAULT_OPTION}>
-                - 태그 이름 -
-              </option>
-              {elements.filter(tagClass => tagClass.id === Number(tagClassSelect))[0]?.types?.map(tag => {
-                return (
-                  <option value={tag.id} key={tag.id}>
-                    {tag.name}
+          <span>
+            설정된 태그 : 
+            <div>{tags?.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</div>
+          </span>
+          <TagListWrapper>
+            <TagListHeader>
+              <span>태그 목록</span>
+              <button onClick={() => setUnfoldView((ufV) => !ufV)}>{unfoldView ? '계층 구조로 보기' : '펼쳐 보기'}</button>
+            </TagListHeader>
+            <div>
+              {unfoldView ? <>
+              {/* Unfolded View */}
+                {
+                  index
+                  .filter((typeElem) => { 
+                    const tagsHasTypeElem = tags.find((tag) => tag.id === typeElem.id);
+                    return tagsHasTypeElem === undefined; 
+                  }) // Filtering Unselected!
+                  .map((typeElem) => <TagBubbleCompactPointer onClick={() => setTags((tags) => [...tags, typeElem])} key={typeElem.id} color={typeElem.color}>{typeElem.name}</TagBubbleCompactPointer>)
+                }
+              </> 
+              : <> 
+              {/* Hierarchical View */}
+                <select data-testid="tagSelect" value={tagClassSelect} onChange={(e) => setTagClassSelect(e.target.value)}>
+                  <option disabled value={DEFAULT_OPTION}>
+                    - 태그 클래스 -
                   </option>
-                );
-              })}
-            </select>
-          </Typography>
+                  {elements.map(tag => {
+                      return (
+                        <option value={tag.id} key={tag.id}>
+                          {tag.name}
+                        </option>
+                      );
+                    })}
+                </select>
+                <select data-testid="tagSelect2" value={tagSelect} onChange={(e) => {
+                  const matchedElem = index.find((elem) => {
+                    // console.log(`${elem.id.toString()} vs ${e.target.value}`);
+                    return elem.id.toString() === e.target.value;
+                  });
+                  if(matchedElem)
+                    setTags((array) => [...array, matchedElem]);
+                  setTagSelect(DEFAULT_OPTION);
+                }}>
+                  <option disabled value={DEFAULT_OPTION}>
+                    - 태그 이름 -
+                  </option>
+                  {elements.filter(tagClass => tagClass.id === Number(tagClassSelect))[0]?.types?.map(tag => {
+                    return (
+                      <option value={tag.id} key={tag.id}>
+                        {tag.name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </>
+              }
+            </div>
+          </TagListWrapper>
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose}>
@@ -108,6 +126,20 @@ const BootstrapDialog = styledMUI(Dialog)(({ theme }) => ({
 
 const DialogBody = styled.div`
   width: 500px;
+`;
+
+const TagListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--ls-gray_lighter);
+  padding-top: 10px;
+  margin-top: 10px;
+`;
+const TagListHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
 `;
 
 export interface DialogTitleProps {
@@ -171,7 +203,8 @@ function TypeInput({ tags, setTags }: TypeInputProps) {
         </div>
         <TypeInputClearSpan onClick={() => clearTagInput()}active={(tags.length !== 0).toString()}>Clear</TypeInputClearSpan>
         <RoundButton onClick={handleClickOpen}>+</RoundButton>
-        <TypeDialog open={open} handleClose={handleClose} initialTags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} />
+        <TypeDialog open={open} handleClose={handleClose}
+                    tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} />
     </TypeInputDiv>
   );
 }
