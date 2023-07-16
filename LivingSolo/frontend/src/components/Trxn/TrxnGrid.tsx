@@ -25,19 +25,27 @@ interface TrxnGridNavProps {
 }
 export function TrxnGridNav({viewMode, setViewMode} : TrxnGridNavProps) {
     return <TrxnGridNavWrapper>
-        <TrxnGridNavSpan active={(viewMode === ViewMode.Detail).toString()} onClick={() => setViewMode(ViewMode.Detail)}>Detailed</TrxnGridNavSpan>
-        <TrxnGridNavSpan active={(viewMode === ViewMode.Graph).toString()} onClick={() => setViewMode(ViewMode.Graph)}>Graphic</TrxnGridNavSpan>
+        <div>
+            <TrxnGridModeBtn active={(viewMode === ViewMode.Detail).toString()} onClick={() => setViewMode(ViewMode.Detail)}>Detailed</TrxnGridModeBtn>
+            <TrxnGridModeBtn active={(viewMode === ViewMode.Graph).toString()} onClick={() => setViewMode(ViewMode.Graph)}>Graphic</TrxnGridModeBtn>
+        </div>
+        {viewMode === ViewMode.Detail && <div>
+            <button>{"<"}</button><span>2023.7</span><button>{">"}</button>
+            <input type="text" placeholder='검색'/><button>검색!</button>
+        </div>}
     </TrxnGridNavWrapper>
 };
 
 const TrxnGridNavWrapper = styled.div`
-    display  : flex;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     justify-content: center;
+    align-items: center;
     
     margin-bottom: 15px;
 `;
-const TrxnGridNavSpan = styled.span<{ active: string }>`
+const TrxnGridModeBtn = styled.span<{ active: string }>`
     font-size: 22px;
     color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
     margin-left: 20px;
@@ -53,7 +61,7 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
             <span>Type</span>
             <span>Amount</span>
             <span>Memo</span>
-            <span>...</span>
+            <div></div>
         </TrxnGridDetailHeaderDiv>
       );
   }else if(viewMode === ViewMode.Graph){
@@ -87,7 +95,7 @@ export function TrxnGridItem({ item, isEditing, setEditID, viewMode }: TrxnGridI
               {/* <input value={trxnItem.amount} onChange={(e) => setTrxnItem((item) => { return { ...item, amount: Number(e.target.value) } })}/> */}
             </div> 
             : 
-            <span>{item.amount}</span>
+            <span className='amount'>{item.amount.toLocaleString()}</span>
         }
 
         {/* MEMO */}
@@ -135,16 +143,20 @@ const TrxnGridDetailTemplate = styled.div`
 `;
 const TrxnGridDetailHeaderDiv = styled(TrxnGridDetailTemplate)`
     > span {
-        /* border: 1px solid red; */
+        border-right: 1px solid gray;
         text-align: center;
         font-size: 22px;
     }
 `;
 const TrxnGridDetailItemDiv = styled(TrxnGridDetailTemplate)`
     > span {
-        /* border: 1px solid red; */
+        border-right: 1px solid gray;
         text-align: center;
         font-size: 22px;
+    }
+    .amount {
+        padding-right: 10px;
+        text-align: right;
     }
     input {
         width: 100%;
@@ -171,6 +183,9 @@ const TrxnGridGraphicItemDiv = styled(TrxnGridGraphicTemplate)`
         /* border: 1px solid red; */
         text-align: center;
         font-size: 22px;
+    }
+    .amount {
+        text-align: right;
     }
     input {
         width: 100%;

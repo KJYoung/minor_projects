@@ -10,7 +10,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { TagBubbleCompact, TagBubbleCompactPointer } from '../general/TypeBubble';
+import { TagBubbleCompact, TagBubbleCompactPointer, TagBubbleWithFunc, TagBubbleX } from '../general/TypeBubble';
 import { useSelector } from 'react-redux';
 import { TypeBubbleElement, selectTrxnType } from '../../store/slices/trxnType';
 
@@ -23,6 +23,7 @@ interface TypeDialogProps {
   setTagClassSelect: React.Dispatch<React.SetStateAction<string>>,
 }
 
+const TAG_MAX_LENGTH = 5;
 const DEFAULT_OPTION = '$NONE$';
 // const NEW_OPTION = '$NEW$';
 // const SEARCH_OPTION = '$SEARCH$';
@@ -30,8 +31,13 @@ const DEFAULT_OPTION = '$NONE$';
 const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClassSelect} : TypeDialogProps) => {
   const { elements, index } = useSelector(selectTrxnType);
   
-  const [unfoldView, setUnfoldView] = useState<boolean>(false);
+  const [unfoldView, setUnfoldView] = useState<boolean>(true); // For convenience.
   const [tagSelect, setTagSelect] = useState<string>(DEFAULT_OPTION); // Tag select value
+
+  const clearTagInput = () => {
+    setTags([]);
+    setTagClassSelect(DEFAULT_OPTION);
+  };
 
   return <div>
     <BootstrapDialog
@@ -41,19 +47,27 @@ const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagCla
     >
       <DialogBody>
         <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Tag for Transaction
+          태그 설정
         </BootstrapDialogTitle>
         <DialogContent dividers>
-          <span>
-            설정된 태그 : 
-            <div>{tags?.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</div>
-          </span>
+          <SetTagHeaderWrapper>
+            <SetTagHeader>
+              설정된 태그 <TagLengthIndicator active={(tags.length >= 5).toString()}>{tags.length}</TagLengthIndicator> / {TAG_MAX_LENGTH}
+            </SetTagHeader>
+            <TypeInputClearSpan onClick={() => clearTagInput()}active={(tags.length !== 0).toString()}>Clear</TypeInputClearSpan>
+          </SetTagHeaderWrapper>
+          <SetTagList>{tags?.map((ee) =>
+            <TagBubbleWithFunc key={ee.id} color={ee.color}>
+              {ee.name}
+              <TagBubbleX onClick={() => setTags((tags) => tags.filter((t) => t.id !== ee.id))}/>
+            </TagBubbleWithFunc>)}
+          </SetTagList>
           <TagListWrapper>
             <TagListHeader>
               <span>태그 목록</span>
               <button onClick={() => setUnfoldView((ufV) => !ufV)}>{unfoldView ? '계층 구조로 보기' : '펼쳐 보기'}</button>
             </TagListHeader>
-            <div>
+            <TagListBody>
               {unfoldView ? <>
               {/* Unfolded View */}
                 {
@@ -62,7 +76,11 @@ const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagCla
                     const tagsHasTypeElem = tags.find((tag) => tag.id === typeElem.id);
                     return tagsHasTypeElem === undefined; 
                   }) // Filtering Unselected!
-                  .map((typeElem) => <TagBubbleCompactPointer onClick={() => setTags((tags) => [...tags, typeElem])} key={typeElem.id} color={typeElem.color}>{typeElem.name}</TagBubbleCompactPointer>)
+                  .map((typeElem) =>
+                    <TagBubbleCompactPointer onClick={() => setTags((tags) => (tags.length >= 5) ? tags : [...tags, typeElem])} key={typeElem.id} color={typeElem.color}>
+                      {typeElem.name}
+                    </TagBubbleCompactPointer>
+                  )
                 }
               </> 
               : <> 
@@ -101,7 +119,7 @@ const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagCla
                 </select>
               </>
               }
-            </div>
+            </TagListBody>
           </TagListWrapper>
         </DialogContent>
         <DialogActions>
@@ -127,7 +145,23 @@ const BootstrapDialog = styledMUI(Dialog)(({ theme }) => ({
 const DialogBody = styled.div`
   width: 500px;
 `;
+const SetTagHeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+const SetTagHeader = styled.span`
+`;
+const TagLengthIndicator = styled.span<{ active: string }>`
+  color: ${props => ((props.active === 'true') ? 'var(--ls-red)' : 'var(--ls-blue)')};
+`;
 
+const SetTagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 10px;
+  min-height: 60px;
+`;
 const TagListWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -141,7 +175,9 @@ const TagListHeader = styled.div`
   justify-content: space-between;
   margin-bottom: 15px;
 `;
-
+const TagListBody = styled.div`
+  min-height: 50px;
+`;
 export interface DialogTitleProps {
   id: string;
   children?: React.ReactNode;
@@ -191,17 +227,12 @@ function TypeInput({ tags, setTags }: TypeInputProps) {
   const handleClose = () => {
     setOpen(false);
   };
-  const clearTagInput = () => {
-    setTags([]);
-    setTagClassSelect(DEFAULT_OPTION);
-  }
 
   return (
     <TypeInputDiv>
         <div>
           {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
         </div>
-        <TypeInputClearSpan onClick={() => clearTagInput()}active={(tags.length !== 0).toString()}>Clear</TypeInputClearSpan>
         <RoundButton onClick={handleClickOpen}>+</RoundButton>
         <TypeDialog open={open} handleClose={handleClose}
                     tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} />
@@ -217,7 +248,13 @@ const TypeInputDiv = styled.div`
     
     display: grid;
     place-items: center;
-    grid-template-columns: 6fr 1fr 1fr;
+    grid-template-columns: 6fr 1fr;
+
+    > div:first-child {
+      > button {
+        margin-right: 5px;
+      }
+    }
 `;
 
 const TypeInputClearSpan = styled.span<{ active: string }>`
