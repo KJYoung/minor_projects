@@ -20,7 +20,7 @@ function TrxnMain() {
 
   useEffect(() => {
     if(errorState === ERRORSTATE.SUCCESS || errorState === ERRORSTATE.DEFAULT){
-      dispatch(fetchTrxns());
+      dispatch(fetchTrxns({}));
       dispatch(fetchTrxnTypes());
       dispatch(fetchTrxnTypesIndex());
     }

@@ -1,3 +1,8 @@
+export type CalMonth = {
+    year: number;
+    month?: number;
+};
+
 export const GetDateTimeFormat2Django = (dt: Date, fullTime?: boolean): string => {
     if(fullTime){
         return `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()} ${dt.getHours()}:${dt.getMonth()}:${dt.getSeconds()}`

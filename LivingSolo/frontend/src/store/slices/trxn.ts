@@ -4,6 +4,7 @@ import client from '../apis/client';
 import { RootState } from '..';
 import { ERRORSTATE } from './core';
 import { TypeBubbleElement } from './trxnType';
+import { CalMonth } from '../../utils/DateTime';
 
 export type TrxnElement = {
   id: number,
@@ -21,6 +22,12 @@ export interface TrxnCreateReqType {
   period: number,
   amount: number,
 };
+export interface TrxnFetchReqType {
+  dayCombined?: boolean, // 일별 거래로 뭉쳐서 요청.
+  searchKeyword?: string, // 검색 키워드.
+  yearMonth?: CalMonth, // 년/월 정보.
+  // fetchSize?: number, // 가져오는 Transaction 개수.
+}
 
 interface TrxnState {
   elements: TrxnElement[],
@@ -34,8 +41,31 @@ export const initialState: TrxnState = {
 
 export const fetchTrxns = createAsyncThunk(
   "trxn/fetchTrxns",
-  async () => {
+  async (payload: TrxnFetchReqType) => {
+    let reqLink = `/api/post/?`;
     const response = await client.get(`/api/trxn/`);
+
+/**
+ * 
+ * 
+ * let link = `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`;
+
+  if (payload.searchKeyword) {
+    link += `&search=${payload.searchKeyword}`;
+  }
+  if (payload.tags.length > 0) {
+    for (const tag of payload.tags) {
+      link += `&tag=${tag.id}`;
+    }
+  }
+  const response = await client.get<getPostsResponseType>(link);
+  return response.data;
+ * 
+ * 
+ */
+
+
+
     return response.data;
   }
 );

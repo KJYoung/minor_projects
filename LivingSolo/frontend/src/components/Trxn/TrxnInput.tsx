@@ -29,7 +29,7 @@ function TrxnInput() {
 
   useEffect(() => {
     if(errorState === ERRORSTATE.SUCCESS){
-      dispatch(fetchTrxns());
+      dispatch(fetchTrxns({}));
     }
   }, [elements, errorState, dispatch]);
 
