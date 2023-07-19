@@ -11,7 +11,9 @@ You can checkout [HERE](https://KJYoung.github.io/minor_projects)
 - [ ] [DartBasics](https://github.com/KJYoung/minor_projects/tree/main/DartBasics)
 - [ ] [FlutterBasics](https://github.com/KJYoung/minor_projects/tree/main/FlutterBasics)
 - [ ] [TSBasics](https://github.com/KJYoung/minor_projects/tree/main/TSBlock)
+- [ ] [ReactNativeBasics](https://github.com/KJYoung/minor_projects/tree/main/ReactNativeBasics)
    
+
 - [ ] [Rust]
 - [ ] [Kotlin]
 - [ ] [Java-Android]   
@@ -19,3 +21,4 @@ You can checkout [HERE](https://KJYoung.github.io/minor_projects)
 ### Minor Projects for myself
 - [ ] [LivingSolo(자취(독립) 재고 관리 및 가계부 정산)](https://github.com/KJYoung/minor_projects/tree/main/LivingSolo)
 - [ ] [ReactDjangoSkeleton1(Redux-saga based Full stack Skeleton)](https://github.com/KJYoung/minor_projects/tree/main/ReactDjangoSkeleton1)
+- [ ] [ReactDjangoSkeleton2(Axiod, Redux based Full stack Skeleton)](https://github.com/KJYoung/minor_projects/tree/main/ReactDjangoSkeleton2)
