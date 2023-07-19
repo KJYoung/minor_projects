@@ -34,7 +34,7 @@ class Transaction(AbstractTimeStampedModel):
     date = models.DateTimeField(blank=True)
     type = models.ManyToManyField(TransactionType, related_name="transaction")
     amount = models.IntegerField()
-    memo = models.TextField()
+    memo = models.CharField(max_length=200, null=False)
 
     period = models.IntegerField(default=0)  # 0 means Not Periodic Transaction.
 

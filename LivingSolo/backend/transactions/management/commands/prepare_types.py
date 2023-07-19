@@ -13,17 +13,20 @@ class Command(BaseCommand):
         # 무산소 태그 프리셋
         class_sublist = {}
         class_sublist["음식"] = ["아침", "점심", "저녁", "식료품", "간식", "카페"]
-        class_sublist["여가"] = ["여행", "모임", "게임", "운동", "도서"]
+        class_sublist["생활"] = ["쇼핑"]
+        class_sublist["여가"] = ["여행", "모임", "게임", "운동", "도서", "영화"]
         class_sublist["교통"] = ["주유", "통행료", "대중교통", "택시"]
         class_sublist["구독"] = [
             "유튜브",
         ]
+        class_sublist["관계"] = ["혼자", "과기", "팀원", "가족", "친구"]
 
         tag_preset = [
             class_sublist["음식"],  # "음식"
             class_sublist["여가"],  # "여가"
             class_sublist["교통"],  # "교통"
             class_sublist["구독"],  # "구독"
+            class_sublist["관계"],  # "관계"
         ]
 
         class_ind = 0

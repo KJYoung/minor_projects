@@ -42,8 +42,26 @@ export const initialState: TrxnState = {
 export const fetchTrxns = createAsyncThunk(
   "trxn/fetchTrxns",
   async (payload: TrxnFetchReqType) => {
-    let reqLink = `/api/post/?`;
-    const response = await client.get(`/api/trxn/`);
+    let reqLink = "/api/trxn/";
+
+    if(payload.dayCombined){
+      reqLink = `${reqLink}?combined=True`
+    }else{
+      reqLink = `${reqLink}?combined=False`
+    };
+
+    if(payload.yearMonth){
+      if(payload.yearMonth.month)
+        reqLink = `${reqLink}&year=${payload.yearMonth.year}&month=${payload.yearMonth.month}`;
+      else
+        reqLink = `${reqLink}&year=${payload.yearMonth.year}`;
+    };
+
+    if(payload.searchKeyword){
+      reqLink = `${reqLink}&keyword=${payload.searchKeyword}`
+    };
+
+    const response = await client.get(reqLink);
 
 /**
  * 

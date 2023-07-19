@@ -6,6 +6,7 @@ import { fetchTrxns, selectTrxn } from '../store/slices/trxn';
 import TrxnInput from '../components/Trxn/TrxnInput';
 import { TrxnGridHeader, TrxnGridItem, TrxnGridNav} from '../components/Trxn/TrxnGrid';
 import { fetchTrxnTypes, fetchTrxnTypesIndex } from '../store/slices/trxnType';
+import { CUR_MONTH } from '../utils/DateTime';
 
 export enum ViewMode {
   Detail, Graph
@@ -20,7 +21,7 @@ function TrxnMain() {
 
   useEffect(() => {
     if(errorState === ERRORSTATE.SUCCESS || errorState === ERRORSTATE.DEFAULT){
-      dispatch(fetchTrxns({}));
+      dispatch(fetchTrxns({yearMonth: CUR_MONTH}));
       dispatch(fetchTrxnTypes());
       dispatch(fetchTrxnTypesIndex());
     }
@@ -30,7 +31,7 @@ function TrxnMain() {
       <TrxnInput />
       <TrxnGridNav viewMode={viewMode} setViewMode={setViewMode}/>
       <TrxnGridHeader viewMode={viewMode}/>
-      {elements && elements.map((e, index) => <TrxnGridItem key={e.id} item={e} isEditing={editID === e.id} setEditID={setEditID} viewMode={viewMode}/>)}
+      {elements && elements.map((e, index) => <TrxnGridItem key={e.id} index={index} item={e} isEditing={editID === e.id} setEditID={setEditID} viewMode={viewMode}/>)}
     </div>
   );
 }

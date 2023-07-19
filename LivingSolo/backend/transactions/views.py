@@ -13,8 +13,34 @@ def general_transaction(request):
     POST : create element
     """
     if request.method == 'GET':
+        # Params: combined<Boolean?>, keyword<String?>, year<Number?(Number if month is valid)>, month<Number?>
+
+        query_args = {}
+        query_args["combined"] = bool(request.GET.get("combined", False))
+        query_args["keyword"] = request.GET.get("keyword", None)
+        query_args["year"] = request.GET.get("year", None)
+        query_args["month"] = request.GET.get("month", None)
+
+        searched_trxn = Transaction.objects.all()
+        # Filtering
+        # 1. Filter by Year & Month
+        if query_args["year"] and query_args["month"]:
+            # 1-1. Both Year & Month
+            searched_trxn = searched_trxn.filter(
+                date__year=query_args["year"], date__month=query_args["month"]
+            )
+        elif query_args["year"]:
+            # 1-2. Only Year
+            searched_trxn = searched_trxn.filter(date__year=query_args["year"])
+
+        # 2. Filter by Keyword
+        if query_args["keyword"]:
+            searched_trxn = searched_trxn.filter(memo__icontains=query_args["keyword"])
         result = []
-        for tr_elem in Transaction.objects.all():
+        for tr_elem in searched_trxn:
+
+            # print(tr_elem.date)
+            # print(type(tr_elem.date))
             types = []
             for type_elem in list(tr_elem.type.all().values()):
                 types.append(

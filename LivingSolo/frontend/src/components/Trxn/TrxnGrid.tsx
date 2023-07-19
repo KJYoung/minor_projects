@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import { Button, TextField } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { TrxnElement, deleteTrxn, editTrxn } from '../../store/slices/trxn';
+import { TrxnElement, TrxnFetchReqType, deleteTrxn, editTrxn, fetchTrxns } from '../../store/slices/trxn';
 import { AppDispatch } from '../../store';
 import { TagBubbleCompact } from '../general/TypeBubble';
-import { CalMonth, GetDateTimeFormatFromDjango } from '../../utils/DateTime';
+import { CUR_MONTH, CUR_YEAR, CalMonth, GetDateTimeFormatFromDjango } from '../../utils/DateTime';
 import { EditAmountInput } from './AmountInput';
 import { ViewMode } from '../../containers/TrxnMain';
 
@@ -14,6 +14,7 @@ interface TrxnGridHeaderProps {
 };
 
 interface TrxnGridItemProps extends TrxnGridHeaderProps {
+    index: number,
     item: TrxnElement,
     isEditing: boolean,
     setEditID: React.Dispatch<React.SetStateAction<number>>
@@ -25,46 +26,58 @@ interface TrxnGridNavProps {
 }
 
 export function TrxnGridNav({viewMode, setViewMode} : TrxnGridNavProps) {
-    const CUR_MONTH = {
-        year: (new Date()).getFullYear(),
-        month: (new Date()).getMonth() + 1
-    };
-    const CUR_YEAR = {
-        year: (new Date()).getFullYear()
-    };
     const [curMonth, setCurMonth] = useState<CalMonth>(CUR_MONTH);
     const [monthMode, setMonthMode] = useState<boolean>(true);
     const [search, setSearch] = useState<string>("");
-    
+    const fetchObj: TrxnFetchReqType = {
+        yearMonth: CUR_MONTH,
+        searchKeyword: "",
+        dayCombined: false
+    };
+
+    const dispatch = useDispatch<AppDispatch>();
     const TrxnGridNavCalendar = () => {
         const monthHandler = (am: number) => {
             const afterMonth = (curMonth.month !== undefined ? curMonth.month : 0) + am;
+
             if(afterMonth > 12)
-                setCurMonth({year: curMonth.year + Math.floor(afterMonth / 12), month: afterMonth % 12});
+                fetchObj.yearMonth = {year: curMonth.year + Math.floor(afterMonth / 12), month: afterMonth % 12};
             else if(afterMonth <= 0)
-                setCurMonth({year: curMonth.year - Math.floor(afterMonth / 12) - 1, month: 12 - ((-afterMonth) % 12)});
+                fetchObj.yearMonth = {year: curMonth.year - Math.floor(afterMonth / 12) - 1, month: 12 - ((-afterMonth) % 12)};
             else
-                setCurMonth({...curMonth, month: afterMonth});
+                fetchObj.yearMonth = {...curMonth, month: afterMonth};
+            
+            dispatch(fetchTrxns(fetchObj));
+            setCurMonth(fetchObj.yearMonth);
         };
         const yearHandler = (am: number) => {
-            setCurMonth({year: curMonth.year + am});
+            fetchObj.yearMonth = {year: curMonth.year + am};
+            setCurMonth(fetchObj.yearMonth);
+            dispatch(fetchTrxns(fetchObj));
+        };
+        const todayHandler = () => {
+            fetchObj.yearMonth = monthMode ? CUR_MONTH : CUR_YEAR;
+            setCurMonth(fetchObj.yearMonth);
+            dispatch(fetchTrxns(fetchObj));
         };
         const monthModeToggler = () => {
             if(monthMode){ // month => year
+                fetchObj.yearMonth = {year: curMonth.year, month: undefined};
                 setMonthMode(false);
-                setCurMonth({year: curMonth.year, month: undefined});
             }else{
+                fetchObj.yearMonth = {year: curMonth.year, month: 1};
                 setMonthMode(true);
-                setCurMonth({year: curMonth.year, month: 1});
             }
+            setCurMonth(fetchObj.yearMonth);
+            dispatch(fetchTrxns(fetchObj));
         }
         return <MonthNavWrapper>
             <MonthNavBtn onClick={() => monthMode ? monthHandler(-1) : yearHandler(-1)}>{"<"}</MonthNavBtn>
             <MonthIndSpan>{`${curMonth.year}년`}{monthMode && ` ${curMonth.month}월`}</MonthIndSpan>
             <MonthNavBtn onClick={() => monthMode ? monthHandler(+1) : yearHandler(+1)}>{">"}</MonthNavBtn>
             <div>
-                <button onClick={() => monthModeToggler()}>{monthMode ? "년 단위로" : "월 단위로"}</button>
-                <button onClick={() => setCurMonth(monthMode ? CUR_MONTH : CUR_YEAR)}>오늘로</button>
+                <MonthNavSubBtn onClick={() => monthModeToggler()}>{monthMode ? "년 단위로" : "월 단위로"}</MonthNavSubBtn>
+                <MonthNavSubBtn onClick={() => todayHandler()}>오늘로</MonthNavSubBtn>
             </div>
         </MonthNavWrapper>
     }
@@ -76,10 +89,20 @@ export function TrxnGridNav({viewMode, setViewMode} : TrxnGridNavProps) {
         </div>
         {viewMode === ViewMode.Detail && <TrxnGridDetailedSubNav>
             <TrxnGridNavCalendar />
-            <div>
+            <SearchNavWrapper>
                 <TextField className="TextField" label="검색" variant="outlined" value={search} onChange={(e) => setSearch(e.target.value)}/>
-                <button>검색!</button>
-            </div>
+                <div>
+                    <MonthNavSubBtn onClick={() => {
+                        fetchObj.searchKeyword = search;
+                        dispatch(fetchTrxns(fetchObj));
+                    }} disabled={search === ""}>검색!</MonthNavSubBtn>
+                    <MonthNavSubBtn onClick={() => {
+                        setSearch("");
+                        fetchObj.searchKeyword = "";
+                        dispatch(fetchTrxns(fetchObj));
+                    }} disabled={search === ""}>Clear</MonthNavSubBtn>
+                </div>
+            </SearchNavWrapper>
         </TrxnGridDetailedSubNav>}
     </TrxnGridNavWrapper>
 };
@@ -91,13 +114,26 @@ const MonthNavBtn = styled.button`
     color: var(--ls-gray_google2);
     cursor: pointer;
     &:hover {
-    background-color: var(--ls-gray_google1);
+        background-color: var(--ls-gray_google1);
     }
     border-radius: 50%;
     width: 38px;
     height: 38px;
     margin-left: 6px;
     margin-right: 6px;
+`;
+const MonthNavSubBtn = styled.button`
+    background-color: transparent;
+    border: none;
+    width: 100%;
+    font-size: 16px;
+    color: var(--ls-gray_google2);
+    cursor: pointer;
+    &:hover {
+        color: var(--ls-blue);
+    }
+    margin-bottom: 3px;
+    margin-right: 5px;
 `;
 const MonthIndSpan = styled.div`
     font-size: 24px;
@@ -111,7 +147,10 @@ const MonthNavWrapper = styled.div`
     flex-direction: row;
     align-items: center;
 `;
-
+const SearchNavWrapper = styled.div`
+    display: flex;
+    align-items: center;
+`;
 const TrxnGridNavWrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -163,14 +202,14 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
     return <></>
   }
 };
-export function TrxnGridItem({ item, isEditing, setEditID, viewMode }: TrxnGridItemProps) {
+export function TrxnGridItem({ index, item, isEditing, setEditID, viewMode }: TrxnGridItemProps) {
   const [trxnItem, setTrxnItem] = useState<TrxnElement>(item);
 
   const dispatch = useDispatch<AppDispatch>();
 
   if(viewMode === ViewMode.Detail){
     return (<TrxnGridDetailItemDiv key={item.id}>
-        <span>{item.id}</span>
+        <span>{index + 1}</span>
         <span>{GetDateTimeFormatFromDjango(item.date, true)}</span>
         <span>{item.period > 0 ? item.period : '-'}</span>
         <span>{item.type.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</span>
@@ -230,12 +269,21 @@ const TrxnGridDetailTemplate = styled.div`
 `;
 const TrxnGridDetailHeaderDiv = styled(TrxnGridDetailTemplate)`
     > span {
-        border-right: 1px solid gray;
         text-align: center;
         font-size: 22px;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+        padding-bottom: 5px;
     }
 `;
 const TrxnGridDetailItemDiv = styled(TrxnGridDetailTemplate)`
+    &:nth-child(4) { 
+        /* First Grid Item */
+        height: 40px;
+        > span {
+            padding-top: 5px;
+        }
+    }
     > span {
         border-right: 1px solid gray;
         text-align: center;
