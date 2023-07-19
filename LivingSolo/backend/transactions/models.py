@@ -1,5 +1,6 @@
 from django.db import models
 from core.models import AbstractTimeStampedModel
+from stockpiles.models import StockpileTransaction
 
 
 class TransactionTypeClass(AbstractTimeStampedModel):
@@ -37,6 +38,10 @@ class Transaction(AbstractTimeStampedModel):
     memo = models.CharField(max_length=200, null=False)
 
     period = models.IntegerField(default=0)  # 0 means Not Periodic Transaction.
+
+    stockpile_transaction = models.ManyToManyField(
+        StockpileTransaction, related_name="mother_trxn"
+    )  # Related Stockpile Change
 
     class Meta:
         ordering = ("-date",)

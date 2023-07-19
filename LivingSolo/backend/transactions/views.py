@@ -36,6 +36,8 @@ def general_transaction(request):
         # 2. Filter by Keyword
         if query_args["keyword"]:
             searched_trxn = searched_trxn.filter(memo__icontains=query_args["keyword"])
+
+        
         result = []
         for tr_elem in searched_trxn:
 

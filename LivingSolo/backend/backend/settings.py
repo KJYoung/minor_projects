@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "core",
     "transactions",
+    "stockpiles",
 ]
 
 MIDDLEWARE = [
@@ -108,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 
 # TIME_ZONE = "UTC"
-TIME_ZONE ="Asia/Seoul"
+TIME_ZONE = "Asia/Seoul"
 USE_I18N = True
 
 # USE_TZ = True

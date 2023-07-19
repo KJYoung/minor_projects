@@ -21,4 +21,4 @@ You can checkout [HERE](https://KJYoung.github.io/minor_projects)
 ### Minor Projects for myself
 - [ ] [LivingSolo(자취(독립) 재고 관리 및 가계부 정산)](https://github.com/KJYoung/minor_projects/tree/main/LivingSolo)
 - [ ] [ReactDjangoSkeleton1(Redux-saga based Full stack Skeleton)](https://github.com/KJYoung/minor_projects/tree/main/ReactDjangoSkeleton1)
-- [ ] [ReactDjangoSkeleton2(Axiod, Redux based Full stack Skeleton)](https://github.com/KJYoung/minor_projects/tree/main/ReactDjangoSkeleton2)
+- [ ] [ReactDjangoSkeleton2(Axios, Redux based Full stack Skeleton)](https://github.com/KJYoung/minor_projects/tree/main/ReactDjangoSkeleton2)
