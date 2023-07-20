@@ -18,7 +18,7 @@ export type TrxnElement = {
 export interface TrxnCreateReqType {
   date: string,
   memo: string,
-  type: TagBubbleElement[],
+  tag: TagBubbleElement[],
   period: number,
   amount: number,
 };

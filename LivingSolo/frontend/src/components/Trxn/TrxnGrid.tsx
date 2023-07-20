@@ -4,7 +4,7 @@ import { Button, TextField } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { TrxnElement, TrxnFetchReqType, deleteTrxn, editTrxn, fetchTrxns } from '../../store/slices/trxn';
 import { AppDispatch } from '../../store';
-import { TagBubbleCompact } from '../general/TypeBubble';
+import { TagBubbleCompact } from '../general/TagBubble';
 import { CUR_MONTH, CUR_YEAR, CalMonth, GetDateTimeFormatFromDjango } from '../../utils/DateTime';
 import { EditAmountInput } from './AmountInput';
 import { ViewMode } from '../../containers/TrxnMain';

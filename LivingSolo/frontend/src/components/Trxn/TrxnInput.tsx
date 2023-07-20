@@ -10,7 +10,7 @@ import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { GetDateTimeFormat2Django } from '../../utils/DateTime';
-import TypeInput from './TypeInput';
+import TagInput from './TagInput';
 import { NewAmountInput } from './AmountInput';
 import { TagBubbleElement } from '../../store/slices/tag';
 
@@ -54,7 +54,7 @@ function TrxnInput() {
               };  
             }} pattern="[0-9]+" min={0} disabled={!isPeriodic}/>
         </div>
-        <TypeInput tags={tags} setTags={setTags}/>
+        <TagInput tags={tags} setTags={setTags}/>
         <NewAmountInput amount={amount} setAmount={setAmount}/>
       </Trxn1stRowDiv>
       <Trxn2ndRowDiv>
@@ -65,7 +65,7 @@ function TrxnInput() {
               amount,
               period,
               date: GetDateTimeFormat2Django(trxnDate),
-              type: tags
+              tag: tags
             }));
             setMemo(""); setAmount(0); setPeriod(0); setTags([]);
         }}>기입</Button>

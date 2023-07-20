@@ -10,11 +10,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { TagBubbleCompact, TagBubbleCompactPointer, TagBubbleWithFunc, TagBubbleX } from '../general/TypeBubble';
+import { TagBubbleCompact, TagBubbleCompactPointer, TagBubbleWithFunc, TagBubbleX } from '../general/TagBubble';
 import { useSelector } from 'react-redux';
 import { TagBubbleElement, selectTag } from '../../store/slices/tag';
 
-interface TypeDialogProps {
+interface TagDialogProps {
   open: boolean,
   handleClose: () => void,
   tags: TagBubbleElement[],
@@ -28,7 +28,7 @@ const DEFAULT_OPTION = '$NONE$';
 // const NEW_OPTION = '$NEW$';
 // const SEARCH_OPTION = '$SEARCH$';
 
-const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClassSelect} : TypeDialogProps) => {
+const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClassSelect} : TagDialogProps) => {
   const { elements, index } = useSelector(selectTag);
   
   const [unfoldView, setUnfoldView] = useState<boolean>(true); // For convenience.
@@ -54,7 +54,7 @@ const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagCla
             <SetTagHeader>
               설정된 태그 <TagLengthIndicator active={(tags.length >= 5).toString()}>{tags.length}</TagLengthIndicator> / {TAG_MAX_LENGTH}
             </SetTagHeader>
-            <TypeInputClearSpan onClick={() => clearTagInput()}active={(tags.length !== 0).toString()}>Clear</TypeInputClearSpan>
+            <TagInputClearSpan onClick={() => clearTagInput()}active={(tags.length !== 0).toString()}>Clear</TagInputClearSpan>
           </SetTagHeaderWrapper>
           <SetTagList>{tags?.map((ee) =>
             <TagBubbleWithFunc key={ee.id} color={ee.color}>
@@ -72,13 +72,13 @@ const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagCla
               {/* Unfolded View */}
                 {
                   index
-                  .filter((typeElem) => { 
-                    const tagsHasTypeElem = tags.find((tag) => tag.id === typeElem.id);
-                    return tagsHasTypeElem === undefined; 
+                  .filter((tagElem) => { 
+                    const tagsHasTagElem = tags.find((tag) => tag.id === tagElem.id);
+                    return tagsHasTagElem === undefined; 
                   }) // Filtering Unselected!
-                  .map((typeElem) =>
-                    <TagBubbleCompactPointer onClick={() => setTags((tags) => (tags.length >= 5) ? tags : [...tags, typeElem])} key={typeElem.id} color={typeElem.color}>
-                      {typeElem.name}
+                  .map((tagElem) =>
+                    <TagBubbleCompactPointer onClick={() => setTags((tags) => (tags.length >= 5) ? tags : [...tags, tagElem])} key={tagElem.id} color={tagElem.color}>
+                      {tagElem.name}
                     </TagBubbleCompactPointer>
                   )
                 }
@@ -207,12 +207,12 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
   );
 }
 
-interface TypeInputProps {
+interface TagInputProps {
   tags: TagBubbleElement[],
   setTags: React.Dispatch<React.SetStateAction<TagBubbleElement[]>>
 }
-// Type Input Container.
-function TypeInput({ tags, setTags }: TypeInputProps) {
+// Tag Input Container.
+function TagInput({ tags, setTags }: TagInputProps) {
   const { elements }  = useSelector(selectTag);
   const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
   const [open, setOpen] = React.useState<boolean>(false);
@@ -229,18 +229,18 @@ function TypeInput({ tags, setTags }: TypeInputProps) {
   };
 
   return (
-    <TypeInputDiv>
+    <TagInputDiv>
         <div>
           {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
         </div>
         <RoundButton onClick={handleClickOpen}>+</RoundButton>
-        <TypeDialog open={open} handleClose={handleClose}
+        <TagDialog open={open} handleClose={handleClose}
                     tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} />
-    </TypeInputDiv>
+    </TagInputDiv>
   );
 }
 
-const TypeInputDiv = styled.div`
+const TagInputDiv = styled.div`
     background-color: var(--ls-gray_lighter2);
     border: 1px solid var(--ls-gray_lighter);
     padding: 5px;
@@ -257,7 +257,7 @@ const TypeInputDiv = styled.div`
     }
 `;
 
-const TypeInputClearSpan = styled.span<{ active: string }>`
+const TagInputClearSpan = styled.span<{ active: string }>`
     margin-top: 3px;
     font-size: 17px;
     color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
@@ -266,4 +266,4 @@ const TypeInputClearSpan = styled.span<{ active: string }>`
     margin-left: 20px;
 `;
 
-export default TypeInput;
+export default TagInput;
