@@ -12,13 +12,13 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { TagBubbleCompact, TagBubbleCompactPointer, TagBubbleWithFunc, TagBubbleX } from '../general/TypeBubble';
 import { useSelector } from 'react-redux';
-import { TypeBubbleElement, selectTrxnType } from '../../store/slices/trxnType';
+import { TagBubbleElement, selectTag } from '../../store/slices/tag';
 
 interface TypeDialogProps {
   open: boolean,
   handleClose: () => void,
-  tags: TypeBubbleElement[],
-  setTags: React.Dispatch<React.SetStateAction<TypeBubbleElement[]>>,
+  tags: TagBubbleElement[],
+  setTags: React.Dispatch<React.SetStateAction<TagBubbleElement[]>>,
   tagClassSelect: string,
   setTagClassSelect: React.Dispatch<React.SetStateAction<string>>,
 }
@@ -29,7 +29,7 @@ const DEFAULT_OPTION = '$NONE$';
 // const SEARCH_OPTION = '$SEARCH$';
 
 const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClassSelect} : TypeDialogProps) => {
-  const { elements, index } = useSelector(selectTrxnType);
+  const { elements, index } = useSelector(selectTag);
   
   const [unfoldView, setUnfoldView] = useState<boolean>(true); // For convenience.
   const [tagSelect, setTagSelect] = useState<string>(DEFAULT_OPTION); // Tag select value
@@ -109,7 +109,7 @@ const TypeDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagCla
                   <option disabled value={DEFAULT_OPTION}>
                     - 태그 이름 -
                   </option>
-                  {elements.filter(tagClass => tagClass.id === Number(tagClassSelect))[0]?.types?.map(tag => {
+                  {elements.filter(tagClass => tagClass.id === Number(tagClassSelect))[0]?.tags?.map(tag => {
                     return (
                       <option value={tag.id} key={tag.id}>
                         {tag.name}
@@ -208,12 +208,12 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 }
 
 interface TypeInputProps {
-  tags: TypeBubbleElement[],
-  setTags: React.Dispatch<React.SetStateAction<TypeBubbleElement[]>>
+  tags: TagBubbleElement[],
+  setTags: React.Dispatch<React.SetStateAction<TagBubbleElement[]>>
 }
 // Type Input Container.
 function TypeInput({ tags, setTags }: TypeInputProps) {
-  const { elements }  = useSelector(selectTrxnType);
+  const { elements }  = useSelector(selectTag);
   const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
   const [open, setOpen] = React.useState<boolean>(false);
   

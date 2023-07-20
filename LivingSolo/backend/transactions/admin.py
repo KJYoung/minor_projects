@@ -1,5 +1,5 @@
 from django.contrib import admin
-from transactions.models import Transaction, TransactionType, TransactionTypeClass
+from transactions.models import Transaction
 
 
 @admin.register(Transaction)
@@ -7,17 +7,3 @@ class TransactionAdmin(admin.ModelAdmin):
     """Transaction admin definition"""
 
     list_display = ("pk", "date", "amount", "memo")
-
-
-@admin.register(TransactionTypeClass)
-class TransactionTypeClassAdmin(admin.ModelAdmin):
-    """Transaction Type Class admin definition"""
-
-    list_display = ("name", "color", "pk")
-
-
-@admin.register(TransactionType)
-class TransactionTypeAdmin(admin.ModelAdmin):
-    """Transaction Type admin definition"""
-
-    list_display = ("name", "color", "type_class", "pk")

@@ -184,7 +184,7 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
             <span>ID</span>
             <span>Date</span>
             <span>Period</span>
-            <span>Type</span>
+            <span>Tag</span>
             <span>Amount</span>
             <span>Memo</span>
             <div></div>
@@ -194,7 +194,7 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
       return (
         <TrxnGridGraphicHeaderDiv>
             <span>Date</span>
-            <span>Type</span>
+            <span>Tag</span>
             <span>Amount</span>
         </TrxnGridGraphicHeaderDiv>
       );
@@ -212,7 +212,7 @@ export function TrxnGridItem({ index, item, isEditing, setEditID, viewMode }: Tr
         <span>{index + 1}</span>
         <span>{GetDateTimeFormatFromDjango(item.date, true)}</span>
         <span>{item.period > 0 ? item.period : '-'}</span>
-        <span>{item.type.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</span>
+        <span>{item.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</span>
         
         {/* AMOUNT */}
         {isEditing ? <div>
@@ -246,7 +246,7 @@ export function TrxnGridItem({ index, item, isEditing, setEditID, viewMode }: Tr
   }else if(viewMode === ViewMode.Graph){
     return (<TrxnGridGraphicItemDiv key={item.id}>
         <span>{GetDateTimeFormatFromDjango(item.date, true)}</span>
-        <span>{item.type.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</span>
+        <span>{item.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</span>
         <span>{item.amount}</span>
         {/* MEMO */}
         {/* {isEditing ? <div>

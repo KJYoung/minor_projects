@@ -12,14 +12,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import { GetDateTimeFormat2Django } from '../../utils/DateTime';
 import TypeInput from './TypeInput';
 import { NewAmountInput } from './AmountInput';
-import { TypeBubbleElement } from '../../store/slices/trxnType';
+import { TagBubbleElement } from '../../store/slices/tag';
 
 function TrxnInput() {
   const [memo, setMemo] = useState<string>("");
   const [trxnDate, setTrxnDate] = useState<Date>(new Date());
   const [realDate, setRealDate] = useState<Date>(new Date());
   const [amount, setAmount] = useState<number>(0);
-  const [tags, setTags] = useState<TypeBubbleElement[]>([]);
+  const [tags, setTags] = useState<TagBubbleElement[]>([]);
   const [isPeriodic, setIsPeriodic] = useState<boolean>(false); // is periodic transaction?
   const [hasDiffTime, setHasDiffTime] = useState<boolean>(false); // 값을 지출한 날과 그 값을 실제로 소비한 날이 다른가?
   const [period, setPeriod] = useState<number>(0);

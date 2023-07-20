@@ -3,14 +3,14 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import client from '../apis/client';
 import { RootState } from '..';
 import { ERRORSTATE } from './core';
-import { TypeBubbleElement } from './trxnType';
+import { TagBubbleElement } from './tag';
 import { CalMonth } from '../../utils/DateTime';
 
 export type TrxnElement = {
   id: number,
   date: string,
   memo: string,
-  type: TypeBubbleElement[],
+  tag: TagBubbleElement[],
   period: number,
   amount: number,
 };
@@ -18,7 +18,7 @@ export type TrxnElement = {
 export interface TrxnCreateReqType {
   date: string,
   memo: string,
-  type: TypeBubbleElement[],
+  type: TagBubbleElement[],
   period: number,
   amount: number,
 };
@@ -62,28 +62,6 @@ export const fetchTrxns = createAsyncThunk(
     };
 
     const response = await client.get(reqLink);
-
-/**
- * 
- * 
- * let link = `/api/post/?page=${payload.pageNum}&pageSize=${payload.pageSize}`;
-
-  if (payload.searchKeyword) {
-    link += `&search=${payload.searchKeyword}`;
-  }
-  if (payload.tags.length > 0) {
-    for (const tag of payload.tags) {
-      link += `&tag=${tag.id}`;
-    }
-  }
-  const response = await client.get<getPostsResponseType>(link);
-  return response.data;
- * 
- * 
- */
-
-
-
     return response.data;
   }
 );

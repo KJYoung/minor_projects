@@ -20,4 +20,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('api/core/', include('core.urls')),
     path('api/trxn/', include('transactions.urls')),
+    path('api/tag/', include('tags.urls')),
 ]

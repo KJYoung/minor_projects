@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "core",
     "transactions",
     "stockpiles",
+    "tags",
 ]
 
 MIDDLEWARE = [

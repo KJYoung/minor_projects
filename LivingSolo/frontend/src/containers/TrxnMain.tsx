@@ -5,7 +5,7 @@ import { ERRORSTATE } from '../store/slices/core';
 import { fetchTrxns, selectTrxn } from '../store/slices/trxn';
 import TrxnInput from '../components/Trxn/TrxnInput';
 import { TrxnGridHeader, TrxnGridItem, TrxnGridNav} from '../components/Trxn/TrxnGrid';
-import { fetchTrxnTypes, fetchTrxnTypesIndex } from '../store/slices/trxnType';
+import { fetchTags, fetchTagsIndex } from '../store/slices/tag';
 import { CUR_MONTH } from '../utils/DateTime';
 
 export enum ViewMode {
@@ -22,8 +22,8 @@ function TrxnMain() {
   useEffect(() => {
     if(errorState === ERRORSTATE.SUCCESS || errorState === ERRORSTATE.DEFAULT){
       dispatch(fetchTrxns({yearMonth: CUR_MONTH}));
-      dispatch(fetchTrxnTypes());
-      dispatch(fetchTrxnTypesIndex());
+      dispatch(fetchTags());
+      dispatch(fetchTagsIndex());
     }
   }, [elements, errorState, dispatch]);
   return (

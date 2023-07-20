@@ -1,16 +1,15 @@
 from django.core.management import BaseCommand
-from transactions.models import TransactionTypeClass, TransactionType
+from tags.models import TagClass, Tag
 
 colors = ['#f4d284', '#f9b6a2', '#f9a2b6', '#a2cff9', '#9fd6cd', '#a9f9a2', '#d3b7d8', '#d3b7d8']
 
 
 class Command(BaseCommand):
-    help = "This command prepares some type classes & basic types."
+    help = "This command prepares some tag classes & basic types."
 
     def handle(self, *args, **options):
         class_list = ["음식", "여가", "교통"]
 
-        # 무산소 태그 프리셋
         class_sublist = {}
         class_sublist["음식"] = ["아침", "점심", "저녁", "식료품", "간식", "카페"]
         class_sublist["생활"] = ["쇼핑"]
@@ -31,17 +30,15 @@ class Command(BaseCommand):
 
         class_ind = 0
         for class_name, tag_names in zip(class_list, tag_preset):
-            type_class = TransactionTypeClass.objects.create(
+            tag_class = TagClass.objects.create(
                 name=class_name,
                 color=colors[class_ind],
             )
             class_ind += 1
 
             for tag_name in tag_names:
-                TransactionType.objects.create(
-                    name=tag_name, type_class=type_class, color=colors[class_ind]
-                )
+                Tag.objects.create(name=tag_name, tag_class=tag_class, color=colors[class_ind])
 
         self.stdout.write(
-            self.style.SUCCESS("Type classes & Type presets are prepared automatically.")
+            self.style.SUCCESS("TagClasses & Tag presets are prepared automatically.")
         )
