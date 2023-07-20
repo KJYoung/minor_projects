@@ -2,7 +2,7 @@
 
 ### How to make project skeleton?
 - Preparation
-- ```python
+```python
    python manage.py prepare_tags
    python manage.py createsuperuser
 ```
