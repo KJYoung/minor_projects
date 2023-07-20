@@ -3,19 +3,23 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Hello! Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-      <Button title="안녕! 하십니까.." onClick={() => console.log("Console 이다!")}>안녕!</Button>
+    <View style={{
+      flex: 1,
+      backgroundColor: 'white',
+      alignItems: 'center',
+      justifyContent: 'center',
+      border: "1px green dashed",
+    }}>
+      <Text style={styles.text}>Hllo! Open up App.js to start working on your app!</Text>
+      <StatusBar style="dark" />
+      <Button title="안녕!! 하십니까.." onClick={() => console.log("Console 이다!")}>안녕!</Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  text: {
+    fontSize: 44,
+    color: "black"
+  }
 });
