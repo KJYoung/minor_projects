@@ -33,6 +33,7 @@ class Todo(AbstractTimeStampedModel):
 
     priority = models.IntegerField()
     deadline = models.DateTimeField(blank=True)
+    period = models.IntegerField()
 
     def __str__(self):
         """To string method"""
