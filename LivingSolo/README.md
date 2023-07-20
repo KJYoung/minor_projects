@@ -7,7 +7,7 @@
    python manage.py createsuperuser
 ```
 - 2023년 6월~7월경.   
-
+- TodoMain.tsx는 아직 이식 작업 중이라 Git Ignored
 
 
 #### Backend ERD Model Structure

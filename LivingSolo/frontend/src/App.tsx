@@ -10,6 +10,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
 import { styled } from 'styled-components';
 import NavDrawer from './components/general/NavDrawer';
+import TodoMain from './containers/TodoMain';
 
 export enum TabState { DEPRECATED, Home, Transaction, Calendar, Stockpile };
 const tab2Str = (e: TabState) => {
@@ -19,7 +20,7 @@ const tab2Str = (e: TabState) => {
     case TabState.Transaction:
       return 'Transaction';
     case TabState.Calendar:
-      return 'Calendar';
+      return 'Calendar(ToDo)';
     case TabState.Stockpile:
       return 'Stockpile';
     default:
@@ -64,7 +65,7 @@ function App() {
         {/* Main Contents */}
         {tabState === TabState.Home && <span>Home</span>}
         {tabState === TabState.Transaction && <TrxnMain />}
-        {tabState === TabState.Calendar && <span>Calendar</span>}
+        {tabState === TabState.Calendar && <TodoMain />}
         {tabState === TabState.Stockpile && <span>Stockpile</span>}
         
         <Drawer open={isDrawerOpen}>

@@ -8,6 +8,9 @@ import { TagBubbleCompact } from '../general/TagBubble';
 import { CUR_MONTH, CUR_YEAR, CalMonth, GetDateTimeFormatFromDjango } from '../../utils/DateTime';
 import { EditAmountInput } from './AmountInput';
 import { ViewMode } from '../../containers/TrxnMain';
+import { RoundButton } from '../../utils/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencil, faX } from '@fortawesome/free-solid-svg-icons';
 
 interface TrxnGridHeaderProps {
     viewMode: ViewMode
@@ -125,15 +128,19 @@ const MonthNavBtn = styled.button`
 const MonthNavSubBtn = styled.button`
     background-color: transparent;
     border: none;
-    width: 100%;
+    width: 90%;
     font-size: 16px;
     color: var(--ls-gray_google2);
     cursor: pointer;
     &:hover {
         color: var(--ls-blue);
     }
+    &:not(:first-child) {
+        border-top: 1px solid var(--ls-gray);
+        padding-top: 5px;
+    }
     margin-bottom: 3px;
-    margin-right: 5px;
+    margin-left: 5px;
 `;
 const MonthIndSpan = styled.div`
     font-size: 24px;
@@ -150,6 +157,10 @@ const MonthNavWrapper = styled.div`
 const SearchNavWrapper = styled.div`
     display: flex;
     align-items: center;
+
+    > div:last-child {
+        width: 10%;
+    }
 `;
 const TrxnGridNavWrapper = styled.div`
     display: flex;
@@ -162,12 +173,12 @@ const TrxnGridNavWrapper = styled.div`
 const TrxnGridDetailedSubNav = styled.div`
     width: 100%;
     display: grid;
-    grid-template-columns: 2fr 8fr;
+    grid-template-columns: 4fr 12fr;
     padding-left: 70px;
     padding-right: 70px;
 
     .TextField {
-        width   : 80%;
+        width   : 90%;
     }
 
 `;
@@ -236,11 +247,11 @@ export function TrxnGridItem({ index, item, isEditing, setEditID, viewMode }: Tr
                     dispatch(editTrxn(trxnItem));
                     setEditID(-1);
                 }}>수정 완료</Button>}
-            {!isEditing && <Button onClick={async () => { setEditID(item.id); setTrxnItem(item); }} variant={"contained"}>수정</Button>}
-            {!isEditing && <Button onClick={async () => {
+            {!isEditing && <RoundButton onClick={async () => { setEditID(item.id); setTrxnItem(item); }}><FontAwesomeIcon icon={faPencil}/></RoundButton>}
+            {!isEditing && <RoundButton onClick={async () => {
                 if (window.confirm('정말 기록을 삭제하시겠습니까?')) {
                     dispatch(deleteTrxn(item.id));
-                }}} variant={"contained"}>삭제</Button>}
+                }}}><FontAwesomeIcon icon={faX}/></RoundButton>}
         </div>
     </TrxnGridDetailItemDiv>);
   }else if(viewMode === ViewMode.Graph){
