@@ -1,3 +1,6 @@
+"""
+    Tag, TagClass, 태그에 관한 모델입니다.
+"""
 from django.db import models
 from core.models import AbstractTimeStampedModel
 
@@ -11,6 +14,9 @@ class TagClass(AbstractTimeStampedModel):
     def __str__(self):
         """To string method"""
         return str(self.name)
+
+    class Meta:
+        verbose_name_plural = "Tag Classes"
 
 
 class Tag(AbstractTimeStampedModel):

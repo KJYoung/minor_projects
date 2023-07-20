@@ -21,4 +21,5 @@ urlpatterns = [
     path('api/core/', include('core.urls')),
     path('api/trxn/', include('transactions.urls')),
     path('api/tag/', include('tags.urls')),
+    path('api/todo/', include('todos.urls')),
 ]

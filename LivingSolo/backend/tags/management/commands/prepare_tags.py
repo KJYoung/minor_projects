@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = "This command prepares some tag classes & basic types."
 
     def handle(self, *args, **options):
-        class_list = ["음식", "여가", "교통"]
+        class_list = ["음식", "생활", "여가", "교통", "구독", "관계"]
 
         class_sublist = {}
         class_sublist["음식"] = ["아침", "점심", "저녁", "식료품", "간식", "카페"]
@@ -22,6 +22,7 @@ class Command(BaseCommand):
 
         tag_preset = [
             class_sublist["음식"],  # "음식"
+            class_sublist["생활"],  # "생활"
             class_sublist["여가"],  # "여가"
             class_sublist["교통"],  # "교통"
             class_sublist["구독"],  # "구독"

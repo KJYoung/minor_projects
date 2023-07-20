@@ -9,7 +9,7 @@ class Stockpile(AbstractTimeStampedModel):
     name = models.CharField(max_length=40, null=False)
     image = models.CharField(max_length=255, null=False)  # URI for Image.
     amount = models.IntegerField()
-    type = models.ManyToManyField(Tag, related_name="stockpile")
+    tag = models.ManyToManyField(Tag, related_name="stockpile")
     memo = models.CharField(max_length=100, null=False)
 
     # Last_purchased Day, Estimated "Out-of-stock" Day

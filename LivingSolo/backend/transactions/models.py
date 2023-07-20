@@ -1,3 +1,6 @@
+"""
+    Transaction, Trxn, 거래에 관한 모델입니다.
+"""
 from django.db import models
 from core.models import AbstractTimeStampedModel
 from tags.models import Tag

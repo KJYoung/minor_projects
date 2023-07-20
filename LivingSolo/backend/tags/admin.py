@@ -1,3 +1,6 @@
+"""
+    TagClass, Tag, 태그에 관한 어드민 패널입니다.
+"""
 from django.contrib import admin
 from tags.models import TagClass, Tag
 

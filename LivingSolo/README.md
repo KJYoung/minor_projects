@@ -16,3 +16,5 @@
 - [React Native Dev](https://reactnative.dev/)
 - [Display:Flex 상태에서 overflow는 다음 줄에 배치되도록](https://stackoverflow.com/questions/62249771/how-can-i-make-my-flex-divs-overflow-to-the-next-line)
 - [Django: DateTimeField 필터링](https://stackoverflow.com/questions/1317714/how-can-i-filter-a-date-of-a-datetimefield-in-django)
+- [Django Admin Cookbook](https://books.agiliq.com/projects/django-admin-cookbook/en/latest/introduction.html)
+    - Django Model Plural Name Setting
