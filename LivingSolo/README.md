@@ -12,6 +12,7 @@
 
 #### Backend ERD Model Structure
 - [ERD Cloud Link](https://www.erdcloud.com/d/FicREAFG6x97kzDmw)
+![ERD Image 0720](record/ERD_230720.png)
 #### MEMO
 - [React Native Dev](https://reactnative.dev/)
 - [Display:Flex 상태에서 overflow는 다음 줄에 배치되도록](https://stackoverflow.com/questions/62249771/how-can-i-make-my-flex-divs-overflow-to-the-next-line)
