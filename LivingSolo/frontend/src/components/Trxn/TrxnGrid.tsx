@@ -11,6 +11,7 @@ import { ViewMode } from '../../containers/TrxnMain';
 import { RoundButton } from '../../utils/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faX } from '@fortawesome/free-solid-svg-icons';
+import { TrxnGridGraphicHeader, TrxnGridGraphicItem } from './TrxnGridGraphics';
 
 interface TrxnGridHeaderProps {
     viewMode: ViewMode
@@ -188,27 +189,107 @@ const TrxnGridModeBtn = styled.span<{ active: string }>`
     margin-left: 20px;
 `;
 
+enum SortState {
+    NotSort, Ascend, Descend, TagFilter
+};
+enum SortTarget {
+    Date, Period, Tag, Amount, Memo
+};
+
+interface TrxnGridSortState {
+    date: SortState.NotSort | SortState.Ascend | SortState.Descend,
+    period: SortState.NotSort | SortState.Ascend | SortState.Descend,
+    tag: SortState.NotSort | SortState.TagFilter,
+    amount: SortState.NotSort | SortState.Ascend | SortState.Descend,
+    memo: SortState.NotSort | SortState.Ascend | SortState.Descend,
+};
+
+const defaultSortState : TrxnGridSortState = {
+    date: SortState.NotSort,
+    period: SortState.NotSort,
+    tag: SortState.NotSort,
+    amount: SortState.NotSort,
+    memo: SortState.NotSort,
+};
+
 export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
+  const [sortState, setSortState] = useState<TrxnGridSortState>(defaultSortState);
+
+  const getNextSortState = (curState: SortState) => {
+    switch(curState) {
+        case SortState.NotSort:
+            return SortState.Descend;
+        case SortState.Descend:
+            return SortState.Ascend;
+        case SortState.Ascend:
+            return SortState.NotSort;
+        default:
+            return SortState.NotSort;
+    };
+  };
+  const sortStateHandler = (sortTarget: SortTarget) => {
+    switch(sortTarget) {
+        case SortTarget.Date:
+            return setSortState((ss) => { 
+                return {...ss, date: getNextSortState(ss.date)};
+            });
+        case SortTarget.Period:
+            return setSortState((ss) => { 
+                return {...ss, period: getNextSortState(ss.period)};
+            });
+        case SortTarget.Amount:
+            return setSortState((ss) => { 
+                return {...ss, amount: getNextSortState(ss.amount)};
+            });
+        case SortTarget.Memo:
+            return setSortState((ss) => { 
+                return {...ss, memo: getNextSortState(ss.memo)};
+            });
+        case SortTarget.Tag:
+            return setSortState((ss) => {
+                return {...ss, tag: ss.tag === SortState.NotSort ? SortState.TagFilter : SortState.NotSort}
+            });
+    };
+  };
+
   if(viewMode === ViewMode.Detail){
       return (
         <TrxnGridDetailHeaderDiv>
-            <span>ID</span>
-            <span>Date</span>
-            <span>Period</span>
-            <span>Tag</span>
-            <span>Amount</span>
-            <span>Memo</span>
+            <TrxnGridDetailHeaderSpan>Index</TrxnGridDetailHeaderSpan>
+            <TrxnGridDetailFilterHeader active={(sortState.date !== SortState.NotSort).toString()} onClick={() => sortStateHandler(SortTarget.Date)}>
+                Date
+                {sortState.date === SortState.Descend && '▼'}
+                {sortState.date === SortState.Ascend && '▲'}
+            </TrxnGridDetailFilterHeader>
+            <TrxnGridDetailFilterHeader active={(sortState.period !== SortState.NotSort).toString()} onClick={() => sortStateHandler(SortTarget.Period)}>
+                Period
+                {sortState.period === SortState.Descend && '▼'}
+                {sortState.period === SortState.Ascend && '▲'}
+            </TrxnGridDetailFilterHeader>
+
+            {/* Unique Logic For Tag Filtering */}
+            {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader active={'false'} onClick={() => sortStateHandler(SortTarget.Tag)}>
+                Tag
+            </TrxnGridDetailFilterHeader>}
+            {sortState.tag === SortState.TagFilter && <TrxnGridDetailFilterHeader active={'true'} onClick={() => sortStateHandler(SortTarget.Tag)}>
+                TagFilter
+            </TrxnGridDetailFilterHeader>}
+            
+            <TrxnGridDetailFilterHeader active={(sortState.amount !== SortState.NotSort).toString()} onClick={() => sortStateHandler(SortTarget.Amount)}>
+                Amount
+                {sortState.amount === SortState.Descend && '▼'}
+                {sortState.amount === SortState.Ascend && '▲'}
+            </TrxnGridDetailFilterHeader>
+            <TrxnGridDetailFilterHeader active={(sortState.memo !== SortState.NotSort).toString()} onClick={() => sortStateHandler(SortTarget.Memo)}>
+                Memo
+                {sortState.memo === SortState.Descend && '▼'}
+                {sortState.memo === SortState.Ascend && '▲'}
+            </TrxnGridDetailFilterHeader>
             <div></div>
         </TrxnGridDetailHeaderDiv>
       );
   }else if(viewMode === ViewMode.Graph){
-      return (
-        <TrxnGridGraphicHeaderDiv>
-            <span>Date</span>
-            <span>Tag</span>
-            <span>Amount</span>
-        </TrxnGridGraphicHeaderDiv>
-      );
+      return <TrxnGridGraphicHeader />
   }else{
     return <></>
   }
@@ -255,18 +336,7 @@ export function TrxnGridItem({ index, item, isEditing, setEditID, viewMode }: Tr
         </div>
     </TrxnGridDetailItemDiv>);
   }else if(viewMode === ViewMode.Graph){
-    return (<TrxnGridGraphicItemDiv key={item.id}>
-        <span>{GetDateTimeFormatFromDjango(item.date, true)}</span>
-        <span>{item.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</span>
-        <span>{item.amount}</span>
-        {/* MEMO */}
-        {/* {isEditing ? <div>
-              <input value={trxnItem.memo} onChange={(e) => setTrxnItem((item) => { return { ...item, memo: e.target.value } })}/>
-            </div> 
-            : 
-            <span>{item.memo}</span>
-        } */}
-    </TrxnGridGraphicItemDiv>);
+    return (<TrxnGridGraphicItem item={item}/>);
   }else{
     return <></>
   }
@@ -278,15 +348,21 @@ const TrxnGridDetailTemplate = styled.div`
     padding-left: 70px;
     padding-right: 70px;   
 `;
+
 const TrxnGridDetailHeaderDiv = styled(TrxnGridDetailTemplate)`
-    > span {
-        text-align: center;
-        font-size: 22px;
-        border-right: 1px solid gray;
-        border-bottom: 1px solid gray;
-        padding-bottom: 5px;
-    }
 `;
+const TrxnGridDetailHeaderSpan = styled.span`
+    text-align: center;
+    font-size: 22px;
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+    padding-bottom: 5px;
+    `;
+const TrxnGridDetailFilterHeader = styled(TrxnGridDetailHeaderSpan)<{ active: string }>`
+    color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-black)')};
+    cursor: pointer;
+`;
+
 const TrxnGridDetailItemDiv = styled(TrxnGridDetailTemplate)`
     &:nth-child(4) { 
         /* First Grid Item */
@@ -310,31 +386,3 @@ const TrxnGridDetailItemDiv = styled(TrxnGridDetailTemplate)`
     }
 `;
 
-const TrxnGridGraphicTemplate = styled.div`
-    display: grid;
-    grid-template-columns: 2fr 2fr 2fr;
-    padding-left: 70px;
-    padding-right: 70px;
-    width: 40%;
-`;
-const TrxnGridGraphicHeaderDiv = styled(TrxnGridGraphicTemplate)`
-    > span {
-        /* border: 1px solid red; */
-        text-align: center;
-        font-size: 22px;
-    }
-`;
-const TrxnGridGraphicItemDiv = styled(TrxnGridGraphicTemplate)`
-    > span {
-        /* border: 1px solid red; */
-        text-align: center;
-        font-size: 22px;
-    }
-    .amount {
-        text-align: right;
-    }
-    input {
-        width: 100%;
-        height: 100%;
-    }
-`;
