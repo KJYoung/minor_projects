@@ -18,10 +18,23 @@ PAY_TYPE_CHOICES = (
     (PAY_TYPE_PAY, "페이포인트"),
 )
 
+CURRENCY_TYPE_KRW = "KRW"  # 한국 원
+CURRENCY_TYPE_USD = "USD"  # 미국 달러
+CURRENCY_TYPE_JPY = "JPY"  # 일본 엔
+
+CURRENCY_TYPE_CHOICES = (
+    (CURRENCY_TYPE_KRW, "KRW"),
+    (CURRENCY_TYPE_USD, "USD"),
+    (CURRENCY_TYPE_JPY, "JPY"),
+)
+
 
 class PayMethod(AbstractTimeStampedModel):
     type = models.CharField(max_length=20, choices=PAY_TYPE_CHOICES, default=PAY_TYPE_CASH)
     name = models.CharField(max_length=30, null=False)
+    currency = models.CharField(
+        max_length=3, choices=CURRENCY_TYPE_CHOICES, default=CURRENCY_TYPE_KRW
+    )
 
 
 class Transaction(AbstractTimeStampedModel):
