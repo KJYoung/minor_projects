@@ -212,10 +212,7 @@ const defaultSortState : TrxnGridSortState = {
     memo: SortState.NotSort,
 };
 
-export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
-  const [sortState, setSortState] = useState<TrxnGridSortState>(defaultSortState);
-
-  const getNextSortState = (curState: SortState) => {
+const getNextSortState = (curState: SortState) => {
     switch(curState) {
         case SortState.NotSort:
             return SortState.Descend;
@@ -226,7 +223,11 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
         default:
             return SortState.NotSort;
     };
-  };
+};
+
+export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
+  const [sortState, setSortState] = useState<TrxnGridSortState>(defaultSortState);
+
   const sortStateHandler = (sortTarget: SortTarget) => {
     switch(sortTarget) {
         case SortTarget.Date:
@@ -252,20 +253,22 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
     };
   };
 
+  const trxnGridDetailFilterHeader = (targetState: SortState, name: string, targetEnum: SortTarget) => {
+    return <TrxnGridDetailFilterHeader active={(targetState !== SortState.NotSort).toString()} onClick={() => sortStateHandler(targetEnum)}>
+        <span>{name}</span>
+        <span>
+            {targetState === SortState.Descend && '▼'}
+            {targetState === SortState.Ascend && '▲'}
+        </span>
+    </TrxnGridDetailFilterHeader>
+  }
+
   if(viewMode === ViewMode.Detail){
       return (
         <TrxnGridDetailHeaderDiv>
-            <TrxnGridDetailHeaderSpan>Index</TrxnGridDetailHeaderSpan>
-            <TrxnGridDetailFilterHeader active={(sortState.date !== SortState.NotSort).toString()} onClick={() => sortStateHandler(SortTarget.Date)}>
-                Date
-                {sortState.date === SortState.Descend && '▼'}
-                {sortState.date === SortState.Ascend && '▲'}
-            </TrxnGridDetailFilterHeader>
-            <TrxnGridDetailFilterHeader active={(sortState.period !== SortState.NotSort).toString()} onClick={() => sortStateHandler(SortTarget.Period)}>
-                Period
-                {sortState.period === SortState.Descend && '▼'}
-                {sortState.period === SortState.Ascend && '▲'}
-            </TrxnGridDetailFilterHeader>
+            <TrxnGridDetailHeaderItem>Index</TrxnGridDetailHeaderItem>
+            {trxnGridDetailFilterHeader(sortState.date, "Date", SortTarget.Date)}
+            {trxnGridDetailFilterHeader(sortState.period, "Period", SortTarget.Period)}
 
             {/* Unique Logic For Tag Filtering */}
             {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader active={'false'} onClick={() => sortStateHandler(SortTarget.Tag)}>
@@ -275,16 +278,8 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
                 TagFilter
             </TrxnGridDetailFilterHeader>}
             
-            <TrxnGridDetailFilterHeader active={(sortState.amount !== SortState.NotSort).toString()} onClick={() => sortStateHandler(SortTarget.Amount)}>
-                Amount
-                {sortState.amount === SortState.Descend && '▼'}
-                {sortState.amount === SortState.Ascend && '▲'}
-            </TrxnGridDetailFilterHeader>
-            <TrxnGridDetailFilterHeader active={(sortState.memo !== SortState.NotSort).toString()} onClick={() => sortStateHandler(SortTarget.Memo)}>
-                Memo
-                {sortState.memo === SortState.Descend && '▼'}
-                {sortState.memo === SortState.Ascend && '▲'}
-            </TrxnGridDetailFilterHeader>
+            {trxnGridDetailFilterHeader(sortState.amount, "Amount", SortTarget.Amount)}
+            {trxnGridDetailFilterHeader(sortState.memo, "Memo", SortTarget.Memo)}
             <div></div>
         </TrxnGridDetailHeaderDiv>
       );
@@ -351,14 +346,18 @@ const TrxnGridDetailTemplate = styled.div`
 
 const TrxnGridDetailHeaderDiv = styled(TrxnGridDetailTemplate)`
 `;
-const TrxnGridDetailHeaderSpan = styled.span`
+const TrxnGridDetailHeaderItem = styled.div`
     text-align: center;
     font-size: 22px;
     border-right: 1px solid gray;
     border-bottom: 1px solid gray;
     padding-bottom: 5px;
     `;
-const TrxnGridDetailFilterHeader = styled(TrxnGridDetailHeaderSpan)<{ active: string }>`
+const TrxnGridDetailFilterHeader = styled(TrxnGridDetailHeaderItem)<{ active: string }>`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px 0px 20px;
     color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-black)')};
     cursor: pointer;
 `;
