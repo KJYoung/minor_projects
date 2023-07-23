@@ -12,6 +12,8 @@ import { RoundButton } from '../../utils/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faX } from '@fortawesome/free-solid-svg-icons';
 import { TrxnGridGraphicHeader, TrxnGridGraphicItem } from './TrxnGridGraphics';
+import { TagInputForGridHeader } from './TagInput';
+import { TagBubbleElement } from '../../store/slices/tag';
 
 interface TrxnGridHeaderProps {
     viewMode: ViewMode
@@ -224,9 +226,17 @@ const getNextSortState = (curState: SortState) => {
             return SortState.NotSort;
     };
 };
+const isSortStateDefault = (curState: TrxnGridSortState) => {
+    return curState.amount === SortState.NotSort && 
+        curState.date === SortState.NotSort &&
+        curState.memo === SortState.NotSort &&
+        curState.period === SortState.NotSort &&
+        curState.tag === SortState.NotSort;
+};
 
 export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
   const [sortState, setSortState] = useState<TrxnGridSortState>(defaultSortState);
+  const [tags, setTags] = useState<TagBubbleElement[]>([]);
 
   const sortStateHandler = (sortTarget: SortTarget) => {
     switch(sortTarget) {
@@ -253,6 +263,11 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
     };
   };
 
+  const sortStateClear = () => {
+    setSortState(defaultSortState);
+    setTags([]);
+  }
+
   const trxnGridDetailFilterHeader = (targetState: SortState, name: string, targetEnum: SortTarget) => {
     return <TrxnGridDetailFilterHeader active={(targetState !== SortState.NotSort).toString()} onClick={() => sortStateHandler(targetEnum)}>
         <span>{name}</span>
@@ -265,26 +280,31 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
 
   if(viewMode === ViewMode.Detail){
       return (
-        <TrxnGridDetailHeaderDiv>
-            <TrxnGridDetailHeaderItem>Index</TrxnGridDetailHeaderItem>
+        <TrxnGridDetailHeaderDiv className='noselect'>
+            <TrxnGridDetailHeaderItem>
+                <span>Index</span>
+            </TrxnGridDetailHeaderItem>
             {trxnGridDetailFilterHeader(sortState.date, "Date", SortTarget.Date)}
             {trxnGridDetailFilterHeader(sortState.period, "Period", SortTarget.Period)}
 
             {/* Unique Logic For Tag Filtering */}
             {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader active={'false'} onClick={() => sortStateHandler(SortTarget.Tag)}>
-                Tag
+                <span>Tag</span>
             </TrxnGridDetailFilterHeader>}
-            {sortState.tag === SortState.TagFilter && <TrxnGridDetailFilterHeader active={'true'} onClick={() => sortStateHandler(SortTarget.Tag)}>
-                TagFilter
-            </TrxnGridDetailFilterHeader>}
+            {sortState.tag === SortState.TagFilter && <div>
+                <TagInputForGridHeader tags={tags} setTags={setTags} closeHandler={() => sortStateHandler(SortTarget.Tag)}/>
+            </div>}
             
             {trxnGridDetailFilterHeader(sortState.amount, "Amount", SortTarget.Amount)}
             {trxnGridDetailFilterHeader(sortState.memo, "Memo", SortTarget.Memo)}
-            <div></div>
+            
+            <TrxnGridDetailFilterReset onClick={() => sortStateClear()}>
+                <span>{!isSortStateDefault(sortState) && 'Reset Filter'}</span>
+            </TrxnGridDetailFilterReset>
         </TrxnGridDetailHeaderDiv>
       );
   }else if(viewMode === ViewMode.Graph){
-      return <TrxnGridGraphicHeader />
+      return <TrxnGridGraphicHeader/>
   }else{
     return <></>
   }
@@ -345,20 +365,28 @@ const TrxnGridDetailTemplate = styled.div`
 `;
 
 const TrxnGridDetailHeaderDiv = styled(TrxnGridDetailTemplate)`
+    min-height: 35px;
 `;
 const TrxnGridDetailHeaderItem = styled.div`
     text-align: center;
     font-size: 22px;
-    border-right: 1px solid gray;
-    border-bottom: 1px solid gray;
     padding-bottom: 5px;
-    `;
-const TrxnGridDetailFilterHeader = styled(TrxnGridDetailHeaderItem)<{ active: string }>`
+
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0px 20px 0px 20px;
+`;
+const TrxnGridDetailFilterHeader = styled(TrxnGridDetailHeaderItem)<{ active: string }>`
     color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-black)')};
+    cursor: pointer;
+`;
+const TrxnGridDetailFilterReset = styled(TrxnGridDetailHeaderItem)`
+    font-size: 16px;
+    color: var(--ls-gray);
+    :hover {
+        color: var(--ls-blue);
+    }
     cursor: pointer;
 `;
 

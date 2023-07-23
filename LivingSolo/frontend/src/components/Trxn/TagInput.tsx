@@ -21,14 +21,14 @@ interface TagDialogProps {
   setTags: React.Dispatch<React.SetStateAction<TagBubbleElement[]>>,
   tagClassSelect: string,
   setTagClassSelect: React.Dispatch<React.SetStateAction<string>>,
+  tag_max_length: number,
 }
 
-const TAG_MAX_LENGTH = 5;
 const DEFAULT_OPTION = '$NONE$';
 // const NEW_OPTION = '$NEW$';
 // const SEARCH_OPTION = '$SEARCH$';
 
-const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClassSelect} : TagDialogProps) => {
+const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClassSelect, tag_max_length} : TagDialogProps) => {
   const { elements, index } = useSelector(selectTag);
   
   const [unfoldView, setUnfoldView] = useState<boolean>(true); // For convenience.
@@ -52,7 +52,8 @@ const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClas
         <DialogContent dividers>
           <SetTagHeaderWrapper>
             <SetTagHeader>
-              설정된 태그 <TagLengthIndicator active={(tags.length >= 5).toString()}>{tags.length}</TagLengthIndicator> / {TAG_MAX_LENGTH}
+              설정된 태그{' '} 
+              <TagLengthIndicator active={(tags.length >= tag_max_length).toString()}>{tags.length}</TagLengthIndicator> / {tag_max_length}
             </SetTagHeader>
             <TagInputClearSpan onClick={() => clearTagInput()}active={(tags.length !== 0).toString()}>Clear</TagInputClearSpan>
           </SetTagHeaderWrapper>
@@ -77,7 +78,7 @@ const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClas
                     return tagsHasTagElem === undefined; 
                   }) // Filtering Unselected!
                   .map((tagElem) =>
-                    <TagBubbleCompactPointer onClick={() => setTags((tags) => (tags.length >= 5) ? tags : [...tags, tagElem])} key={tagElem.id} color={tagElem.color}>
+                    <TagBubbleCompactPointer onClick={() => setTags((tags) => (tags.length >= tag_max_length) ? tags : [...tags, tagElem])} key={tagElem.id} color={tagElem.color}>
                       {tagElem.name}
                     </TagBubbleCompactPointer>
                   )
@@ -212,7 +213,7 @@ interface TagInputProps {
   setTags: React.Dispatch<React.SetStateAction<TagBubbleElement[]>>
 }
 // Tag Input Container.
-function TagInput({ tags, setTags }: TagInputProps) {
+export const TagInputForTrxnInput = ({ tags, setTags }: TagInputProps) => {
   const { elements }  = useSelector(selectTag);
   const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
   const [open, setOpen] = React.useState<boolean>(false);
@@ -235,10 +236,10 @@ function TagInput({ tags, setTags }: TagInputProps) {
         </div>
         <RoundButton onClick={handleClickOpen}>+</RoundButton>
         <TagDialog open={open} handleClose={handleClose}
-                    tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} />
+                    tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={5}/>
     </TagInputDiv>
   );
-}
+};
 
 const TagInputDiv = styled.div`
     background-color: var(--ls-gray_lighter2);
@@ -266,4 +267,95 @@ const TagInputClearSpan = styled.span<{ active: string }>`
     margin-left: 20px;
 `;
 
-export default TagInput;
+// Tag Input Container for GridHeader
+interface GridTagInputProps extends TagInputProps {
+  closeHandler: () => void
+};
+
+export const TagInputForGridHeader = ({ tags, setTags, closeHandler }: GridTagInputProps) => {
+  const { elements }  = useSelector(selectTag);
+  const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
+  const [open, setOpen] = React.useState<boolean>(false);
+  
+  useEffect(() => {
+    setTags([]);
+  }, [elements, setTags]);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <GridTagInputDiv>
+        <div>
+          {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
+        </div>
+        <GridTagOpenBtn onClick={handleClickOpen}>+</GridTagOpenBtn>
+        <GridTagCap>
+          <span onClick={closeHandler}>Tag Filter...</span>
+          <span onClick={closeHandler}>x</span>
+        </GridTagCap>
+        <TagDialog open={open} handleClose={handleClose}
+                    tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={3}/>
+    </GridTagInputDiv>
+  );
+};
+
+const GridTagInputDiv = styled.div`
+    border: 1px solid var(--ls-gray_lighter);
+    padding: 10px 5px 0px 5px;
+    border-radius: 5px;
+    
+    display: grid;
+    grid-template-columns: 9fr 1fr;
+
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    > div:first-child {
+      > button {
+        margin-right: 5px;
+      }
+    }
+`;
+
+const GridTagOpenBtn = styled.span`
+  cursor: pointer;
+  color: var(--ls-blue);
+  font-size: 22px;
+  font-weight: 700;
+`;
+const GridTagCap = styled.div`
+  position: absolute;
+  top: -10px;
+  font-size: 13px;
+  
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  > span {
+    background-color: white;
+    margin-left: 10px;
+    padding: 0px 3px 0px 3px;
+    cursor: pointer;
+    color: var(--ls-blue);
+  }
+  > span:first-child {
+    margin-left: 5px;
+    font-size: 13px;
+  }
+  > span:nth-child(2) {
+    
+  }
+  > span:last-child {
+    margin-right: 15px;
+    color: var(--ls-red);
+    font-size: 20px;
+  }
+`;

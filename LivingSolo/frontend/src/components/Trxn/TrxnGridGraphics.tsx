@@ -9,7 +9,7 @@ interface TrxnGridGraphicItemProps {
 };
 
 export function TrxnGridGraphicHeader() {
-    return (<TrxnGridGraphicHeaderDiv>
+    return (<TrxnGridGraphicHeaderDiv className='noselect'>
         <span>Date</span>
         <span>Tag</span>
         <span>Amount</span>
