@@ -1,6 +1,8 @@
 ## React Native 기본 공부
 
 - 2023년 7월경.   
+- weatherV: openweathermap API로 사용자 지역의 5일간 기상 예보를 보여주는 간단한 JS 기반 앱.
+- todoV: TS 기반 앱.
 
 ### React Native...
 - Native <=> Bridge <=> JavaScript의 Communication!
@@ -10,7 +12,11 @@
 - [Expo SDK](https://docs.expo.dev/versions/latest/) 에서 Expo 팀에서 제작한 Packages, APIs를 볼 수 있다. 커뮤니티에 의존하는 것보다는 안정적일 것.
 ### Minor-Minor Projects
 - weatherV : weather application.
-### Debugging
+### Setting & Debugging
+- Expo Init
+ ```
+    npx create-expo-app --template
+ ```
 - Expo를 이용한 간단한 테스트.
   ```
     sudo npm install --global expo-cli
