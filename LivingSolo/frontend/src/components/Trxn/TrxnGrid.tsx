@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import { Button, TextField } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { TrxnElement, TrxnFetchReqType, deleteTrxn, editTrxn, fetchTrxns } from '../../store/slices/trxn';
+import { useDispatch, useSelector } from 'react-redux';
+import { SortState, TrxnActions, TrxnElement, TrxnFetchReqType, TrxnSortState, TrxnSortTarget, deleteTrxn, editTrxn, fetchTrxns, selectTrxn } from '../../store/slices/trxn';
 import { AppDispatch } from '../../store';
 import { TagBubbleCompact } from '../general/TagBubble';
 import { CUR_MONTH, CUR_YEAR, CalMonth, GetDateTimeFormatFromDjango } from '../../utils/DateTime';
@@ -191,30 +191,8 @@ const TrxnGridModeBtn = styled.span<{ active: string }>`
     margin-left: 20px;
 `;
 
-enum SortState {
-    NotSort, Ascend, Descend, TagFilter
-};
-enum SortTarget {
-    Date, Period, Tag, Amount, Memo
-};
 
-interface TrxnGridSortState {
-    date: SortState.NotSort | SortState.Ascend | SortState.Descend,
-    period: SortState.NotSort | SortState.Ascend | SortState.Descend,
-    tag: SortState.NotSort | SortState.TagFilter,
-    amount: SortState.NotSort | SortState.Ascend | SortState.Descend,
-    memo: SortState.NotSort | SortState.Ascend | SortState.Descend,
-};
-
-const defaultSortState : TrxnGridSortState = {
-    date: SortState.NotSort,
-    period: SortState.NotSort,
-    tag: SortState.NotSort,
-    amount: SortState.NotSort,
-    memo: SortState.NotSort,
-};
-
-const getNextSortState = (curState: SortState) => {
+const getNextTrxnSortState = (curState: SortState) => {
     switch(curState) {
         case SortState.NotSort:
             return SortState.Descend;
@@ -226,7 +204,7 @@ const getNextSortState = (curState: SortState) => {
             return SortState.NotSort;
     };
 };
-const isSortStateDefault = (curState: TrxnGridSortState) => {
+const isTrxnSortStateDefault = (curState: TrxnSortState) => {
     return curState.amount === SortState.NotSort && 
         curState.date === SortState.NotSort &&
         curState.memo === SortState.NotSort &&
@@ -235,41 +213,32 @@ const isSortStateDefault = (curState: TrxnGridSortState) => {
 };
 
 export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
-  const [sortState, setSortState] = useState<TrxnGridSortState>(defaultSortState);
+  const dispatch = useDispatch<AppDispatch>();
+  const { sortState }  = useSelector(selectTrxn);
   const [tags, setTags] = useState<TagBubbleElement[]>([]);
 
-  const sortStateHandler = (sortTarget: SortTarget) => {
-    switch(sortTarget) {
-        case SortTarget.Date:
-            return setSortState((ss) => { 
-                return {...ss, date: getNextSortState(ss.date)};
-            });
-        case SortTarget.Period:
-            return setSortState((ss) => { 
-                return {...ss, period: getNextSortState(ss.period)};
-            });
-        case SortTarget.Amount:
-            return setSortState((ss) => { 
-                return {...ss, amount: getNextSortState(ss.amount)};
-            });
-        case SortTarget.Memo:
-            return setSortState((ss) => { 
-                return {...ss, memo: getNextSortState(ss.memo)};
-            });
-        case SortTarget.Tag:
-            return setSortState((ss) => {
-                return {...ss, tag: ss.tag === SortState.NotSort ? SortState.TagFilter : SortState.NotSort}
-            });
+  const TrxnSortStateHandler = (trxnSortTarget: TrxnSortTarget) => {
+    switch(trxnSortTarget) {
+        case TrxnSortTarget.Date:
+            return dispatch(TrxnActions.setTrxnSort({...sortState, date: getNextTrxnSortState(sortState.date)}));
+        case TrxnSortTarget.Period:
+            return dispatch(TrxnActions.setTrxnSort({...sortState, period: getNextTrxnSortState(sortState.period)}));
+        case TrxnSortTarget.Amount:
+            return dispatch(TrxnActions.setTrxnSort({...sortState, amount: getNextTrxnSortState(sortState.amount)}));
+        case TrxnSortTarget.Memo:
+            return dispatch(TrxnActions.setTrxnSort({...sortState, memo: getNextTrxnSortState(sortState.memo)}));
+        case TrxnSortTarget.Tag:
+            return dispatch(TrxnActions.setTrxnSort({...sortState, tag: sortState.tag === SortState.NotSort ? SortState.TagFilter : SortState.NotSort}));
     };
   };
 
-  const sortStateClear = () => {
-    setSortState(defaultSortState);
+  const TrxnSortStateClear = () => {
+    dispatch(TrxnActions.clearTrxnSort({}));
     setTags([]);
-  }
+  };
 
-  const trxnGridDetailFilterHeader = (targetState: SortState, name: string, targetEnum: SortTarget) => {
-    return <TrxnGridDetailFilterHeader active={(targetState !== SortState.NotSort).toString()} onClick={() => sortStateHandler(targetEnum)}>
+  const trxnGridDetailFilterHeader = (targetState: SortState, name: string, targetEnum: TrxnSortTarget) => {
+    return <TrxnGridDetailFilterHeader active={(targetState !== SortState.NotSort).toString()} onClick={() => TrxnSortStateHandler(targetEnum)}>
         <span>{name}</span>
         <span>
             {targetState === SortState.Descend && '▼'}
@@ -284,22 +253,22 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
             <TrxnGridDetailHeaderItem>
                 <span>Index</span>
             </TrxnGridDetailHeaderItem>
-            {trxnGridDetailFilterHeader(sortState.date, "Date", SortTarget.Date)}
-            {trxnGridDetailFilterHeader(sortState.period, "Period", SortTarget.Period)}
+            {trxnGridDetailFilterHeader(sortState.date, "Date", TrxnSortTarget.Date)}
+            {trxnGridDetailFilterHeader(sortState.period, "Period", TrxnSortTarget.Period)}
 
             {/* Unique Logic For Tag Filtering */}
-            {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader active={'false'} onClick={() => sortStateHandler(SortTarget.Tag)}>
+            {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader active={'false'} onClick={() => TrxnSortStateHandler(TrxnSortTarget.Tag)}>
                 <span>Tag</span>
             </TrxnGridDetailFilterHeader>}
             {sortState.tag === SortState.TagFilter && <div>
-                <TagInputForGridHeader tags={tags} setTags={setTags} closeHandler={() => sortStateHandler(SortTarget.Tag)}/>
+                <TagInputForGridHeader tags={tags} setTags={setTags} closeHandler={() => TrxnSortStateHandler(TrxnSortTarget.Tag)}/>
             </div>}
             
-            {trxnGridDetailFilterHeader(sortState.amount, "Amount", SortTarget.Amount)}
-            {trxnGridDetailFilterHeader(sortState.memo, "Memo", SortTarget.Memo)}
+            {trxnGridDetailFilterHeader(sortState.amount, "Amount", TrxnSortTarget.Amount)}
+            {trxnGridDetailFilterHeader(sortState.memo, "Memo", TrxnSortTarget.Memo)}
             
-            <TrxnGridDetailFilterReset onClick={() => sortStateClear()}>
-                <span>{!isSortStateDefault(sortState) && 'Reset Filter'}</span>
+            <TrxnGridDetailFilterReset onClick={() => TrxnSortStateClear()}>
+                <span>{!isTrxnSortStateDefault(sortState) && 'Reset Filter'}</span>
             </TrxnGridDetailFilterReset>
         </TrxnGridDetailHeaderDiv>
       );

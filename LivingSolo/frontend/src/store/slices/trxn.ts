@@ -27,16 +27,41 @@ export interface TrxnFetchReqType {
   searchKeyword?: string, // 검색 키워드.
   yearMonth?: CalMonth, // 년/월 정보.
   // fetchSize?: number, // 가져오는 Transaction 개수.
-}
+};
+
+export enum SortState {
+  NotSort, Ascend, Descend, TagFilter
+};
+export enum TrxnSortTarget {
+  Date, Period, Tag, Amount, Memo
+};
+
+export interface TrxnSortState {
+  date: SortState.NotSort | SortState.Ascend | SortState.Descend,
+  period: SortState.NotSort | SortState.Ascend | SortState.Descend,
+  tag: SortState.NotSort | SortState.TagFilter,
+  amount: SortState.NotSort | SortState.Ascend | SortState.Descend,
+  memo: SortState.NotSort | SortState.Ascend | SortState.Descend,
+};
+
+export const defaultTrxnSortState : TrxnSortState = {
+  date: SortState.NotSort,
+  period: SortState.NotSort,
+  tag: SortState.NotSort,
+  amount: SortState.NotSort,
+  memo: SortState.NotSort,
+};
 
 interface TrxnState {
   elements: TrxnElement[],
   errorState: ERRORSTATE,
+  sortState: TrxnSortState,
 };
 
 export const initialState: TrxnState = {
   elements: [],
-  errorState: ERRORSTATE.DEFAULT
+  errorState: ERRORSTATE.DEFAULT,
+  sortState: defaultTrxnSortState
 };
 
 export const fetchTrxns = createAsyncThunk(
@@ -68,22 +93,19 @@ export const fetchTrxns = createAsyncThunk(
 export const createTrxn = createAsyncThunk(
   "trxn/createTrxn",
   async (trxnCreateObj: TrxnCreateReqType, { dispatch }) => {
-      const response = await client.post("/api/trxn/", trxnCreateObj);
-      dispatch(TrxnActions.createTrxn(response.data));
+    await client.post("/api/trxn/", trxnCreateObj);
   }
 );
 export const editTrxn = createAsyncThunk(
   "trxn/editTrxn",
   async (editTrxnObj: TrxnElement, { dispatch }) => {
-      const response = await client.put(`/api/trxn/${editTrxnObj.id}/`, editTrxnObj);
-      dispatch(TrxnActions.editTrxn(response.data));
+    await client.put(`/api/trxn/${editTrxnObj.id}/`, editTrxnObj);
   }
 );
 export const deleteTrxn = createAsyncThunk(
   "trxn/deleteTrxn",
   async (TrxnID: String | Number, { dispatch }) => {
-      const response = await client.delete(`/api/trxn/${TrxnID}/`);
-      dispatch(TrxnActions.deleteTrxn(response.data));
+    await client.delete(`/api/trxn/${TrxnID}/`);
   }
 );
 
@@ -91,9 +113,12 @@ export const TrxnSlice = createSlice({
   name: "trxn",
   initialState,
   reducers: {
-    createTrxn: (state, action: PayloadAction<{}>) => {},
-    editTrxn: (state, action: PayloadAction<{}>) => {},
-    deleteTrxn: (state, action: PayloadAction<{}>) => {},
+    setTrxnSort: (state, action: PayloadAction<TrxnSortState>) => {
+      state.sortState = action.payload;
+    },
+    clearTrxnSort: (state, action: PayloadAction<{}>) => {
+      state.sortState = defaultTrxnSortState;
+    },
   },
   extraReducers(builder) {
     builder.addCase(fetchTrxns.fulfilled, (state, action) => {

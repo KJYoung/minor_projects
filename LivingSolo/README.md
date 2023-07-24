@@ -15,7 +15,12 @@
 ![ERD Image 0720](record/ERD_230720.png)
 #### MEMO
 - [React Native Dev](https://reactnative.dev/)
+  
+##### Frontend
+- [Color Name Presets](https://www.w3schools.com/colors/colors_names.asp)
 - [Display:Flex 상태에서 overflow는 다음 줄에 배치되도록](https://stackoverflow.com/questions/62249771/how-can-i-make-my-flex-divs-overflow-to-the-next-line)
+- [How to disable text selection(drag)](https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting)
+##### Backend
 - [Django: DateTimeField 필터링](https://stackoverflow.com/questions/1317714/how-can-i-filter-a-date-of-a-datetimefield-in-django)
 - [Django Admin Cookbook](https://books.agiliq.com/projects/django-admin-cookbook/en/latest/introduction.html)
     - Django Model Plural Name Setting
