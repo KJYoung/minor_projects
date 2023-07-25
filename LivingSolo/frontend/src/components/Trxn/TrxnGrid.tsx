@@ -88,6 +88,10 @@ export function TrxnGridNav({viewMode, setViewMode} : TrxnGridNavProps) {
         </MonthNavWrapper>
     }
 
+    const searchBtnClickListener = () => {
+        fetchObj.searchKeyword = search;
+        search !== "" && dispatch(fetchTrxns(fetchObj));
+    }
     return <TrxnGridNavWrapper>
         <div>
             <TrxnGridModeBtn active={(viewMode === ViewMode.Detail).toString()} onClick={() => setViewMode(ViewMode.Detail)}>Detailed</TrxnGridModeBtn>
@@ -96,17 +100,19 @@ export function TrxnGridNav({viewMode, setViewMode} : TrxnGridNavProps) {
         {viewMode === ViewMode.Detail && <TrxnGridDetailedSubNav>
             <TrxnGridNavCalendar />
             <SearchNavWrapper>
-                <TextField className="TextField" label="검색" variant="outlined" value={search} onChange={(e) => setSearch(e.target.value)}/>
+                <TextField 
+                    className="TextField" label="검색" variant="outlined" value={search} onChange={(e) => setSearch(e.target.value)}
+                    onKeyUp={(e) => {
+                        if (e.key === 'Enter') {
+                            searchBtnClickListener()
+                    }}}/>
                 <div>
-                    <MonthNavSubBtn onClick={() => {
-                        fetchObj.searchKeyword = search;
-                        dispatch(fetchTrxns(fetchObj));
-                    }} disabled={search === ""}>검색!</MonthNavSubBtn>
+                    <MonthNavSubBtn onClick={() => searchBtnClickListener()}>검색!</MonthNavSubBtn>
                     <MonthNavSubBtn onClick={() => {
                         setSearch("");
                         fetchObj.searchKeyword = "";
                         dispatch(fetchTrxns(fetchObj));
-                    }} disabled={search === ""}>Clear</MonthNavSubBtn>
+                    }}>Clear</MonthNavSubBtn>
                 </div>
             </SearchNavWrapper>
         </TrxnGridDetailedSubNav>}
