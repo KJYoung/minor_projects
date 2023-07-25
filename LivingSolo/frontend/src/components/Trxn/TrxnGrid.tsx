@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import { Button, TextField } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faX } from '@fortawesome/free-solid-svg-icons';
 import { TrxnGridGraphicHeader, TrxnGridGraphicItem } from './TrxnGridGraphics';
 import { TagInputForGridHeader } from './TagInput';
-import { TagBubbleElement } from '../../store/slices/tag';
+import { TagElement } from '../../store/slices/tag';
 
 interface TrxnGridHeaderProps {
     viewMode: ViewMode
@@ -215,7 +215,11 @@ const isTrxnSortStateDefault = (curState: TrxnSortState) => {
 export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
   const dispatch = useDispatch<AppDispatch>();
   const { sortState }  = useSelector(selectTrxn);
-  const [tags, setTags] = useState<TagBubbleElement[]>([]);
+  const [tags, setTags] = useState<TagElement[]>([]);
+
+  useEffect(() => {
+    dispatch(TrxnActions.setTrxnFilterTag(tags));
+  }, [tags, dispatch]);
 
   const TrxnSortStateHandler = (trxnSortTarget: TrxnSortTarget) => {
     switch(trxnSortTarget) {

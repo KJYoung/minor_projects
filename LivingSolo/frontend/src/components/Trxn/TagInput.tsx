@@ -12,13 +12,13 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { TagBubbleCompact, TagBubbleCompactPointer, TagBubbleWithFunc, TagBubbleX } from '../general/TagBubble';
 import { useSelector } from 'react-redux';
-import { TagBubbleElement, selectTag } from '../../store/slices/tag';
+import { TagElement, selectTag } from '../../store/slices/tag';
 
 interface TagDialogProps {
   open: boolean,
   handleClose: () => void,
-  tags: TagBubbleElement[],
-  setTags: React.Dispatch<React.SetStateAction<TagBubbleElement[]>>,
+  tags: TagElement[],
+  setTags: React.Dispatch<React.SetStateAction<TagElement[]>>,
   tagClassSelect: string,
   setTagClassSelect: React.Dispatch<React.SetStateAction<string>>,
   tag_max_length: number,
@@ -209,8 +209,8 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 }
 
 interface TagInputProps {
-  tags: TagBubbleElement[],
-  setTags: React.Dispatch<React.SetStateAction<TagBubbleElement[]>>
+  tags: TagElement[],
+  setTags: React.Dispatch<React.SetStateAction<TagElement[]>>
 }
 // Tag Input Container.
 export const TagInputForTrxnInput = ({ tags, setTags }: TagInputProps) => {

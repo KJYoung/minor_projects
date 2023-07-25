@@ -4,12 +4,6 @@ import client from '../apis/client';
 import { RootState } from '..';
 import { ERRORSTATE } from './core';
 
-export type TagBubbleElement = {
-  id: number,
-  name: string,
-  color: string
-};
-
 export type TagClassElement = {
   id: number,
   name: string,
@@ -17,12 +11,14 @@ export type TagClassElement = {
   tags?: TagElement[]
 };
 
+// without tag_class, TagElement is "TagBubbleElement"
 export type TagElement = {
   id: number,
   name: string,
   color: string,
   tag_class?: TagElement
 };
+
 
 interface TagState {
   elements: TagClassElement[],
