@@ -1,15 +1,15 @@
 // ignore_for_file: unused_local_variable
 
-class Strong {
+mixin Strong {
   // Mixin. without Constructor!!!
   final double magnitude = 1.0;
 }
 
-class Charm {
+mixin Charm {
   final double level = 1.0;
 }
 
-class Intelligence {
+mixin Intelligence {
   final double level = 1.5;
 }
 
