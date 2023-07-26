@@ -10,6 +10,7 @@
 - [개발자 페이지](https://reactnative.dev/) 에서 React Native가 제공하는 Components들을 확인할 수 있다. 예전에는 지금보다 더 많은 components를 제공했었음. 유지관리와 경량화를 위해 필요한 APIs, Components만을 남기는 방향으로 발전한 것. 대신에 Third-party Package(Community Package)를 통해서 기능을 제공하도록 유도함.
 - [Third-Party Packages](https://reactnative.directory/) 에서 Third-Party Packages에 대한 정보를 둘러볼 수 있다.
 - [Expo SDK](https://docs.expo.dev/versions/latest/) 에서 Expo 팀에서 제작한 Packages, APIs를 볼 수 있다. 커뮤니티에 의존하는 것보다는 안정적일 것.
+- Button과 관련된 컴포넌트: TouchableOpacity, TouchableHighlight, TouchableWithoutFeedback, Pressable.
 ### Minor-Minor Projects
 - weatherV : weather application.
 ### Setting & Debugging
