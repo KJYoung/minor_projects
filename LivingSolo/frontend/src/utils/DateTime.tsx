@@ -1,8 +1,12 @@
 export type CalTodoDay = {
     year: number;
     month: number;
-    day: number;
+    day: number | null;
 };
+
+export const MONTH_SHORT_KR = new Intl.DateTimeFormat('kr', { month: 'short' });
+export const MONTH_SHORT_EN = new Intl.DateTimeFormat('en', { month: 'short' });
+export const MONTH_LONG_EN = new Intl.DateTimeFormat('en', { month: 'long' });
 
 export type CalMonth = {
     year: number;
