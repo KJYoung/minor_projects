@@ -1,3 +1,9 @@
+export type CalTodoDay = {
+    year: number;
+    month: number;
+    day: number;
+};
+
 export type CalMonth = {
     year: number;
     month?: number;

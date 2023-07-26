@@ -370,6 +370,7 @@ const TrxnGridDetailFilterReset = styled(TrxnGridDetailHeaderItem)`
 `;
 
 const TrxnGridDetailItemDiv = styled(TrxnGridDetailTemplate)`
+    background-color: var(--ls-gray_lighter2);
     &:nth-child(4) { 
         /* First Grid Item */
         height: 40px;
