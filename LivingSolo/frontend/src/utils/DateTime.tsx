@@ -7,6 +7,25 @@ export type CalTodoDay = {
 export const MONTH_SHORT_KR = new Intl.DateTimeFormat('kr', { month: 'short' });
 export const MONTH_SHORT_EN = new Intl.DateTimeFormat('en', { month: 'short' });
 export const MONTH_LONG_EN = new Intl.DateTimeFormat('en', { month: 'long' });
+export const A_LESS_THAN_B_CalTodoDay = (a: CalTodoDay, b: CalTodoDay) => {
+    if(a.year < b.year){
+        return true;
+    }else if(a.year > b.year){
+        return false;
+    }else{ // a.year === b.year
+        if(a.month < b.month){
+            return true;
+        }else if(a.month > b.month){
+            return false;
+        }else{ // a.month === b.month
+            if(a.day !== null && b.day !== null){
+                return a.day < b.day;
+            }else{
+                return false;
+            }
+        }
+    }
+};
 
 export type CalMonth = {
     year: number;

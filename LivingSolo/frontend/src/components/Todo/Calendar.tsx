@@ -1,11 +1,14 @@
 import React from 'react';
 import { styled } from 'styled-components';
-import { CalTodoDay, MONTH_SHORT_EN, MONTH_SHORT_KR } from '../../utils/DateTime';
+import { A_LESS_THAN_B_CalTodoDay, CalTodoDay, MONTH_SHORT_EN, MONTH_SHORT_KR } from '../../utils/DateTime';
 
 interface CalendarProps {
   curDay: CalTodoDay,
   setCurDay: React.Dispatch<React.SetStateAction<CalTodoDay>>,
 };
+
+const TODAY_ = new Date();
+const TODAY = {year: TODAY_.getFullYear(), month: TODAY_.getMonth(), day: TODAY_.getDate()};
 
 const SUNDAY_FIRST_DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 const getDateByCalTodoDay = (calDay: CalTodoDay) => new Date(calDay.year, calDay.month, calDay.day ?? 1);
@@ -15,7 +18,10 @@ const sundayFirstMapper = (calDay: CalTodoDay) => {
     return day < 7 ? day + 1 : 0; // To Make Sunday First Calendar;
     // return day; // To Make Monday First Calendar;
 };
-const getDayElementLength = (calDay: CalTodoDay) => sundayFirstMapper({...calDay, day: 1}) + getLastDayByCalTodoDay(calDay);
+const getDayElementLength = (calDay: CalTodoDay) => {
+    const bef_plus_valid = sundayFirstMapper({...calDay, day: 1}) + getLastDayByCalTodoDay(calDay) - 1;
+    return Math.ceil(bef_plus_valid / 7) * 7;
+};
 
 export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
   const monthAdjuster = (calMonth: CalTodoDay, delta_month: number) => {
@@ -27,49 +33,111 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
         return { year: calMonth.year, month: calMonth.month + delta_month, day: null };
     }
   };
+  const dayClickListener = (day: number) => {
+    setCurDay({...curDay, day});
+  };
 
   return <CalendarWrapper>
-  <div>
-    <div>
-      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>
-        {'<'}
-      </button>
-      <div>
-        <span>{curDay.year}</span>
-        <span>
-            {MONTH_SHORT_KR.format(getDateByCalTodoDay(curDay))}
-            |{MONTH_SHORT_EN.format(getDateByCalTodoDay(curDay))}
-        </span>
-      </div>
-      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>
-        {'>'}
-      </button>
-    </div>
-    <div>
-      {SUNDAY_FIRST_DAYS.map(d => 
-        <span className={d} key={d}>
-            {d}
-        </span>
-      )}
-      {Array(getDayElementLength(curDay)).fill(null)
-        .map((_, index) => {
-            const dayOfMonth = index - sundayFirstMapper({ ...curDay, day: 1 });
-            if(dayOfMonth < 0){
-                return <div className='beforeFirst' key={index}></div>
-            } else if(dayOfMonth < getLastDayByCalTodoDay(curDay)){
-                return <div className='validDays' key={index}>
-                    <span>{dayOfMonth + 1}</span>
-                </div>
-            } else {
-                return <div className='afterLast' key={index}></div>
-            }            
-        })}
-    </div>
-  </div>
+    <CalendarHeaderWrapper>
+      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>{'<<'}</button>
+      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>{'<'}</button>
+      <CalendarMonthWrapper>
+        <CalendarMonthH1>
+            <span>{curDay.year}</span>
+            <span>{MONTH_SHORT_KR.format(getDateByCalTodoDay(curDay))}</span>
+        </CalendarMonthH1>
+        <CalendarMonthH2>
+            <span>{MONTH_SHORT_EN.format(getDateByCalTodoDay(curDay))}</span>
+        </CalendarMonthH2>
+      </CalendarMonthWrapper>
+      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>{'>'}</button>
+      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>{'>>'}</button>
+    </CalendarHeaderWrapper>
+
+    <CalendarDatePalette>
+      <CalendarDateHeader>
+        {SUNDAY_FIRST_DAYS.map((d, index) => <CalendarDateElement className='validDays' key={index}>
+            <span className={d} key={d}>{d}</span>
+        </CalendarDateElement>)}
+      </CalendarDateHeader>
+      <CalendarDateBody>
+        {Array(getDayElementLength(curDay)).fill(null)
+            .map((_, index) => {
+                const dayOfMonth = index - sundayFirstMapper({ ...curDay, day: 1 }) + 1;
+                if(dayOfMonth < 0){ // Before the First Day.
+                    return <CalendarDateElement className='beforeFirst' key={index}></CalendarDateElement>
+                } else if(dayOfMonth < getLastDayByCalTodoDay(curDay)){ // Valid Days.
+                    const validDay = dayOfMonth + 1;
+                    const isSelected = (validDay === curDay.day) ? 'selected' : '';
+                    const pastDay = A_LESS_THAN_B_CalTodoDay({...curDay, day: validDay}, TODAY) ? 'pastDay' : '';
+                    return <CalendarDateElement className={`validDay ${isSelected} ${pastDay}`} key={index} onClick={() => dayClickListener(validDay)}>
+                        <span>{validDay}</span>
+                    </CalendarDateElement>
+                } else { // After the Last Day.
+                    return <CalendarDateElement className='afterLast' key={index}></CalendarDateElement>
+                }            
+            })}
+      </CalendarDateBody>
+    </CalendarDatePalette>
 </CalendarWrapper>
 };
 
 const CalendarWrapper = styled.div`
   width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr 6fr;
   border: 1px solid red;
+`;
+
+const CalendarHeaderWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 4fr 1fr 1fr;
+  margin-bottom: 20px;
+`;
+const CalendarMonthWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+const CalendarMonthH1 = styled.div`
+`;
+const CalendarMonthH2 = styled.div`
+`;
+
+const CalendarDatePalette = styled.div`
+`; 
+const CalendarDateHeader = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+`;
+const CalendarDateBody = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+`;
+const CalendarDateElement = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid gray;
+  &.beforeFirst {
+    background-color: tomato;
+  };
+  &.afterLast {
+    background-color: teal;
+  };
+  &.validDay {
+    cursor: pointer;
+  };
+  &.pastDay {
+    color: gray;
+  }
+  &.selected {
+    background-color: khaki;
+  }
 `;
