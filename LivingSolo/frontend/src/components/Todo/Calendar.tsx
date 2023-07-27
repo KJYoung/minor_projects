@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled } from 'styled-components';
-import { A_LESS_THAN_B_CalTodoDay, CalTodoDay, MONTH_SHORT_EN, MONTH_SHORT_KR } from '../../utils/DateTime';
+import { A_LESS_THAN_B_CalTodoDay, CalTodoDay, MONTH_LONG_EN, MONTH_SHORT_KR } from '../../utils/DateTime';
 
 interface CalendarProps {
   curDay: CalTodoDay,
@@ -43,11 +43,10 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
       <button onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>{'<'}</button>
       <CalendarMonthWrapper>
         <CalendarMonthH1>
-            <span>{curDay.year}</span>
-            <span>{MONTH_SHORT_KR.format(getDateByCalTodoDay(curDay))}</span>
+            <span>{curDay.year} {MONTH_SHORT_KR.format(getDateByCalTodoDay(curDay))}</span>
         </CalendarMonthH1>
         <CalendarMonthH2>
-            <span>{MONTH_SHORT_EN.format(getDateByCalTodoDay(curDay))}</span>
+            <span>{MONTH_LONG_EN.format(getDateByCalTodoDay(curDay))}</span>
         </CalendarMonthH2>
       </CalendarMonthWrapper>
       <button onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>{'>'}</button>
@@ -56,8 +55,8 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
 
     <CalendarDatePalette>
       <CalendarDateHeader>
-        {SUNDAY_FIRST_DAYS.map((d, index) => <CalendarDateElement className='validDays' key={index}>
-            <span className={d} key={d}>{d}</span>
+        {SUNDAY_FIRST_DAYS.map((d, index) => <CalendarDateElement className={`validDay ${d}`} key={index}>
+            <span>{d}</span>
         </CalendarDateElement>)}
       </CalendarDateHeader>
       <CalendarDateBody>
@@ -70,7 +69,8 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
                     const validDay = dayOfMonth + 1;
                     const isSelected = (validDay === curDay.day) ? 'selected' : '';
                     const pastDay = A_LESS_THAN_B_CalTodoDay({...curDay, day: validDay}, TODAY) ? 'pastDay' : '';
-                    return <CalendarDateElement className={`validDay ${isSelected} ${pastDay}`} key={index} onClick={() => dayClickListener(validDay)}>
+                    const isSatSun = (index % 7 === 0) ? 'SUN' : (index % 7 === 6) ? 'SAT' : '';
+                    return <CalendarDateElement className={`validDay ${isSelected} ${pastDay} ${isSatSun}`} key={index} onClick={() => dayClickListener(validDay)}>
                         <span>{validDay}</span>
                     </CalendarDateElement>
                 } else { // After the Last Day.
@@ -102,8 +102,13 @@ const CalendarMonthWrapper = styled.div`
   align-items: center;
 `;
 const CalendarMonthH1 = styled.div`
+  font-size: 24px;
+  margin-bottom: 5px;
+  color: var(--ls-gray_darker1);
 `;
 const CalendarMonthH2 = styled.div`
+  font-size: 16px;
+  color: var(--ls-gray_google2);
 `;
 
 const CalendarDatePalette = styled.div`
@@ -136,8 +141,20 @@ const CalendarDateElement = styled.div`
   };
   &.pastDay {
     color: gray;
-  }
+  };
   &.selected {
     background-color: khaki;
-  }
+  };
+  &.SUN {
+    color: var(--ls-red);
+  };
+  &.SAT {
+    color: var(--ls-blue);
+  };
+  &.SUN.pastDay {
+    color: var(--ls-red_gray);
+  };
+  &.SAT.pastDay {
+    color: var(--ls-blue_gray);
+  };
 `;
