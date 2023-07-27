@@ -25,7 +25,7 @@ class Todo(AbstractTimeStampedModel):
     """Todo definition"""
 
     name = models.CharField(max_length=24, null=False)
-    color = models.CharField(max_length=7, null=False)
+    done = models.BooleanField(default=False)
     category = models.ForeignKey(
         TodoCatecory, related_name='todo', on_delete=models.SET_NULL, null=True
     )
@@ -33,6 +33,7 @@ class Todo(AbstractTimeStampedModel):
 
     priority = models.IntegerField()
     deadline = models.DateTimeField(blank=True)
+    is_hard_deadline = models.BooleanField(default=False)
     period = models.IntegerField()
 
     def __str__(self):

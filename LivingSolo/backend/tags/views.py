@@ -20,9 +20,7 @@ def general_tag_class(request):
                 tags_list = []
                 for tag in list(trc_elem.tag.all().values()):
                     # {'id': 1, 'created': datetime.datetime(2023, 7, 12, 22, 43, 56, 23036), 'updated': datetime.datetime(2023, 7, 12, 22, 43, 56, 27034), 'name': '클1타1', 'color': '#000000', 'type_class_id': 1}
-                    tags_list.append(
-                        {"id": tag['id'], "name": tag['name'], "color": tag['color']}
-                    )
+                    tags_list.append({"id": tag['id'], "name": tag['name'], "color": tag['color']})
                 result.append(
                     {
                         "id": trc_elem.id,
@@ -47,9 +45,8 @@ def general_tag(request):
         try:
             result = []
             for tr_elem in Tag.objects.all():
-                class_elem = (
-                    tr_elem.tag_class
-                )  # tr_elem.tag_class(FK field) : TagClass Object
+                class_elem = tr_elem.tag_class
+                # tr_elem.tag_class(FK field) : TagClass Object
                 result.append(
                     {
                         "id": tr_elem.id,

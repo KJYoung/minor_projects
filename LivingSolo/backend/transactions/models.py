@@ -30,6 +30,8 @@ CURRENCY_TYPE_CHOICES = (
 
 
 class PayMethod(AbstractTimeStampedModel):
+    """PayMethod definition"""
+
     type = models.CharField(max_length=20, choices=PAY_TYPE_CHOICES, default=PAY_TYPE_CASH)
     name = models.CharField(max_length=30, null=False)
     currency = models.CharField(

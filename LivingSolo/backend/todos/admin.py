@@ -16,4 +16,4 @@ class TodoCategoryAdmin(admin.ModelAdmin):
 class TodoAdmin(admin.ModelAdmin):
     """Todo admin definition"""
 
-    list_display = ("name", "color", "category", "pk", "priority", "deadline")
+    list_display = ("name", "done", "category", "pk", "priority", "deadline")

@@ -1,6 +1,8 @@
 import React from 'react';
 import { styled } from 'styled-components';
 import { A_LESS_THAN_B_CalTodoDay, CalTodoDay, MONTH_LONG_EN, MONTH_SHORT_KR } from '../../utils/DateTime';
+import { useSelector } from 'react-redux';
+import { selectTodo } from '../../store/slices/todo';
 
 interface CalendarProps {
   curDay: CalTodoDay,
@@ -24,6 +26,8 @@ const getDayElementLength = (calDay: CalTodoDay) => {
 };
 
 export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
+  const { elements } = useSelector(selectTodo);
+
   const monthAdjuster = (calMonth: CalTodoDay, delta_month: number) => {
     if(calMonth.month + delta_month < 0){ // 0 ~ 11 Month!
         return { year: calMonth.year - 1, month: 12 + (calMonth.month + delta_month), day: null };
@@ -39,8 +43,8 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
 
   return <CalendarWrapper>
     <CalendarHeaderWrapper>
-      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>{'<<'}</button>
-      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>{'<'}</button>
+      <CalendarMonthNav onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>◀︎◀︎</CalendarMonthNav>
+      <CalendarMonthNav onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>◀︎</CalendarMonthNav>
       <CalendarMonthWrapper>
         <CalendarMonthH1>
             <span>{curDay.year} {MONTH_SHORT_KR.format(getDateByCalTodoDay(curDay))}</span>
@@ -49,8 +53,8 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
             <span>{MONTH_LONG_EN.format(getDateByCalTodoDay(curDay))}</span>
         </CalendarMonthH2>
       </CalendarMonthWrapper>
-      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>{'>'}</button>
-      <button onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>{'>>'}</button>
+      <CalendarMonthNav onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>▶︎</CalendarMonthNav>
+      <CalendarMonthNav onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>▶︎▶︎</CalendarMonthNav>
     </CalendarHeaderWrapper>
 
     <CalendarDatePalette>
@@ -70,7 +74,17 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
                     const isSelected = (validDay === curDay.day) ? 'selected' : '';
                     const pastDay = A_LESS_THAN_B_CalTodoDay({...curDay, day: validDay}, TODAY) ? 'pastDay' : '';
                     const isSatSun = (index % 7 === 0) ? 'SUN' : (index % 7 === 6) ? 'SAT' : '';
+
+                    const doneNum = elements[validDay] ? elements[validDay].filter((todo) => todo.done).length : 0;
+                    const pendNum = elements[validDay] ? elements[validDay].filter((todo) => !todo.done).length : 0;
+                    const totalNum = doneNum + pendNum;
+
                     return <CalendarDateElement className={`validDay ${isSelected} ${pastDay} ${isSatSun}`} key={index} onClick={() => dayClickListener(validDay)}>
+                        <CalendarIndicatorWrapper>
+                            <CalendarIndicator>
+                                <TodoDoneNumIndicator>{doneNum} / {totalNum}</TodoDoneNumIndicator>
+                            </CalendarIndicator>
+                        </CalendarIndicatorWrapper>
                         <span>{validDay}</span>
                     </CalendarDateElement>
                 } else { // After the Last Day.
@@ -83,10 +97,11 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
 };
 
 const CalendarWrapper = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 800px;
+  min-height: 800px;
+  max-height: 800px;
   display: grid;
-  grid-template-rows: 1fr 6fr;
+  grid-template-rows: 1fr 7fr;
   border: 1px solid red;
 `;
 
@@ -94,6 +109,13 @@ const CalendarHeaderWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 4fr 1fr 1fr;
   margin-bottom: 20px;
+  border: 1px dashed blue;
+`;
+const CalendarMonthNav = styled.button`
+  background-color: transparent;
+  border: none;
+  font-size: 26px;
+  color: var(--ls-gray_darker1);
 `;
 const CalendarMonthWrapper = styled.div`
   display: flex;
@@ -112,6 +134,10 @@ const CalendarMonthH2 = styled.div`
 `;
 
 const CalendarDatePalette = styled.div`
+  border: 1px dashed green;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 1fr 18fr;
 `; 
 const CalendarDateHeader = styled.div`
   display: grid;
@@ -121,23 +147,19 @@ const CalendarDateBody = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 `;
+
 const CalendarDateElement = styled.div`
-  width: 100%;
-  height: 100%;
-  padding: 10px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  border: 1px solid gray;
-  &.beforeFirst {
-    background-color: tomato;
-  };
-  &.afterLast {
-    background-color: teal;
+  &.beforeFirst, &.afterLast {
+    background-color: var(--ls-gray_lighter);
   };
   &.validDay {
     cursor: pointer;
+    border: 0.5px solid gray;
   };
   &.pastDay {
     color: gray;
@@ -157,4 +179,31 @@ const CalendarDateElement = styled.div`
   &.SAT.pastDay {
     color: var(--ls-blue_gray);
   };
+`;
+
+const CalendarIndicatorWrapper = styled.div`
+  width: 80px;
+  height: 80px;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid blue;
+`;
+const CalendarIndicator = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: gray;
+
+  margin-bottom: 10px;
+
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const TodoDoneNumIndicator = styled.span`
+  color: black;
 `;

@@ -6,13 +6,14 @@
    python manage.py prepare_tags
    python manage.py createsuperuser
 ```
-- 2023년 6월~7월경.   
-- TodoMain.tsx는 아직 이식 작업 중이라 Git Ignored
+- 2023년 6월~7월경.
 
+#### Latest Screenshot
+![ERD Image 0720](record/Todo_230727-20.51.43.png)
 
 #### Backend ERD Model Structure
 - [ERD Cloud Link](https://www.erdcloud.com/d/FicREAFG6x97kzDmw)
-![ERD Image 0720](record/ERD_230720.png)
+![ERD Image 0720](record/ERD_230727.png)
 #### MEMO
 - [React Native Dev](https://reactnative.dev/)
   
@@ -26,3 +27,4 @@
 - [Django: DateTimeField 필터링](https://stackoverflow.com/questions/1317714/how-can-i-filter-a-date-of-a-datetimefield-in-django)
 - [Django Admin Cookbook](https://books.agiliq.com/projects/django-admin-cookbook/en/latest/introduction.html)
     - Django Model Plural Name Setting
+- [Month Day Length from year, month](https://stackoverflow.com/questions/4938429/how-do-we-determine-the-number-of-days-for-a-given-month-in-python)
