@@ -26,6 +26,9 @@ export type TodoElement = {
 export interface TodoFetchReqType {
   yearMonth: CalMonth, // 년/월 정보.
 };
+export interface TodoToggleDoneReqType {
+  id: number,
+};
 
 interface TodoState {
   elements: (TodoElement[])[], // Sorted, Filtered Data in Frontend
@@ -38,10 +41,17 @@ export const initialState: TodoState = {
 };
 
 export const fetchTodos = createAsyncThunk(
-  "trxn/fetchTodos",
+  "todo/fetchTodos",
   async (payload: TodoFetchReqType) => {
     const reqLink = `/api/todo/?&year=${payload.yearMonth.year}&month=${payload.yearMonth.month! + 1}`;
     const response = await client.get(reqLink);
+    return response.data;
+  }
+);
+export const toggleTodoDone = createAsyncThunk(
+  "todo/toggleTodoDone",
+  async (payload: TodoToggleDoneReqType) => {
+    const response = await client.put(`/api/todo/toggle/${payload.id}/`);
     return response.data;
   }
 );
@@ -55,6 +65,12 @@ export const TodoSlice = createSlice({
     builder.addCase(fetchTodos.fulfilled, (state, action) => {
       state.elements = action.payload.elements;
       state.errorState = ERRORSTATE.NORMAL;
+    });
+    builder.addCase(toggleTodoDone.pending, (state, action) => {
+      state.errorState = ERRORSTATE.DEFAULT;
+    });
+    builder.addCase(toggleTodoDone.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
     });
   },
 });

@@ -6,13 +6,15 @@ import { CalTodoDay } from '../utils/DateTime';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
 import { fetchTodos, selectTodo } from '../store/slices/todo';
+import { DailyTodo } from '../components/Todo/DailyTodo';
+import { ERRORSTATE } from '../store/slices/core';
 
 const TodoMain = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { elements } = useSelector(selectTodo);
 
   const today = new Date();
   const [curDay, setCurDay] = useState<CalTodoDay>({year: today.getFullYear(), month: today.getMonth(), day: today.getDate()});
+  const { errorState } = useSelector(selectTodo);
 
   useEffect(() => {
     dispatch(fetchTodos({
@@ -21,6 +23,12 @@ const TodoMain = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, curDay.year, curDay.month]);
   
+  useEffect(() => {
+    if(errorState === ERRORSTATE.SUCCESS)
+      dispatch(fetchTodos({ yearMonth: curDay }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errorState]);
+
   return (
     <Wrapper>
       <InnerWrapper>
@@ -28,14 +36,7 @@ const TodoMain = () => {
           <Calendar curDay={curDay} setCurDay={setCurDay}/>
         </LeftWrapper>
         <RightWrapper>
-          <div>
-            <span>{curDay.year}.{curDay.month + 1}.{curDay.day}</span>
-            <div>
-              {curDay.day && elements[curDay.day] && elements[curDay.day].map((todo) => {
-                return <div>{todo.done && '✅'}{todo.name} | {todo.deadline}</div>
-              })}
-            </div>
-          </div>  
+          <DailyTodo curDay={curDay} setCurDay={setCurDay}/>
         </RightWrapper>
       </InnerWrapper>
     </Wrapper>
@@ -71,18 +72,15 @@ const LeftWrapper = styled.div`
 
   display: flex;
   flex-direction: column;
-  
-  border: 1px solid black;
 `;
 
 const RightWrapper = styled.div`
   width: 100%;
   height: 100%;
-  padding: 30px 30px 0px 0px;
+  padding: 30px 30px 0px 15px;
 
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
 
   > div {
     width: 100%;

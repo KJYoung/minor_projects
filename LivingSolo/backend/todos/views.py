@@ -50,7 +50,6 @@ def general_todo(request):
                     }
                 )
             todo_cate = todo_elem.category
-            print("only added to...", todo_elem.deadline.day)
             result[todo_elem.deadline.day].append(
                 {
                     "id": todo_elem.id,
@@ -69,22 +68,28 @@ def general_todo(request):
                 }
             )
         return JsonResponse({"elements": result}, safe=False)
-    # else:  ## post
-    #     try:
-    #         req_data = json.loads(request.body.decode())
-    #         element = Transaction(
-    #             memo=req_data["memo"],
-    #             amount=req_data["amount"],
-    #             period=req_data["period"],
-    #             date=req_data["date"],
-    #         )
-    #         element.save()
 
-    #         # Set tags
-    #         tag_bubble_list = req_data["tag"]
-    #         for tag_bubble in tag_bubble_list:
-    #             tag_elem = Tag.objects.get(pk=tag_bubble["id"])
-    #             element.tag.add(tag_elem)
-    #     except (KeyError, JSONDecodeError):
-    #         return HttpResponseBadRequest()
-    #     return JsonResponse({"id": element.id, "memo": element.memo}, status=201)
+
+@require_http_methods(['PUT'])
+def toggle_todo(request, todo_id):
+    """
+    PUT : toggle done
+    """
+    if request.method == 'PUT':
+        try:
+            todo_id = int(todo_id)
+            todo_obj = Todo.objects.get(pk=todo_id)
+
+            todo_obj.done = not (todo_obj.done)
+            todo_obj.save()
+            return JsonResponse({"message": "success"}, status=200)
+        except Todo.DoesNotExist:
+            return HttpResponseNotFound()
+    else:  ## delete
+        try:
+            todo_id = int(todo_id)
+            todo_obj = Todo.objects.get(pk=todo_id)
+            todo_obj.delete()
+            return JsonResponse({"message": "success"}, status=200)
+        except Todo.DoesNotExist:
+            return HttpResponseNotFound()
