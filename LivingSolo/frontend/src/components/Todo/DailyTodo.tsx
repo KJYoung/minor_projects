@@ -34,16 +34,15 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
         </DayFn>
     </DayHeaderRow>
     <DayBodyRow>
-    {curDay.day && elements[curDay.day] && elements[curDay.day]
+        {curDay.day && elements[curDay.day] && elements[curDay.day]
             .map((todo) => {
                 return <TodoElementWrapper>
                     <TodoElementColorCircle color={todo.color} onClick={() => doneToggle(todo.id)}>
                         {todo.done && <FontAwesomeIcon icon={faCheck} fontSize={'13'} color={getContrastYIQ(todo.color)}/>}
                     </TodoElementColorCircle>
-                    {todo.name}
+                    {todo.name} | {todo.is_hard_deadline ? 'HARD' : 'SOFT'} | {todo.priority} | {todo.period} | {todo.category.name} | {todo.tag.map((t) => t.name)}
                 </TodoElementWrapper>
-            })
-        }
+        })}
     </DayBodyRow>
 </DailyTodoWrapper>
 };
@@ -103,10 +102,14 @@ const DayBodyRow = styled.div`
 const TodoElementWrapper = styled.div`
     width: 100%;
     padding: 10px;
-    border: 1px dashed green;
+    border-bottom: 0.5px solid green;
     
     display: flex;
     align-items: center;
+
+    &:last-child {
+        border-bottom: none;
+    };
 `;
 const TodoElementColorCircle = styled.div<{ color: string }>`
     width: 20px;
