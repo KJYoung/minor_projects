@@ -5,9 +5,10 @@ import { Calendar } from '../components/Todo/Calendar';
 import { CalTodoDay } from '../utils/DateTime';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
-import { fetchTodos, selectTodo } from '../store/slices/todo';
+import { fetchTodoCategory, fetchTodos, selectTodo } from '../store/slices/todo';
 import { DailyTodo } from '../components/Todo/DailyTodo';
 import { ERRORSTATE } from '../store/slices/core';
+import { fetchTagsIndex } from '../store/slices/tag';
 
 const TodoMain = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,10 +25,16 @@ const TodoMain = () => {
   }, [dispatch, curDay.year, curDay.month]);
   
   useEffect(() => {
-    if(errorState === ERRORSTATE.SUCCESS)
+    if(errorState === ERRORSTATE.SUCCESS){
       dispatch(fetchTodos({ yearMonth: curDay }));
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [errorState]);
+
+  useEffect(() => {
+    dispatch(fetchTodoCategory());
+    dispatch(fetchTagsIndex());
+  }, [dispatch]);
 
   return (
     <Wrapper>

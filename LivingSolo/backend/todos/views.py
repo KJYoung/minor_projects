@@ -7,7 +7,8 @@ from calendar import monthrange
 
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
-from todos.models import Todo
+from todos.models import Todo, TodoCatecory
+from tags.models import Tag
 
 
 @require_http_methods(['GET', 'POST'])
@@ -68,6 +69,26 @@ def general_todo(request):
                 }
             )
         return JsonResponse({"elements": result}, safe=False)
+    else:  # POST
+        try:
+            req_data = json.loads(request.body.decode())
+            element = Todo(
+                name=req_data["name"],
+                priority=req_data["priority"],
+                period=req_data["period"],
+                deadline=req_data["deadline"],
+            )
+            element.category = TodoCatecory.objects.get(pk=req_data["category"])
+            element.save()
+
+            # Set tags
+            tag_bubble_list = req_data["tag"]
+            for tag_bubble in tag_bubble_list:
+                tag_elem = Tag.objects.get(pk=tag_bubble["id"])
+                element.tag.add(tag_elem)
+        except (KeyError, JSONDecodeError):
+            return HttpResponseBadRequest()
+        return JsonResponse({"id": element.id, "name": element.name}, status=201)
 
 
 @require_http_methods(['PUT'])
@@ -93,3 +114,36 @@ def toggle_todo(request, todo_id):
             return JsonResponse({"message": "success"}, status=200)
         except Todo.DoesNotExist:
             return HttpResponseNotFound()
+
+
+## TodoCategory
+@require_http_methods(['GET'])
+def general_todo_category(request):
+    """
+    GET : get todo category list
+    """
+    if request.method == 'GET':
+        try:
+            result = []
+            for tc_elem in TodoCatecory.objects.all():
+                tags = []
+                for tag_elem in list(tc_elem.tag.all().values()):
+                    tags.append(
+                        {
+                            "id": tag_elem['id'],
+                            "name": tag_elem['name'],
+                            "color": tag_elem['color'],
+                        }
+                    )
+                result.append(
+                    {
+                        "id": tc_elem.id,
+                        "name": tc_elem.name,
+                        "color": tc_elem.color,
+                        "tag": tags,
+                    }
+                )
+            return JsonResponse({"elements": result}, safe=False)
+        except (KeyError, JSONDecodeError, TodoCatecory.DoesNotExist):
+            print("ERROR from general_todo_category")
+            return HttpResponseBadRequest()

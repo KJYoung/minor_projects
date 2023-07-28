@@ -45,7 +45,7 @@ export const SatelliteManualBottom = ({ colors: input_colors, totalNum, doneNum 
         }
         {colors.map((color, idx) => {
           if(idx === 0){
-            return <></>
+            return <div key={idx}></div>
           }else{
             return <SatelliteSmall key={idx} color={color} top={(top_left_array[colors.length-1][idx-1][0])} left={(top_left_array[colors.length-1][idx-1][1])}></SatelliteSmall>
           }

@@ -6,9 +6,10 @@ import { ERRORSTATE } from './core';
 import { TagElement } from './tag';
 import { CalMonth } from '../../utils/DateTime';
 
-type TodoCategory = {
-    name: string,
-    color: string
+export type TodoCategory = {
+  id?: number,
+  name: string,
+  color: string
 };
 export type TodoElement = {
   id: number,
@@ -29,14 +30,25 @@ export interface TodoFetchReqType {
 export interface TodoToggleDoneReqType {
   id: number,
 };
+export interface TodoCreateReqType {
+  name: string,
+  tag: TagElement[],
+  category: string,
+  priority: number,
+  deadline: string,
+  is_hard_deadline: boolean,
+  period: number,
+};
 
 interface TodoState {
-  elements: (TodoElement[])[], // Sorted, Filtered Data in Frontend
+  elements: (TodoElement[])[],
+  categories: TodoCategory[],
   errorState: ERRORSTATE,
 };
 
 export const initialState: TodoState = {
   elements: [],
+  categories: [],
   errorState: ERRORSTATE.DEFAULT,
 };
 
@@ -48,10 +60,24 @@ export const fetchTodos = createAsyncThunk(
     return response.data;
   }
 );
+export const fetchTodoCategory = createAsyncThunk(
+  "todo/fetchTodoCategory",
+  async () => {
+    const response = await client.get(`/api/todo/category/`);
+    return response.data;
+  }
+);
 export const toggleTodoDone = createAsyncThunk(
   "todo/toggleTodoDone",
   async (payload: TodoToggleDoneReqType) => {
     const response = await client.put(`/api/todo/toggle/${payload.id}/`);
+    return response.data;
+  }
+);
+export const createTodo = createAsyncThunk(
+  "todo/createTodo",
+  async (payload: TodoCreateReqType) => {
+    const response = await client.post(`/api/todo/`, payload);
     return response.data;
   }
 );
@@ -66,10 +92,20 @@ export const TodoSlice = createSlice({
       state.elements = action.payload.elements;
       state.errorState = ERRORSTATE.NORMAL;
     });
+    builder.addCase(fetchTodoCategory.fulfilled, (state, action) => {
+      state.categories = action.payload.elements;
+      state.errorState = ERRORSTATE.NORMAL;
+    });
     builder.addCase(toggleTodoDone.pending, (state, action) => {
       state.errorState = ERRORSTATE.DEFAULT;
     });
     builder.addCase(toggleTodoDone.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
+    });
+    builder.addCase(createTodo.pending, (state, action) => {
+      state.errorState = ERRORSTATE.DEFAULT;
+    });
+    builder.addCase(createTodo.fulfilled, (state, action) => {
       state.errorState = ERRORSTATE.SUCCESS;
     });
   },
