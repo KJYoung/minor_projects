@@ -9,7 +9,7 @@
 - 2023년 6월~7월경.
 
 #### Latest Screenshot
-![Todo Image 0728](record/Todo_230728-18.59.38)
+![Todo Image 0728](record/Todo_230728-18.59.38.png)
 
 #### Backend ERD Model Structure
 - [ERD Cloud Link](https://www.erdcloud.com/d/FicREAFG6x97kzDmw)
