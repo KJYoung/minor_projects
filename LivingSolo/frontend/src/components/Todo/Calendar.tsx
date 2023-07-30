@@ -43,7 +43,7 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
     setCurDay({...curDay, day});
   };
 
-  return <CalendarWrapper>
+  return <CalendarWrapper className='noselect'>
     <CalendarHeaderWrapper>
       <CalendarMonthNav className='clickable' onClick={() => setCurDay((cD) => monthAdjuster(cD, -12))}>◀︎◀︎</CalendarMonthNav>
       <CalendarMonthNav className='clickable' onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>◀︎</CalendarMonthNav>

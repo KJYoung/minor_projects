@@ -59,113 +59,169 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
 
   const [addMode, setAddMode] = useState<CondRendAnimState>({ isMounted: false, showElem: false });
   const [categoryMode, setCategoryMode] = useState<boolean>(true);
+  const [categoryPanel, setCategoryPanel] =useState<boolean>(false);
   const [isPeriodic, setIsPeriodic] = useState<boolean>(false);
   const [tags, setTags] = useState<TagElement[]>([]);
   const [curTCateg, setCurTCateg] = useState<TodoCategory | null>(null);
   const [newTodo, setNewTodo] = useState<TodoCreateReqType>({...todoSkeleton, tag: tags});
 
+  const toggleCategoryPanel = () => {
+    if(categoryPanel) { // T => F
+        setCategoryPanel(false);
+        setAddMode(aM => { return { isMounted: false, showElem: false} });
+    }else{ // F => T
+        setCategoryPanel(true);
+        setAddMode(aM => { return { isMounted: false, showElem: false} });
+    };
+  };
+
   return <DailyTodoWrapper>
-    <DayHeaderRow>
+    <DayHeaderRow className='noselect'>
         <DayH1>{curDay.year}년 {curDay.month + 1}월 {curDay.day}{curDay.day && '일'}</DayH1>
         <DayFn>
-            <DayFnBtn onClick={() => toggleCondRendAnimState(addMode, setAddMode)}>
-                <span>투두</span><span>추가</span>
+            <DayFnBtn onClick={() => toggleCategoryPanel()}>
+                {categoryPanel && <span>돌아가기</span>}
+                {!categoryPanel && <><span>카테고리</span><span>관리</span></>}
             </DayFnBtn>
-            <DayFnBtn onClick={() => setCategoryMode((cM) => !cM)}>
-                {categoryMode && <span>중요도</span>}
-                {!categoryMode && <span>카테고리</span>}
-                <span>정렬</span>
-            </DayFnBtn>
-            <DayFnBtn>
-                <span>카테고리</span><span>관리</span>
-            </DayFnBtn>
-            <DayFnBtn onClick={() => setCurDay(TODAY)}>오늘로</DayFnBtn>
+
+            {categoryPanel && <>
+                <DayFnBtn onClick={() => toggleCondRendAnimState(addMode, setAddMode)}>
+                    {addMode.showElem ? <>
+                        <span>추가</span><span>완료</span>
+                    </> : <>
+                        <span>카테고리</span><span>추가</span>
+                    </>}
+                </DayFnBtn>
+            </>}
+
+            {!categoryPanel && <>
+                <DayFnBtn onClick={() => toggleCondRendAnimState(addMode, setAddMode)}>
+                    {addMode.showElem ? <>
+                        <span>추가</span><span>완료</span>
+                    </> : <>
+                        <span>투두</span><span>추가</span>
+                    </>}
+                </DayFnBtn>
+                <DayFnBtn onClick={() => setCategoryMode((cM) => !cM)}>
+                    {categoryMode && <span>중요도</span>}
+                    {!categoryMode && <span>카테고리</span>}
+                    <span>정렬</span>
+                </DayFnBtn>     
+                <DayFnBtn onClick={() => setCurDay(TODAY)}>오늘로</DayFnBtn>
+            </>}
         </DayFn>
     </DayHeaderRow>
     <DayBodyRow>
-        {addMode.showElem && <TodoAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
-            <TodoAdder1stRow>
-                <TodoAdderAddInputs>
-                    <label htmlFor="prioritySelect">중요도</label>
-                    <select id="prioritySelect" value={newTodo.priority} onChange={(e) => { setNewTodo((nT) => { return {...nT, priority: parseInt(e.target.value)}}); }}>
-                        <option disabled value={0}>- 중요도 -</option>
-                        {Array(10).fill(null).map((_, index) => <option value={index + 1} key={index + 1}>{index + 1}</option>)}
-                    </select>
-                </TodoAdderAddInputs>
-                <TodoAdderAddInputs>
-                    <TodoPeriodicLabel>
-                        <label htmlFor="periodInput">주기</label>
-                        <input  type="checkbox" id="isPeriodic" checked={isPeriodic}
-                            onChange={(e) => {
-                                setIsPeriodic((ip) => !ip);
-                                setNewTodo((nT) => { return {...nT, period: 0}});
-                            }} />
-                    </TodoPeriodicLabel>
-                    <input id="periodInput" type="number" disabled={!isPeriodic} value={newTodo.period} onChange={(e) => setNewTodo((nT) => { return {...nT, period: parseInt(e.target.value)}})}/>
-                </TodoAdderAddInputs>
-                <TodoAdderAddInputs>
-                    <label htmlFor="ishardDeadline">엄격성</label>
-                    <input  type="checkbox" id="ishardDeadline" checked={newTodo.is_hard_deadline}
-                        onChange={(e) => setNewTodo((nT) => { return {...nT, is_hard_deadline: !nT.is_hard_deadline}})} />
-                </TodoAdderAddInputs>
-                <select value={newTodo.category} onChange={(e) => {
-                    setNewTodo((nT) => { return {...nT, category: e.target.value}});
-                    const categ = categories.find((c) => c.id === parseInt(e.target.value));
-                    categ && setCurTCateg(categ);
-                }}>
-                    <option disabled value={DEFAULT_OPTION}>
-                        - 투두 카테고리 -
-                    </option>
-                    {categories.map(categ => {
-                        return (
-                            <option value={categ.id} key={categ.id}>
-                            {categ.name}
-                            </option>
-                        );
-                        })}
-                </select>
-                <TagInputForTodo tags={tags} setTags={setTags} closeHandler={() => {}}/>
-            </TodoAdder1stRow>
-            <TodoAdder2ndRow>
-                <TodoElementColorCircle color={curTCateg ? curTCateg.color : 'gray'} ishard={newTodo.is_hard_deadline.toString()}></TodoElementColorCircle>
-                <TodoAdder2nfRowInputWrapper>
-                    <input type="text" placeholder='Todo Name' value={newTodo.name} onChange={(e) => setNewTodo((nT) => { return {...nT, name: e.target.value}})}/>
-                    <button onClick={() => { curDay.day && dispatch(createTodo({
-                        ...newTodo,
-                        tag: tags,
-                        deadline: GetDateTimeFormat2Django(new Date(curDay.year, curDay.month, curDay.day)),
-                    })) }}>Create</button>
-                </TodoAdder2nfRowInputWrapper>
-            </TodoAdder2ndRow>
-        </TodoAdderWrapper>}
-        {/* Important! `addMode.showElem && addMode.isMounted` <== is required for the smooth transition! Not only one of them, But both! */}
-        <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(125px)" } : { transform: "translateY(0px)" }}>
-            {categoryMode && <>
-                {curDay.day && elements[curDay.day] && categoricalSlicer(elements[curDay.day])
-                    .map((categoryElement) => {
-                        return <TodoCategoryWrapper key={categoryElement.id}>
-                            <TodoCategoryHeader>
-                                <TodoElementColorCircle color={categoryElement.color} ishard='false' />
-                                <span>{categoryElement.name}</span>
-                            </TodoCategoryHeader>
-                            <TodoCategoryBody>
-                            {categoryElement.todos // For Read Only Array Sort, We have to copy that.
-                                .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
-                                .map((todo) => {
-                                    return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} />
+        {categoryPanel && <div>
+            {addMode.showElem && <TodoAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
+                <TodoAdder1stRow>
+                    <TagInputForTodo tags={tags} setTags={setTags} closeHandler={() => {}}/>
+                </TodoAdder1stRow>
+                <TodoAdder2ndRow>
+                    <TodoElementColorCircle color={curTCateg ? curTCateg.color : 'gray'} ishard={newTodo.is_hard_deadline.toString()}></TodoElementColorCircle>
+                    <TodoAdder2nfRowInputWrapper>
+                        <input type="text" placeholder='Todo Name' value={newTodo.name} onChange={(e) => setNewTodo((nT) => { return {...nT, name: e.target.value}})}/>
+                        <button onClick={() => { curDay.day && dispatch(createTodo({
+                            ...newTodo,
+                            tag: tags,
+                            deadline: GetDateTimeFormat2Django(new Date(curDay.year, curDay.month, curDay.day)),
+                        })) }}>Create</button>
+                    </TodoAdder2nfRowInputWrapper>
+                </TodoAdder2ndRow>
+            </TodoAdderWrapper>}
+
+            <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(125px)" } : { transform: "translateY(0px)" }}>
+                {categories.map((categ) => <TodoCategoryHeader key={categ.id}>
+                        <TodoElementColorCircle color={categ.color} ishard='false' />
+                        <span>{categ.name}</span>
+                </TodoCategoryHeader>)}
+            </TodoElementList>
+        </div>}
+        {!categoryPanel && <>
+            {addMode.showElem && <TodoAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
+                <TodoAdder1stRow>
+                    <TodoAdderAddInputs>
+                        <label htmlFor="prioritySelect">중요도</label>
+                        <select id="prioritySelect" value={newTodo.priority} onChange={(e) => { setNewTodo((nT) => { return {...nT, priority: parseInt(e.target.value)}}); }}>
+                            <option disabled value={0}>- 중요도 -</option>
+                            {Array(10).fill(null).map((_, index) => <option value={index + 1} key={index + 1}>{index + 1}</option>)}
+                        </select>
+                    </TodoAdderAddInputs>
+                    <TodoAdderAddInputs>
+                        <TodoPeriodicLabel>
+                            <label htmlFor="periodInput">주기</label>
+                            <input  type="checkbox" id="isPeriodic" checked={isPeriodic}
+                                onChange={(e) => {
+                                    setIsPeriodic((ip) => !ip);
+                                    setNewTodo((nT) => { return {...nT, period: 0}});
+                                }} />
+                        </TodoPeriodicLabel>
+                        <input id="periodInput" type="number" disabled={!isPeriodic} value={newTodo.period} onChange={(e) => setNewTodo((nT) => { return {...nT, period: parseInt(e.target.value)}})}/>
+                    </TodoAdderAddInputs>
+                    <TodoAdderAddInputs>
+                        <label htmlFor="ishardDeadline">엄격성</label>
+                        <input  type="checkbox" id="ishardDeadline" checked={newTodo.is_hard_deadline}
+                            onChange={(e) => setNewTodo((nT) => { return {...nT, is_hard_deadline: !nT.is_hard_deadline}})} />
+                    </TodoAdderAddInputs>
+                    <select value={newTodo.category} onChange={(e) => {
+                        setNewTodo((nT) => { return {...nT, category: e.target.value}});
+                        const categ = categories.find((c) => c.id === parseInt(e.target.value));
+                        categ && setCurTCateg(categ);
+                    }}>
+                        <option disabled value={DEFAULT_OPTION}>
+                            - 카테고리 -
+                        </option>
+                        {categories.map(categ => {
+                            return (
+                                <option value={categ.id} key={categ.id}>
+                                {categ.name}
+                                </option>
+                            );
                             })}
-                            </TodoCategoryBody>
-                        </TodoCategoryWrapper>
-                    })}
-            </>}
-            {!categoryMode && <>
-                {curDay.day && elements[curDay.day] && [...elements[curDay.day]] // For Read Only Array Sort, We have to copy that.
-                .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
-                .map((todo) => {
-                    return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} />
-            })}
-            </>}
-        </TodoElementList>
+                    </select>
+                    <TagInputForTodo tags={tags} setTags={setTags} closeHandler={() => {}}/>
+                </TodoAdder1stRow>
+                <TodoAdder2ndRow>
+                    <TodoElementColorCircle color={curTCateg ? curTCateg.color : 'gray'} ishard={newTodo.is_hard_deadline.toString()}></TodoElementColorCircle>
+                    <TodoAdder2nfRowInputWrapper>
+                        <input type="text" placeholder='Todo Name' value={newTodo.name} onChange={(e) => setNewTodo((nT) => { return {...nT, name: e.target.value}})}/>
+                        <button onClick={() => { curDay.day && dispatch(createTodo({
+                            ...newTodo,
+                            tag: tags,
+                            deadline: GetDateTimeFormat2Django(new Date(curDay.year, curDay.month, curDay.day)),
+                        })) }}>Create</button>
+                    </TodoAdder2nfRowInputWrapper>
+                </TodoAdder2ndRow>
+            </TodoAdderWrapper>}
+            {/* Important! `addMode.showElem && addMode.isMounted` <== is required for the smooth transition! Not only one of them, But both! */}
+            <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(125px)" } : { transform: "translateY(0px)" }}>
+                {categoryMode && <>
+                    {curDay.day && elements[curDay.day] && categoricalSlicer(elements[curDay.day])
+                        .map((categoryElement) => {
+                            return <TodoCategoryWrapper key={categoryElement.id}>
+                                <TodoCategoryHeader>
+                                    <TodoElementColorCircle color={categoryElement.color} ishard='false' />
+                                    <span>{categoryElement.name}</span>
+                                </TodoCategoryHeader>
+                                <TodoCategoryBody>
+                                {categoryElement.todos // For Read Only Array Sort, We have to copy that.
+                                    .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
+                                    .map((todo) => {
+                                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} />
+                                })}
+                                </TodoCategoryBody>
+                            </TodoCategoryWrapper>
+                        })}
+                </>}
+                {!categoryMode && <>
+                    {curDay.day && elements[curDay.day] && [...elements[curDay.day]] // For Read Only Array Sort, We have to copy that.
+                    .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
+                    .map((todo) => {
+                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} />
+                })}
+                </>}
+            </TodoElementList>
+        </>}
     </DayBodyRow>
 </DailyTodoWrapper>
 };
