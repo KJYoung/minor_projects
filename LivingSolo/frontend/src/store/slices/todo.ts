@@ -39,6 +39,11 @@ export interface TodoCreateReqType {
   is_hard_deadline: boolean,
   period: number,
 };
+export interface TodoCategoryCreateReqType {
+  name: string,
+  tag: TagElement[],
+  color: string,
+};
 
 interface TodoState {
   elements: (TodoElement[])[],
@@ -81,6 +86,13 @@ export const createTodo = createAsyncThunk(
     return response.data;
   }
 );
+export const createTodoCategory = createAsyncThunk(
+  "todo/createTodoCategory",
+  async (payload: TodoCategoryCreateReqType) => {
+    const response = await client.post(`/api/todo/category/`, payload);
+    return response.data;
+  }
+);
 
 export const TodoSlice = createSlice({
   name: "todo",
@@ -106,6 +118,12 @@ export const TodoSlice = createSlice({
       state.errorState = ERRORSTATE.DEFAULT;
     });
     builder.addCase(createTodo.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
+    });
+    builder.addCase(createTodoCategory.pending, (state, action) => {
+      state.errorState = ERRORSTATE.DEFAULT;
+    });
+    builder.addCase(createTodoCategory.fulfilled, (state, action) => {
       state.errorState = ERRORSTATE.SUCCESS;
     });
   },

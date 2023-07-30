@@ -118,7 +118,7 @@ def toggle_todo(request, todo_id):
 
 
 ## TodoCategory
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'POST'])
 def general_todo_category(request):
     """
     GET : get todo category list
@@ -148,3 +148,20 @@ def general_todo_category(request):
         except (KeyError, JSONDecodeError, TodoCatecory.DoesNotExist):
             print("ERROR from general_todo_category")
             return HttpResponseBadRequest()
+    else:  # POST
+        try:
+            req_data = json.loads(request.body.decode())
+            element = TodoCatecory(
+                name=req_data["name"],
+                color=req_data["color"],
+            )
+            element.save()
+
+            # Set tags
+            tag_bubble_list = req_data["tag"]
+            for tag_bubble in tag_bubble_list:
+                tag_elem = Tag.objects.get(pk=tag_bubble["id"])
+                element.tag.add(tag_elem)
+        except (KeyError, JSONDecodeError):
+            return HttpResponseBadRequest()
+        return JsonResponse({"id": element.id, "name": element.name}, status=201)

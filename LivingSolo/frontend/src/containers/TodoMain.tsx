@@ -27,12 +27,12 @@ const TodoMain = () => {
   useEffect(() => {
     if(errorState === ERRORSTATE.SUCCESS){
       dispatch(fetchTodos({ yearMonth: curDay }));
+      dispatch(fetchTodoCategory());
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [errorState]);
 
   useEffect(() => {
-    dispatch(fetchTodoCategory());
     dispatch(fetchTagsIndex());
   }, [dispatch]);
 

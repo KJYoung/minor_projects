@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import { CalTodoDay, GetDateTimeFormat2Django } from '../../utils/DateTime';
 import { useDispatch, useSelector } from 'react-redux';
-import { TodoCategory, TodoCreateReqType, TodoElement, createTodo, selectTodo } from '../../store/slices/todo';
+import { TodoCategory, TodoCategoryCreateReqType, TodoCreateReqType, TodoElement, createTodo, createTodoCategory, selectTodo } from '../../store/slices/todo';
 import { AppDispatch } from '../../store';
-import { TagInputForTodo } from '../Trxn/TagInput';
+import { TagInputForTodo, TagInputForTodoCategory } from '../Trxn/TagInput';
 import { TagElement } from '../../store/slices/tag';
 import { TodoItem } from './TodoItem';
 import { CondRendAnimState, toggleCondRendAnimState, condRendMounted, condRendUnmounted, onAnimEnd } from '../../utils/Rendering';
+import { getRandomHex } from '../../styles/color';
 
 
 interface DailyTodoProps {
@@ -27,6 +28,10 @@ const todoSkeleton = {
   is_hard_deadline: false,
   period: 0,
 };
+const todoCategorySkeleton = {
+  name: '',
+  color: '#000000',
+}
 
 interface CategoricalTodos {
     id: number,
@@ -62,8 +67,10 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   const [categoryPanel, setCategoryPanel] =useState<boolean>(false);
   const [isPeriodic, setIsPeriodic] = useState<boolean>(false);
   const [tags, setTags] = useState<TagElement[]>([]);
+  const [categTags, setCategTags] = useState<TagElement[]>([]);
   const [curTCateg, setCurTCateg] = useState<TodoCategory | null>(null);
   const [newTodo, setNewTodo] = useState<TodoCreateReqType>({...todoSkeleton, tag: tags});
+  const [newTodoCategory, setNewTodoCategory] = useState<TodoCategoryCreateReqType>({...todoCategorySkeleton, tag: categTags});
 
   const toggleCategoryPanel = () => {
     if(categoryPanel) { // T => F
@@ -114,23 +121,22 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
     <DayBodyRow>
         {categoryPanel && <div>
             {addMode.showElem && <TodoAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
-                <TodoAdder1stRow>
-                    <TagInputForTodo tags={tags} setTags={setTags} closeHandler={() => {}}/>
-                </TodoAdder1stRow>
-                <TodoAdder2ndRow>
-                    <TodoElementColorCircle color={curTCateg ? curTCateg.color : 'gray'} ishard={newTodo.is_hard_deadline.toString()}></TodoElementColorCircle>
-                    <TodoAdder2nfRowInputWrapper>
-                        <input type="text" placeholder='Todo Name' value={newTodo.name} onChange={(e) => setNewTodo((nT) => { return {...nT, name: e.target.value}})}/>
-                        <button onClick={() => { curDay.day && dispatch(createTodo({
-                            ...newTodo,
-                            tag: tags,
-                            deadline: GetDateTimeFormat2Django(new Date(curDay.year, curDay.month, curDay.day)),
-                        })) }}>Create</button>
-                    </TodoAdder2nfRowInputWrapper>
-                </TodoAdder2ndRow>
+                <CategoryAdderRow>
+                    <TodoElementColorCircle color={newTodoCategory.color} ishard={'false'} onClick={() => setNewTodoCategory((nTC) => { return {...nTC, color: getRandomHex()}})}></TodoElementColorCircle>
+                    <TagInputForTodoCategory tags={categTags} setTags={setCategTags} closeHandler={() => {}}/>
+                    <CategoryAdderInputWrapper>
+                        <input type="text" placeholder='Category Name' value={newTodoCategory.name} onChange={(e) => setNewTodoCategory((nTC) => { return {...nTC, name: e.target.value}})}/>
+                        <button onClick={() => { 
+                            dispatch(createTodoCategory(newTodoCategory));
+                            setCategTags([]);
+                            setNewTodoCategory({...todoCategorySkeleton, tag: categTags});
+                        }}>Create</button>
+                    </CategoryAdderInputWrapper>
+                </CategoryAdderRow>
+                
             </TodoAdderWrapper>}
 
-            <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(125px)" } : { transform: "translateY(0px)" }}>
+            <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(55px)" } : { transform: "translateY(0px)" }}>
                 {categories.map((categ) => <TodoCategoryHeader key={categ.id}>
                         <TodoElementColorCircle color={categ.color} ishard='false' />
                         <span>{categ.name}</span>
@@ -183,14 +189,22 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                 </TodoAdder1stRow>
                 <TodoAdder2ndRow>
                     <TodoElementColorCircle color={curTCateg ? curTCateg.color : 'gray'} ishard={newTodo.is_hard_deadline.toString()}></TodoElementColorCircle>
-                    <TodoAdder2nfRowInputWrapper>
+                    <TodoAdder2ndRowInputWrapper>
                         <input type="text" placeholder='Todo Name' value={newTodo.name} onChange={(e) => setNewTodo((nT) => { return {...nT, name: e.target.value}})}/>
-                        <button onClick={() => { curDay.day && dispatch(createTodo({
-                            ...newTodo,
-                            tag: tags,
-                            deadline: GetDateTimeFormat2Django(new Date(curDay.year, curDay.month, curDay.day)),
-                        })) }}>Create</button>
-                    </TodoAdder2nfRowInputWrapper>
+                        <button onClick={() => { 
+                            if(curDay.day){
+                                dispatch(createTodo({
+                                    ...newTodo,
+                                    tag: tags,
+                                    deadline: GetDateTimeFormat2Django(new Date(curDay.year, curDay.month, curDay.day)),
+                                }));
+                                setTags([]);
+                                setNewTodo({...todoSkeleton, tag: tags});
+                            }else{
+                                // ERROR
+                            }
+                        }}>Create</button>
+                    </TodoAdder2ndRowInputWrapper>
                 </TodoAdder2ndRow>
             </TodoAdderWrapper>}
             {/* Important! `addMode.showElem && addMode.isMounted` <== is required for the smooth transition! Not only one of them, But both! */}
@@ -294,6 +308,28 @@ const TodoAdderWrapper = styled.div`
 
     margin-bottom: 10px;
 `;
+const CategoryAdderRow = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 5fr 13fr;
+    align-items: center;
+
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid gray;
+`;
+const CategoryAdderInputWrapper = styled.div`
+    width  : 100%;
+    display: flex;
+    justify-content: space-between;
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-right: 20px;
+    }
+    button {
+        padding: 10px;
+    }
+`;
 const TodoAdder1stRow = styled.div`
     width: 100%;
     display: grid;
@@ -327,7 +363,7 @@ const TodoAdder2ndRow = styled.div`
     display: flex;
     align-items: center;
 `;
-const TodoAdder2nfRowInputWrapper = styled.div`
+const TodoAdder2ndRowInputWrapper = styled.div`
     width  : 100%;
     display: flex;
     justify-content: space-between;
