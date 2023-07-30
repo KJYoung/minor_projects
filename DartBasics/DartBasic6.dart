@@ -13,6 +13,11 @@ String sayHello2(String name, int age, [String? country]) {
   return '';
 }
 
+List<Map<String, String>> ss = [
+  {"term": "wordA", "definition": "AAA"},
+  {"term": "wordB", "definition": "BBB"}
+];
+
 /* Long Comment */
 void main() {
   print("Hello, World!"); // Comment.

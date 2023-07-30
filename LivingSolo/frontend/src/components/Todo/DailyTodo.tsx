@@ -141,7 +141,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
             {categoryMode && <>
                 {curDay.day && elements[curDay.day] && categoricalSlicer(elements[curDay.day])
                     .map((categoryElement) => {
-                        return <TodoCategoryWrapper>
+                        return <TodoCategoryWrapper key={categoryElement.id}>
                             <TodoCategoryHeader>
                                 <TodoElementColorCircle color={categoryElement.color} ishard='false' />
                                 <span>{categoryElement.name}</span>
@@ -150,7 +150,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                             {categoryElement.todos // For Read Only Array Sort, We have to copy that.
                                 .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
                                 .map((todo) => {
-                                    return <TodoItem todo={todo} curDay={curDay} setCurDay={setCurDay} />
+                                    return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} />
                             })}
                             </TodoCategoryBody>
                         </TodoCategoryWrapper>
@@ -160,7 +160,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                 {curDay.day && elements[curDay.day] && [...elements[curDay.day]] // For Read Only Array Sort, We have to copy that.
                 .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
                 .map((todo) => {
-                    return <TodoItem todo={todo} curDay={curDay} setCurDay={setCurDay} />
+                    return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} />
             })}
             </>}
         </TodoElementList>
