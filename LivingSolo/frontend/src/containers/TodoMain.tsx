@@ -33,6 +33,7 @@ const TodoMain = () => {
   }, [errorState]);
 
   useEffect(() => {
+    dispatch(fetchTodoCategory());
     dispatch(fetchTagsIndex());
   }, [dispatch]);
 
