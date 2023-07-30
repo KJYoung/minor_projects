@@ -6,10 +6,10 @@
    python manage.py prepare_tags
    python manage.py createsuperuser
 ```
-- 2023년 6월~7월경.
+- 2023년 6월~8월경.
 
 #### Latest Screenshot
-![Todo Image 0728](record/Todo_230728-18.59.38.png)
+![Todo Image 0730](record/Todo_230730-15.29.32.png)
 
 #### Backend ERD Model Structure
 - [ERD Cloud Link](https://www.erdcloud.com/d/FicREAFG6x97kzDmw)

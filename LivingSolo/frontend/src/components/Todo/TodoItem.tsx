@@ -33,11 +33,8 @@ export const TodoItem = ({ curDay, setCurDay, todo }: TodoElementProps) => {
         </TodoElementColorCircle>
         <div>
             <span>
-                {todo.name}
+                {todo.name}{`  <${todo.priority}>`}
             </span>
-        </div>
-        <div>
-            Priority {todo.priority} 
         </div>
         <div>
             {todo.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
@@ -54,7 +51,7 @@ const TodoElementWrapper = styled.div`
     border-bottom: 0.5px solid green;
     
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 12fr 5fr 4fr;
     align-items: center;
 
     &:last-child {

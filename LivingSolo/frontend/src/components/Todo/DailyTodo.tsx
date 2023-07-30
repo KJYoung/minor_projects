@@ -57,7 +57,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   const { elements, categories } = useSelector(selectTodo);
 
   const [addMode, setAddMode] = useState<boolean>(false);
-  const [categoryMode, setCategoryMode] = useState<boolean>(false);
+  const [categoryMode, setCategoryMode] = useState<boolean>(true);
   const [isPeriodic, setIsPeriodic] = useState<boolean>(false);
   const [tags, setTags] = useState<TagElement[]>([]);
   const [curTCateg, setCurTCateg] = useState<TodoCategory | null>(null);
@@ -71,8 +71,8 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                 <span>투두</span><span>추가</span>
             </DayFnBtn>
             <DayFnBtn onClick={() => setCategoryMode((cM) => !cM)}>
-                {categoryMode && <span>카테고리</span>}
-                {!categoryMode && <span>중요도</span>}
+                {categoryMode && <span>중요도</span>}
+                {!categoryMode && <span>카테고리</span>}
                 <span>정렬</span>
             </DayFnBtn>
             <DayFnBtn>
@@ -139,33 +139,30 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
         </TodoAdderWrapper>}
         <TodoElementList>
             {categoryMode && <>
-                카테고리 기준 정렬
                 {curDay.day && elements[curDay.day] && categoricalSlicer(elements[curDay.day])
                     .map((categoryElement) => {
                         return <TodoCategoryWrapper>
-                            <div>
+                            <TodoCategoryHeader>
                                 <TodoElementColorCircle color={categoryElement.color} ishard='false' />
-                                {categoryElement.name}
-                            </div>
-                            <div>
+                                <span>{categoryElement.name}</span>
+                            </TodoCategoryHeader>
+                            <TodoCategoryBody>
                             {categoryElement.todos // For Read Only Array Sort, We have to copy that.
                                 .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
                                 .map((todo) => {
                                     return <TodoItem todo={todo} curDay={curDay} setCurDay={setCurDay} />
                             })}
-                            </div>
+                            </TodoCategoryBody>
                         </TodoCategoryWrapper>
                     })}
             </>}
             {!categoryMode && <>
-                중요도 기준 정렬
                 {curDay.day && elements[curDay.day] && [...elements[curDay.day]] // For Read Only Array Sort, We have to copy that.
                 .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
                 .map((todo) => {
                     return <TodoItem todo={todo} curDay={curDay} setCurDay={setCurDay} />
             })}
             </>}
-            알림? 날짜 바꾸기? 복사하기? 수정하기? 삭제하기? 카테고리 옮기기? 미완료 미루기/복사/삭제하기? 전체 복사/삭제하기? 
         </TodoElementList>
     </DayBodyRow>
 </DailyTodoWrapper>
@@ -190,7 +187,6 @@ const DayHeaderRow = styled.div`
 `;
 const DayH1 = styled.span`
   width: 500px;
-  border-right: 1px solid red;
   font-size: 40px;
   color: var(--ls-gray);
 `;
@@ -264,8 +260,9 @@ const TodoPeriodicLabel = styled.div`
 `;
 const TodoAdder2ndRow = styled.div`
     width: 100%;
-    padding: 10px;
-    border-bottom: 1.5px solid green;
+    padding: 10px 10px 15px 10px;
+    border-bottom: 1.5px solid gray;
+    margin-bottom: 10px;
     
     display: flex;
     align-items: center;
@@ -290,6 +287,26 @@ const TodoElementList = styled.div`
 
 const TodoCategoryWrapper = styled.div`
     width  : 100%;
+`;
+const TodoCategoryHeader = styled.div`
+    width  : 100%;
+
+    display: flex;
+    align-items: center;
+    
+    padding: 4px;
+    margin-top: 10px;
+    border-bottom: 1px solid var(--ls-gray);
+
+    > span {
+        font-size: 24px;
+        font-weight: 300;
+        /* color: var(--ls-gray); */
+    }
+`;
+const TodoCategoryBody = styled.div`
+    width  : 100%;
+    margin-left: 10px;
 `;
 
 const TodoElementColorCircle = styled.div<{ color: string, ishard: string }>`
