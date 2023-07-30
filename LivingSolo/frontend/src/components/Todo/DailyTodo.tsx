@@ -138,7 +138,8 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                 </TodoAdder2nfRowInputWrapper>
             </TodoAdder2ndRow>
         </TodoAdderWrapper>}
-        <TodoElementList>
+        {/* Important! `addMode.showElem && addMode.isMounted` <== is required for the smooth transition! Not only one of them, But both! */}
+        <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(125px)" } : { transform: "translateY(0px)" }}>
             {categoryMode && <>
                 {curDay.day && elements[curDay.day] && categoricalSlicer(elements[curDay.day])
                     .map((categoryElement) => {
@@ -226,6 +227,8 @@ const DayFnBtn = styled.div`
 const DayBodyRow = styled.div`
     width: 100%;
     margin-top: 20px;
+
+    position: relative;
 `;
 
 const TodoAdderWrapper = styled.div`
@@ -284,6 +287,12 @@ const TodoAdder2nfRowInputWrapper = styled.div`
 `;
 const TodoElementList = styled.div`
     width: 100%;
+    position: absolute;
+    top: 0px;
+
+    transition-property: all;
+    transition-duration: 250ms;
+    transition-delay: 0s;
 `;
 
 const TodoCategoryWrapper = styled.div`
