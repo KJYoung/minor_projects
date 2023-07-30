@@ -59,6 +59,7 @@ def general_todo(request):
                     "done": todo_elem.done,
                     "color": todo_cate.color,
                     "category": {
+                        "id": todo_cate.id,
                         "name": todo_cate.name,
                         "color": todo_cate.color,
                     },

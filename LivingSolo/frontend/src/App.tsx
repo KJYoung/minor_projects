@@ -12,7 +12,7 @@ import { styled } from 'styled-components';
 import NavDrawer from './components/general/NavDrawer';
 import TodoMain from './containers/TodoMain';
 
-export enum TabState { DEPRECATED, Home, Transaction, Calendar, Stockpile };
+export enum TabState { DEPRECATED, Home, Transaction, Calendar, Stockpile, Community };
 const tab2Str = (e: TabState) => {
   switch (e) {
     case TabState.Home:
@@ -23,6 +23,8 @@ const tab2Str = (e: TabState) => {
       return 'Calendar(ToDo)';
     case TabState.Stockpile:
       return 'Stockpile';
+    case TabState.Community:
+      return 'Community';
     default:
       return 'Unknown';
   }
@@ -67,6 +69,7 @@ function App() {
         {tabState === TabState.Transaction && <TrxnMain />}
         {tabState === TabState.Calendar && <TodoMain />}
         {tabState === TabState.Stockpile && <span>Stockpile</span>}
+        {tabState === TabState.Community && <span>Community</span>}
         
         <Drawer open={isDrawerOpen}>
           <NavDrawer toggleDrawer={toggleDrawer}/>

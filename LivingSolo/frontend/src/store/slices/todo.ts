@@ -7,7 +7,7 @@ import { TagElement } from './tag';
 import { CalMonth } from '../../utils/DateTime';
 
 export type TodoCategory = {
-  id?: number,
+  id: number,
   name: string,
   color: string
 };

@@ -16,6 +16,7 @@ const NavDrawer = ({ toggleDrawer }: {toggleDrawer : any}) => (
       <Button onClick={toggleDrawer(false, TabState.Transaction)}>Transaction</Button>
       <Button onClick={toggleDrawer(false, TabState.Calendar)}>Calendar</Button>
       <Button onClick={toggleDrawer(false, TabState.Stockpile)}>Stockpile</Button>
+      <Button onClick={toggleDrawer(false, TabState.Community)}>Community</Button>
     </NavDrawerDiv>
   );
 

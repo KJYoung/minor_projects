@@ -45,8 +45,8 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
 
   return <CalendarWrapper>
     <CalendarHeaderWrapper>
-      <CalendarMonthNav onClick={() => setCurDay((cD) => monthAdjuster(cD, -12))}>◀︎◀︎</CalendarMonthNav>
-      <CalendarMonthNav onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>◀︎</CalendarMonthNav>
+      <CalendarMonthNav className='clickable' onClick={() => setCurDay((cD) => monthAdjuster(cD, -12))}>◀︎◀︎</CalendarMonthNav>
+      <CalendarMonthNav className='clickable' onClick={() => setCurDay((cD) => monthAdjuster(cD, -1))}>◀︎</CalendarMonthNav>
       <CalendarMonthWrapper>
         <CalendarMonthH1>
             <span>{curDay.year}년 {MONTH_SHORT_KR.format(getDateByCalTodoDay(curDay))}</span>
@@ -55,8 +55,8 @@ export const Calendar = ({ curDay, setCurDay }: CalendarProps) => {
             <span>{MONTH_LONG_EN.format(getDateByCalTodoDay(curDay))}</span>
         </CalendarMonthH2>
       </CalendarMonthWrapper>
-      <CalendarMonthNav onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>▶︎</CalendarMonthNav>
-      <CalendarMonthNav onClick={() => setCurDay((cD) => monthAdjuster(cD, +12))}>▶︎▶︎</CalendarMonthNav>
+      <CalendarMonthNav className='clickable' onClick={() => setCurDay((cD) => monthAdjuster(cD, +1))}>▶︎</CalendarMonthNav>
+      <CalendarMonthNav className='clickable' onClick={() => setCurDay((cD) => monthAdjuster(cD, +12))}>▶︎▶︎</CalendarMonthNav>
     </CalendarHeaderWrapper>
 
     <CalendarDatePalette>

@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import { CalTodoDay, GetDateTimeFormat2Django } from '../../utils/DateTime';
 import { useDispatch, useSelector } from 'react-redux';
-import { TodoCategory, TodoCreateReqType, createTodo, selectTodo, toggleTodoDone } from '../../store/slices/todo';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { TodoCategory, TodoCreateReqType, TodoElement, createTodo, selectTodo } from '../../store/slices/todo';
 import { AppDispatch } from '../../store';
-import { getContrastYIQ } from '../../styles/color';
 import { TagInputForTodo } from '../Trxn/TagInput';
 import { TagElement } from '../../store/slices/tag';
-import { TagBubbleCompact } from '../general/TagBubble';
+import { TodoItem } from './TodoItem';
 
 
 interface DailyTodoProps {
@@ -30,31 +27,56 @@ const todoSkeleton = {
   period: 0,
 };
 
+interface CategoricalTodos {
+    id: number,
+    name: string,
+    color: string,
+    todos: TodoElement[]
+};
+const categoricalSlicer = (todoItems : TodoElement[]) : CategoricalTodos[] => {
+    const result: CategoricalTodos[] = [];
+
+    const alreadyCategory = (id: number, already: CategoricalTodos[]) => already.findIndex((res) => res.id === id);
+
+    todoItems.forEach((todo) => {
+        const categoryIndex = alreadyCategory(todo.category.id, result);
+        if(categoryIndex !== -1){
+            result[categoryIndex].todos.push(todo);
+        }else{
+            result.push({
+                ...todo.category,
+                todos: [todo]
+            });
+        };
+    });
+    return result;
+}
+
 export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { elements, categories } = useSelector(selectTodo);
 
   const [addMode, setAddMode] = useState<boolean>(false);
+  const [categoryMode, setCategoryMode] = useState<boolean>(false);
   const [isPeriodic, setIsPeriodic] = useState<boolean>(false);
   const [tags, setTags] = useState<TagElement[]>([]);
   const [curTCateg, setCurTCateg] = useState<TodoCategory | null>(null);
   const [newTodo, setNewTodo] = useState<TodoCreateReqType>({...todoSkeleton, tag: tags});
-  
-  const doneToggle = (id: number) => {
-    dispatch(toggleTodoDone({ id }));
-  };
 
   return <DailyTodoWrapper>
     <DayHeaderRow>
         <DayH1>{curDay.year}년 {curDay.month + 1}월 {curDay.day}{curDay.day && '일'}</DayH1>
         <DayFn>
             <DayFnBtn onClick={() => setAddMode((aM) => !aM)}>
-                <span>투두</span>
-                <span>추가</span>
+                <span>투두</span><span>추가</span>
+            </DayFnBtn>
+            <DayFnBtn onClick={() => setCategoryMode((cM) => !cM)}>
+                {categoryMode && <span>카테고리</span>}
+                {!categoryMode && <span>중요도</span>}
+                <span>정렬</span>
             </DayFnBtn>
             <DayFnBtn>
-                <span>카테고리</span>
-                <span>관리</span>
+                <span>카테고리</span><span>관리</span>
             </DayFnBtn>
             <DayFnBtn onClick={() => setCurDay(TODAY)}>오늘로</DayFnBtn>
         </DayFn>
@@ -116,16 +138,34 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
             </TodoAdder2ndRow>
         </TodoAdderWrapper>}
         <TodoElementList>
-            {curDay.day && elements[curDay.day] && elements[curDay.day]
+            {categoryMode && <>
+                카테고리 기준 정렬
+                {curDay.day && elements[curDay.day] && categoricalSlicer(elements[curDay.day])
+                    .map((categoryElement) => {
+                        return <TodoCategoryWrapper>
+                            <div>
+                                <TodoElementColorCircle color={categoryElement.color} ishard='false' />
+                                {categoryElement.name}
+                            </div>
+                            <div>
+                            {categoryElement.todos // For Read Only Array Sort, We have to copy that.
+                                .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
+                                .map((todo) => {
+                                    return <TodoItem todo={todo} curDay={curDay} setCurDay={setCurDay} />
+                            })}
+                            </div>
+                        </TodoCategoryWrapper>
+                    })}
+            </>}
+            {!categoryMode && <>
+                중요도 기준 정렬
+                {curDay.day && elements[curDay.day] && [...elements[curDay.day]] // For Read Only Array Sort, We have to copy that.
+                .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
                 .map((todo) => {
-                    return <TodoElementWrapper key={todo.id}>
-                        <TodoElementColorCircle color={todo.color} onClick={() => doneToggle(todo.id)} title={todo.category.name} ishard={todo.is_hard_deadline.toString()}>
-                            {todo.done && <FontAwesomeIcon icon={faCheck} fontSize={'13'} color={getContrastYIQ(todo.color)}/>}
-                        </TodoElementColorCircle>
-                        {todo.name} | {todo.priority} | {todo.period} | {todo.category.name} | 
-                            {todo.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
-                    </TodoElementWrapper>
+                    return <TodoItem todo={todo} curDay={curDay} setCurDay={setCurDay} />
             })}
+            </>}
+            알림? 날짜 바꾸기? 복사하기? 수정하기? 삭제하기? 카테고리 옮기기? 미완료 미루기/복사/삭제하기? 전체 복사/삭제하기? 
         </TodoElementList>
     </DayBodyRow>
 </DailyTodoWrapper>
@@ -149,12 +189,13 @@ const DayHeaderRow = styled.div`
   display: flex;
 `;
 const DayH1 = styled.span`
-  width: 100%;
+  width: 500px;
+  border-right: 1px solid red;
   font-size: 40px;
   color: var(--ls-gray);
 `;
 const DayFn = styled.div`
-  width: 300px;
+  width: 100%;
   height: 100%;
   align-self: flex-end;
   display: flex;
@@ -247,18 +288,10 @@ const TodoElementList = styled.div`
     width: 100%;
 `;
 
-const TodoElementWrapper = styled.div`
-    width: 100%;
-    padding: 10px;
-    border-bottom: 0.5px solid green;
-    
-    display: flex;
-    align-items: center;
-
-    &:last-child {
-        border-bottom: none;
-    };
+const TodoCategoryWrapper = styled.div`
+    width  : 100%;
 `;
+
 const TodoElementColorCircle = styled.div<{ color: string, ishard: string }>`
     width: 20px;
     height: 20px;

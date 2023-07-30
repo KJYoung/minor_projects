@@ -6,3 +6,9 @@
     -ms-user-select: none;
     user-select: none;
 }
+.clickable {
+    cursor: pointer;
+}
+.clickable:hover {
+    color: var(--ls-blue);
+}
