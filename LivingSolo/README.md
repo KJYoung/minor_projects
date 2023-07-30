@@ -23,6 +23,9 @@
 - [How to disable text selection(drag)](https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting)
 - [Month Name from Date](https://stackoverflow.com/questions/1643320/get-month-name-from-date)
 - [Month Day Length from Date](https://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript)
+- [Conditional Rendering Animation!](https://stackoverflow.com/questions/61428958/react-js-how-to-animate-conditionally-rendered-components)
+
+
 ##### Backend
 - [Django: DateTimeField 필터링](https://stackoverflow.com/questions/1317714/how-can-i-filter-a-date-of-a-datetimefield-in-django)
 - [Django Admin Cookbook](https://books.agiliq.com/projects/django-admin-cookbook/en/latest/introduction.html)

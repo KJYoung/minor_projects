@@ -1,3 +1,4 @@
+/* 텍스트 선택 방지 */
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -6,9 +7,32 @@
     -ms-user-select: none;
     user-select: none;
 }
+/* Clickable이고, Hover일 때 푸른색이 되도록 */
 .clickable {
     cursor: pointer;
 }
 .clickable:hover {
     color: var(--ls-blue);
 }
+/* Conditional Rendering Animation */
+@keyframes inAnimation {
+0% {
+    opacity: 0;
+    visibility: hidden;
+}
+100% {
+    opacity: 1;
+    visibility: visible;
+}
+}
+
+@keyframes outAnimation {
+0% {
+    opacity: 1;
+}
+100% {
+    opacity: 0;
+    visibility: hidden;
+}
+}
+  

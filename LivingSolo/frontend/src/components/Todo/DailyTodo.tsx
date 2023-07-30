@@ -7,6 +7,7 @@ import { AppDispatch } from '../../store';
 import { TagInputForTodo } from '../Trxn/TagInput';
 import { TagElement } from '../../store/slices/tag';
 import { TodoItem } from './TodoItem';
+import { CondRendAnimState, toggleCondRendAnimState, condRendMounted, condRendUnmounted, onAnimEnd } from '../../utils/Rendering';
 
 
 interface DailyTodoProps {
@@ -50,13 +51,13 @@ const categoricalSlicer = (todoItems : TodoElement[]) : CategoricalTodos[] => {
         };
     });
     return result;
-}
+};
 
 export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { elements, categories } = useSelector(selectTodo);
 
-  const [addMode, setAddMode] = useState<boolean>(false);
+  const [addMode, setAddMode] = useState<CondRendAnimState>({ isMounted: false, showElem: false });
   const [categoryMode, setCategoryMode] = useState<boolean>(true);
   const [isPeriodic, setIsPeriodic] = useState<boolean>(false);
   const [tags, setTags] = useState<TagElement[]>([]);
@@ -67,7 +68,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
     <DayHeaderRow>
         <DayH1>{curDay.year}년 {curDay.month + 1}월 {curDay.day}{curDay.day && '일'}</DayH1>
         <DayFn>
-            <DayFnBtn onClick={() => setAddMode((aM) => !aM)}>
+            <DayFnBtn onClick={() => toggleCondRendAnimState(addMode, setAddMode)}>
                 <span>투두</span><span>추가</span>
             </DayFnBtn>
             <DayFnBtn onClick={() => setCategoryMode((cM) => !cM)}>
@@ -82,7 +83,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
         </DayFn>
     </DayHeaderRow>
     <DayBodyRow>
-        {addMode && <TodoAdderWrapper>
+        {addMode.showElem && <TodoAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
             <TodoAdder1stRow>
                 <TodoAdderAddInputs>
                     <label htmlFor="prioritySelect">중요도</label>
