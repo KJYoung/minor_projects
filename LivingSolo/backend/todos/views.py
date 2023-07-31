@@ -112,16 +112,13 @@ def duplicate_todo(request):
         req_data = json.loads(request.body.decode())
 
         prev_todo = Todo.objects.get(pk=req_data["todo_id"])
-        tags = []
-        for tag_elem in list(prev_todo.tag.all().values()):
-            tags.append(Tag.objects.get(pk=tag_elem['id']))
+        prev_tag = prev_todo.tag.all()
         prev_todo.pk = None
         prev_todo.done = False  # Maybe Duplicated Jobs to be Done Again.
+        prev_todo.tag.set(prev_tag)
         prev_todo.save()
 
-        for tag in tags:
-            prev_todo.tag.add(tag)
-
+        return JsonResponse({"message": "success"}, status=200)
     except (KeyError, JSONDecodeError):
         return HttpResponseBadRequest()
     return JsonResponse({"id": prev_todo.id, "name": prev_todo.name}, status=201)
