@@ -32,7 +32,7 @@ const top_left_array = [
 
 
 export const SatelliteManualBottom = ({ colors: input_colors, totalNum, doneNum }: SatelliteProps) => { 
-  const colors = (!input_colors || input_colors.length === 0) ? ['var(--ls-gray_lighter2)'] : (input_colors.length > 8 ? input_colors.splice(8) : input_colors);
+  const colors = (!input_colors || input_colors.length === 0) ? ['var(--ls-gray_lighter2)'] : (input_colors.length > 8 ? input_colors.slice(0, 8) : input_colors);
   return <SatelliteDiv>
       <SatelliteBig key={0} color={colors[0]}>
         {totalNum !== 0 && doneNum !== totalNum && <TodoNumIndicator>
