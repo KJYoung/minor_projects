@@ -102,8 +102,6 @@ def detail_transaction(request, trxn_id):
             return JsonResponse({"message": "success"}, status=200)
         except Transaction.DoesNotExist:
             return HttpResponseNotFound()
-        except Exception:
-            return HttpResponseBadRequest()
     else:  ## delete
         try:
             trxn_id = int(trxn_id)
@@ -113,5 +111,3 @@ def detail_transaction(request, trxn_id):
             return JsonResponse({"message": "success"}, status=200)
         except Transaction.DoesNotExist:
             return HttpResponseNotFound()
-        except Exception:
-            return HttpResponseBadRequest()

@@ -40,6 +40,18 @@ export interface TodoCreateReqType {
   is_hard_deadline: boolean,
   period: number,
 };
+
+export interface TodoEditReqType {
+  id: number,
+  name: string,
+  tag: TagElement[],
+  category: number,
+  priority: number,
+  deadline: string,
+  is_hard_deadline: boolean,
+  period: number,
+};
+
 export interface TodoCategoryCreateReqType {
   name: string,
   tag: TagElement[],
@@ -92,6 +104,12 @@ export const duplicateTodo = createAsyncThunk(
   async (todoID: String | Number, { dispatch }) => {
     const response = await client.post(`/api/todo/duplicate/`, { todo_id: todoID });
     return response.data;
+  }
+);
+export const editTodo = createAsyncThunk(
+  "todo/editTodo",
+  async (payload: TodoEditReqType) => {
+    await client.put(`/api/todo/${payload.id}/`, payload);
   }
 );
 export const deleteTodo = createAsyncThunk(
@@ -150,6 +168,12 @@ export const TodoSlice = createSlice({
       state.errorState = ERRORSTATE.DEFAULT;
     });
     builder.addCase(duplicateTodo.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
+    });
+    builder.addCase(editTodo.pending, (state, action) => {
+      state.errorState = ERRORSTATE.DEFAULT;
+    });
+    builder.addCase(editTodo.fulfilled, (state, action) => {
       state.errorState = ERRORSTATE.SUCCESS;
     });
     builder.addCase(deleteTodo.pending, (state, action) => {

@@ -139,7 +139,7 @@ def detail_todo(request, todo_id):
             todo_id = int(todo_id)
             todo_obj = Todo.objects.get(pk=todo_id)
 
-            todo_obj.name = data["name"]
+            todo_obj.deadline = data["deadline"]
             todo_obj.save()
             return JsonResponse({"message": "success"}, status=200)
         except Todo.DoesNotExist:

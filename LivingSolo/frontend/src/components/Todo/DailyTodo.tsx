@@ -66,7 +66,9 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   // Todo List
   const [addMode, setAddMode] = useState<CondRendAnimState>({ isMounted: false, showElem: false });
   const [fnMode, setFnMode] = useState<boolean>(false);
+  const [editID, setEditID] = useState<number>(-1);
   const [categorySort, setCategorySort] = useState<boolean>(true);
+
   // Category List
   const [categoryPanel, setCategoryPanel] = useState<boolean>(false);
   const [categoryDelete, setCategoryDelete] = useState<boolean>(false);
@@ -260,7 +262,8 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                                 {categoryElement.todos // For Read Only Array Sort, We have to copy that.
                                     .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
                                     .map((todo) => {
-                                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} fnMode={fnMode}/>
+                                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay}
+                                                        fnMode={fnMode} editID={editID} setEditID={setEditID}/>
                                 })}
                                 </TodoCategoryBody>
                             </TodoCategoryWrapper>
@@ -270,7 +273,8 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                     {curDay.day && elements[curDay.day] && [...elements[curDay.day]] // For Read Only Array Sort, We have to copy that.
                     .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
                     .map((todo) => {
-                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} fnMode={fnMode}/>
+                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay}
+                                        fnMode={fnMode}  editID={editID} setEditID={setEditID}/>
                 })}
                 </>}
             </TodoElementList>
