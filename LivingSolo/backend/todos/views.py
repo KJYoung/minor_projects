@@ -106,14 +106,20 @@ def general_todo(request):
 @require_http_methods(['POST'])
 def duplicate_todo(request):
     """
-    POST : create todo element
+    POST : duplicate todo element
     """
     try:
         req_data = json.loads(request.body.decode())
 
         prev_todo = Todo.objects.get(pk=req_data["todo_id"])
+        tags = []
+        for tag_elem in list(prev_todo.tag.all().values()):
+            tags.append(Tag.objects.get(pk=tag_elem['id']))
         prev_todo.pk = None
         prev_todo.save()
+
+        for tag in tags:
+            prev_todo.tag.add(tag)
 
     except (KeyError, JSONDecodeError):
         return HttpResponseBadRequest()
