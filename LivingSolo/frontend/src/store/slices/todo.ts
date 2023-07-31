@@ -9,7 +9,8 @@ import { CalMonth } from '../../utils/DateTime';
 export type TodoCategory = {
   id: number,
   name: string,
-  color: string
+  color: string,
+  tag: TagElement[],
 };
 export type TodoElement = {
   id: number,
@@ -93,6 +94,12 @@ export const createTodoCategory = createAsyncThunk(
     return response.data;
   }
 );
+export const deleteTodoCategory = createAsyncThunk(
+  "todo/deleteTodoCategory",
+  async (todoCategoryID: String | Number, { dispatch }) => {
+    await client.delete(`/api/todo/category/${todoCategoryID}/`);
+  }
+);
 
 export const TodoSlice = createSlice({
   name: "todo",
@@ -124,6 +131,12 @@ export const TodoSlice = createSlice({
       state.errorState = ERRORSTATE.DEFAULT;
     });
     builder.addCase(createTodoCategory.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
+    });
+    builder.addCase(deleteTodoCategory.pending, (state, action) => {
+      state.errorState = ERRORSTATE.DEFAULT;
+    });
+    builder.addCase(deleteTodoCategory.fulfilled, (state, action) => {
       state.errorState = ERRORSTATE.SUCCESS;
     });
   },

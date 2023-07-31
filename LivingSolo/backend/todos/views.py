@@ -102,7 +102,7 @@ def toggle_todo(request, todo_id):
             todo_id = int(todo_id)
             todo_obj = Todo.objects.get(pk=todo_id)
 
-            todo_obj.done = not (todo_obj.done)
+            todo_obj.done = not todo_obj.done
             todo_obj.save()
             return JsonResponse({"message": "success"}, status=200)
         except Todo.DoesNotExist:
@@ -165,3 +165,32 @@ def general_todo_category(request):
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
         return JsonResponse({"id": element.id, "name": element.name}, status=201)
+
+
+@require_http_methods(['PUT', 'DELETE'])
+def detail_todo_category(request, categ_id):
+    """
+    PUT : edit category's content
+    DELETE : delete category
+    """
+    if request.method == 'PUT':
+        try:
+            data = json.loads(request.body.decode())
+            categ_id = int(categ_id)
+            categ_obj = TodoCatecory.objects.get(pk=categ_id)
+
+            categ_obj.name = data["name"]
+            categ_obj.amount = data["amount"]
+            categ_obj.save()
+            return JsonResponse({"message": "success"}, status=200)
+        except TodoCatecory.DoesNotExist:
+            return HttpResponseNotFound()
+    else:  ## delete
+        try:
+            categ_id = int(categ_id)
+            categ_obj = TodoCatecory.objects.get(pk=categ_id)
+
+            categ_obj.delete()
+            return JsonResponse({"message": "success"}, status=200)
+        except TodoCatecory.DoesNotExist:
+            return HttpResponseNotFound()
