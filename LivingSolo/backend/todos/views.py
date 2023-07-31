@@ -116,6 +116,7 @@ def duplicate_todo(request):
         for tag_elem in list(prev_todo.tag.all().values()):
             tags.append(Tag.objects.get(pk=tag_elem['id']))
         prev_todo.pk = None
+        prev_todo.done = False  # Maybe Duplicated Jobs to be Done Again.
         prev_todo.save()
 
         for tag in tags:
