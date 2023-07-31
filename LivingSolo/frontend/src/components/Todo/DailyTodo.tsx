@@ -65,6 +65,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
 
   // Todo List
   const [addMode, setAddMode] = useState<CondRendAnimState>({ isMounted: false, showElem: false });
+  const [fnMode, setFnMode] = useState<boolean>(false);
   const [categorySort, setCategorySort] = useState<boolean>(true);
   // Category List
   const [categoryPanel, setCategoryPanel] = useState<boolean>(false);
@@ -114,7 +115,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                     </>}
                 </DayFnBtn>
                 <DayFnBtn onClick={() => setCategoryDelete((cD) => !cD)}>
-                    {addMode.showElem ? <>
+                    {categoryDelete ? <>
                         <span>삭제</span><span>완료</span>
                     </> : <>
                         <span>카테고리</span><span>삭제</span>
@@ -136,6 +137,10 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                     <span>정렬</span>
                 </DayFnBtn>     
                 <DayFnBtn onClick={() => setCurDay(TODAY)}>오늘로</DayFnBtn>
+                <DayFnBtn onClick={() => setFnMode(fM => !fM)}>
+                    {fnMode && <><span>기능</span><span>끄기</span></>}
+                    {!fnMode && <><span>추가</span><span>기능</span></>}
+                </DayFnBtn>
             </>}
         </DayFn>
     </DayHeaderRow>
@@ -148,7 +153,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                     <CategoryAdderInputWrapper>
                         <input type="text" placeholder='Category Name' value={newTodoCategory.name} onChange={(e) => setNewTodoCategory((nTC) => { return {...nTC, name: e.target.value}})}/>
                         <button onClick={() => { 
-                            dispatch(createTodoCategory(newTodoCategory));
+                            dispatch(createTodoCategory({...newTodoCategory, tag: categTags}));
                             setCategTags([]);
                             setNewTodoCategory({...todoCategorySkeleton, tag: categTags});
                         }}>Create</button>
@@ -158,19 +163,19 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
             </TodoAdderWrapper>}
 
             <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(55px)" } : { transform: "translateY(0px)" }}>
-                {categories.map((categ) => <TodoCategoryHeader key={categ.id}>
+                {categories.map((categ) => <TodoCategoryItem key={categ.id}>
                         <TodoElementColorCircle color={categ.color} ishard='false' />
                         <span>{categ.name}</span>
                         <div>
                             {categ.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
                         </div>
-                        <div className='clickable' onClick={() => {
+                        {categoryDelete && <div className='clickable' onClick={() => {
                             if (window.confirm('정말 카테고리를 삭제하시겠습니까?')) {
                                 dispatch(deleteTodoCategory(categ.id));
                             }}}>
                             삭제
-                        </div>
-                </TodoCategoryHeader>)}
+                        </div>}
+                </TodoCategoryItem>)}
             </TodoElementList>
         </div>}
         {!categoryPanel && <>
@@ -203,6 +208,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                         setNewTodo((nT) => { return {...nT, category: e.target.value}});
                         const categ = categories.find((c) => c.id === parseInt(e.target.value));
                         if(categ){
+                            console.log('categ', categ);
                             setCurTCateg(categ);
                             setTags(categ.tag);
                         };
@@ -254,7 +260,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                                 {categoryElement.todos // For Read Only Array Sort, We have to copy that.
                                     .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
                                     .map((todo) => {
-                                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} />
+                                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} fnMode={fnMode}/>
                                 })}
                                 </TodoCategoryBody>
                             </TodoCategoryWrapper>
@@ -264,7 +270,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                     {curDay.day && elements[curDay.day] && [...elements[curDay.day]] // For Read Only Array Sort, We have to copy that.
                     .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
                     .map((todo) => {
-                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} />
+                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay} fnMode={fnMode}/>
                 })}
                 </>}
             </TodoElementList>
@@ -346,6 +352,7 @@ const CategoryAdderRow = styled.div`
     grid-template-columns: 1fr 5fr 13fr;
     align-items: center;
 
+    padding: 4px;
     padding-bottom: 10px;
     border-bottom: 1.5px solid gray;
 `;
@@ -363,6 +370,25 @@ const CategoryAdderInputWrapper = styled.div`
         padding: 10px;
     }
 `;
+
+const TodoCategoryItem = styled.div`
+    width  : 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 12fr 5fr 2fr;
+    align-items: center;
+    
+    padding: 4px;
+    margin-top: 10px;
+    border-bottom: 1px solid var(--ls-gray);
+
+    > span {
+        font-size: 24px;
+        font-weight: 300;
+        /* color: var(--ls-gray); */
+    }
+`;
+
 const TodoAdder1stRow = styled.div`
     width: 100%;
     display: grid;

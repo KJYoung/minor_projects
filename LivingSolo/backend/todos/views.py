@@ -10,6 +10,8 @@ from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonRespon
 from todos.models import Todo, TodoCatecory
 from tags.models import Tag
 
+NULL_COLOR = '#333333'
+
 
 @require_http_methods(['GET', 'POST'])
 def general_todo(request):
@@ -51,18 +53,27 @@ def general_todo(request):
                     }
                 )
             todo_cate = todo_elem.category
+            categ_json = (
+                {
+                    "id": todo_cate.id,
+                    "name": todo_cate.name,
+                    "color": todo_cate.color,
+                }
+                if todo_cate
+                else {
+                    "id": -1,
+                    "name": '삭제된 카테고리',
+                    "color": NULL_COLOR,
+                }
+            )
             result[todo_elem.deadline.day].append(
                 {
                     "id": todo_elem.id,
                     "name": todo_elem.name,
                     "tag": tags,
                     "done": todo_elem.done,
-                    "color": todo_cate.color,
-                    "category": {
-                        "id": todo_cate.id,
-                        "name": todo_cate.name,
-                        "color": todo_cate.color,
-                    },
+                    "color": todo_cate.color if todo_cate else NULL_COLOR,
+                    "category": categ_json,
                     "priority": todo_elem.priority,
                     "deadline": todo_elem.deadline,
                     "is_hard_deadline": todo_elem.is_hard_deadline,
@@ -90,6 +101,51 @@ def general_todo(request):
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
         return JsonResponse({"id": element.id, "name": element.name}, status=201)
+
+
+@require_http_methods(['POST'])
+def duplicate_todo(request):
+    """
+    POST : create todo element
+    """
+    try:
+        req_data = json.loads(request.body.decode())
+
+        prev_todo = Todo.objects.get(pk=req_data["todo_id"])
+        prev_todo.pk = None
+        prev_todo.save()
+
+    except (KeyError, JSONDecodeError):
+        return HttpResponseBadRequest()
+    return JsonResponse({"id": prev_todo.id, "name": prev_todo.name}, status=201)
+
+
+@require_http_methods(['PUT', 'DELETE'])
+def detail_todo(request, todo_id):
+    """
+    PUT : edit todo's content
+    DELETE : delete todo
+    """
+    if request.method == 'PUT':
+        try:
+            data = json.loads(request.body.decode())
+            todo_id = int(todo_id)
+            todo_obj = Todo.objects.get(pk=todo_id)
+
+            todo_obj.name = data["name"]
+            todo_obj.save()
+            return JsonResponse({"message": "success"}, status=200)
+        except Todo.DoesNotExist:
+            return HttpResponseNotFound()
+    else:  ## delete
+        try:
+            todo_id = int(todo_id)
+            todo_obj = Todo.objects.get(pk=todo_id)
+
+            todo_obj.delete()
+            return JsonResponse({"message": "success"}, status=200)
+        except Todo.DoesNotExist:
+            return HttpResponseNotFound()
 
 
 @require_http_methods(['PUT'])

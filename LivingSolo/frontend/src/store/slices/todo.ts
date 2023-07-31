@@ -87,6 +87,19 @@ export const createTodo = createAsyncThunk(
     return response.data;
   }
 );
+export const duplicateTodo = createAsyncThunk(
+  "todo/duplicateTodo",
+  async (todoID: String | Number, { dispatch }) => {
+    const response = await client.post(`/api/todo/duplicate/`, { todo_id: todoID });
+    return response.data;
+  }
+);
+export const deleteTodo = createAsyncThunk(
+  "todo/deleteTodo",
+  async (todoID: String | Number, { dispatch }) => {
+    await client.delete(`/api/todo/${todoID}/`);
+  }
+);
 export const createTodoCategory = createAsyncThunk(
   "todo/createTodoCategory",
   async (payload: TodoCategoryCreateReqType) => {
@@ -131,6 +144,18 @@ export const TodoSlice = createSlice({
       state.errorState = ERRORSTATE.DEFAULT;
     });
     builder.addCase(createTodoCategory.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
+    });
+    builder.addCase(duplicateTodo.pending, (state, action) => {
+      state.errorState = ERRORSTATE.DEFAULT;
+    });
+    builder.addCase(duplicateTodo.fulfilled, (state, action) => {
+      state.errorState = ERRORSTATE.SUCCESS;
+    });
+    builder.addCase(deleteTodo.pending, (state, action) => {
+      state.errorState = ERRORSTATE.DEFAULT;
+    });
+    builder.addCase(deleteTodo.fulfilled, (state, action) => {
       state.errorState = ERRORSTATE.SUCCESS;
     });
     builder.addCase(deleteTodoCategory.pending, (state, action) => {

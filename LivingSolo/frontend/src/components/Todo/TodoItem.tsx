@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { styled } from 'styled-components';
 import { CalTodoDay } from '../../utils/DateTime';
 import { useDispatch } from 'react-redux';
-import { TodoElement, toggleTodoDone } from '../../store/slices/todo';
+import { TodoElement, deleteTodo, duplicateTodo, toggleTodoDone } from '../../store/slices/todo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { AppDispatch } from '../../store';
@@ -14,21 +14,33 @@ interface TodoElementProps {
   curDay: CalTodoDay,
   setCurDay: React.Dispatch<React.SetStateAction<CalTodoDay>>,
   todo: TodoElement,
+  fnMode: boolean,
 };
 
 const TODAY_ = new Date();
 const TODAY = {year: TODAY_.getFullYear(), month: TODAY_.getMonth(), day: TODAY_.getDate()};
 
-
-export const TodoItem = ({ curDay, setCurDay, todo }: TodoElementProps) => {
+export const TodoItem = ({ curDay, setCurDay, todo, fnMode }: TodoElementProps) => {
   const dispatch = useDispatch<AppDispatch>();
   
-  const doneToggle = (id: number) => {
-    dispatch(toggleTodoDone({ id }));
+  const doneToggle = (id: number, curDone: boolean) => {
+    if(curDone){
+        if (window.confirm('정말 완료를 취소하시겠습니까?')) {
+            dispatch(toggleTodoDone({ id }));
+        }
+    }else{
+        dispatch(toggleTodoDone({ id }));
+    }
+  };
+
+  const deleteHandler = (id: number) => {
+    if (window.confirm('정말 투두를 삭제하시겠습니까?')) {
+        dispatch(deleteTodo(id));
+    }
   };
 
   return <TodoElementWrapper key={todo.id}>
-        <TodoElementColorCircle color={todo.color} onClick={() => doneToggle(todo.id)} title={todo.category.name} ishard={todo.is_hard_deadline.toString()}>
+        <TodoElementColorCircle color={todo.color} onClick={() => doneToggle(todo.id, todo.done)} title={todo.category.name} ishard={todo.is_hard_deadline.toString()}>
             {todo.done && <FontAwesomeIcon icon={faCheck} fontSize={'13'} color={getContrastYIQ(todo.color)}/>}
         </TodoElementColorCircle>
         <div>
@@ -40,7 +52,11 @@ export const TodoItem = ({ curDay, setCurDay, todo }: TodoElementProps) => {
             {todo.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
         </div>
         <div>
-            ...
+            {fnMode && <>
+                <button>수정</button>
+                <button onClick={() => dispatch(duplicateTodo(todo.id))}>복제</button>
+                <button onClick={() => deleteHandler(todo.id)}>삭제</button>    
+            </>}
         </div>
     </TodoElementWrapper>
 };

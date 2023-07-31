@@ -31,3 +31,4 @@
 - [Django Admin Cookbook](https://books.agiliq.com/projects/django-admin-cookbook/en/latest/introduction.html)
     - Django Model Plural Name Setting
 - [Month Day Length from year, month](https://stackoverflow.com/questions/4938429/how-do-we-determine-the-number-of-days-for-a-given-month-in-python)
+- Django Object Clone: pk를 None으로 설정하고 save()
