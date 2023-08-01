@@ -182,6 +182,9 @@ export const TodoEditor = ({ addMode, setAddMode, curDay, editObj, editCompleteH
                     // ERROR
                 }
             }}>Edit</button>
+            <button onClick={() => editCompleteHandler()}>
+                Cancel
+            </button>
         </TodoAdder2ndRowInputWrapper>
     </TodoAdder2ndRow>
 </TodoAdderWrapper>
