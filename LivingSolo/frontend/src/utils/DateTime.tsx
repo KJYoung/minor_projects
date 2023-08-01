@@ -47,6 +47,13 @@ export const GetDateTimeFormat2Django = (dt: Date, fullTime?: boolean): string =
         return `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()} 10:30:57`; // default HH:MM:SS
     }
 }
+export const GetDjangoDateByCalTodoDay = (dt: CalTodoDay): string => {
+    if(dt.day){
+        return GetDateTimeFormat2Django(new Date(dt.year, dt.month, dt.day));
+    }else{
+        throw Error();
+    }
+}
 
 export const GetDateTimeFormatFromDjango = (dateString: string, compact?: boolean): string | undefined => {
     // ex. input format: 2023-07-22T12:00:00
@@ -60,4 +67,9 @@ export const GetDateTimeFormatFromDjango = (dateString: string, compact?: boolea
     }else{
         return `ERROR`;
     }
-}
+};
+
+export const GetDateObjFromDjango = (dateString: string): Date => {
+    // ex. input format: 2023-07-22T12:00:00
+    return new Date(dateString);
+};

@@ -2,10 +2,10 @@
     TodoCategory, Todo, 할일에 관한 어드민 패널입니다.
 """
 from django.contrib import admin
-from todos.models import TodoCatecory, Todo
+from todos.models import TodoCategory, Todo
 
 
-@admin.register(TodoCatecory)
+@admin.register(TodoCategory)
 class TodoCategoryAdmin(admin.ModelAdmin):
     """TodoCategory admin definition"""
 

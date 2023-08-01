@@ -6,7 +6,7 @@ from core.models import AbstractTimeStampedModel
 from tags.models import Tag
 
 # Create your models here.
-class TodoCatecory(AbstractTimeStampedModel):
+class TodoCategory(AbstractTimeStampedModel):
     """Todo Category definition"""
 
     name = models.CharField(max_length=16, null=False)
@@ -27,7 +27,7 @@ class Todo(AbstractTimeStampedModel):
     name = models.CharField(max_length=24, null=False)
     done = models.BooleanField(default=False)
     category = models.ForeignKey(
-        TodoCatecory, related_name='todo', on_delete=models.SET_NULL, null=True
+        TodoCategory, related_name='todo', on_delete=models.SET_NULL, null=True
     )
     tag = models.ManyToManyField(Tag, related_name="todo")
 

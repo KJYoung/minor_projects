@@ -13,6 +13,7 @@ const NavDrawer = ({ toggleDrawer }: {toggleDrawer : any}) => (
         </div>
       </CloseRowDiv>
       <Button onClick={toggleDrawer(false, TabState.Home)}>Home</Button>
+      <Button onClick={toggleDrawer(false, TabState.Tag)}>Tag</Button>
       <Button onClick={toggleDrawer(false, TabState.Transaction)}>Transaction</Button>
       <Button onClick={toggleDrawer(false, TabState.Calendar)}>Calendar</Button>
       <Button onClick={toggleDrawer(false, TabState.Stockpile)}>Stockpile</Button>

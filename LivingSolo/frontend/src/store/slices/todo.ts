@@ -44,7 +44,9 @@ export interface TodoCreateReqType {
 export interface TodoEditReqType {
   id: number,
   name: string,
+  // done: boolean,
   tag: TagElement[],
+  // color: string,
   category: number,
   priority: number,
   deadline: string,
@@ -106,6 +108,13 @@ export const duplicateTodo = createAsyncThunk(
     return response.data;
   }
 );
+export const postponeTodo = createAsyncThunk(
+  "todo/postponeTodo",
+  async (date: String, { dispatch }) => {
+    const response = await client.post(`/api/todo/postpone/`, { date });
+    return response.data;
+  }
+);
 export const editTodo = createAsyncThunk(
   "todo/editTodo",
   async (payload: TodoEditReqType) => {
@@ -146,47 +155,19 @@ export const TodoSlice = createSlice({
       state.categories = action.payload.elements;
       state.errorState = ERRORSTATE.NORMAL;
     });
-    builder.addCase(toggleTodoDone.pending, (state, action) => {
-      state.errorState = ERRORSTATE.DEFAULT;
-    });
-    builder.addCase(toggleTodoDone.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
-    });
-    builder.addCase(createTodo.pending, (state, action) => {
-      state.errorState = ERRORSTATE.DEFAULT;
-    });
-    builder.addCase(createTodo.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
-    });
-    builder.addCase(createTodoCategory.pending, (state, action) => {
-      state.errorState = ERRORSTATE.DEFAULT;
-    });
-    builder.addCase(createTodoCategory.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
-    });
-    builder.addCase(duplicateTodo.pending, (state, action) => {
-      state.errorState = ERRORSTATE.DEFAULT;
-    });
-    builder.addCase(duplicateTodo.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
-    });
-    builder.addCase(editTodo.pending, (state, action) => {
-      state.errorState = ERRORSTATE.DEFAULT;
-    });
-    builder.addCase(editTodo.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
-    });
-    builder.addCase(deleteTodo.pending, (state, action) => {
-      state.errorState = ERRORSTATE.DEFAULT;
-    });
-    builder.addCase(deleteTodo.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
-    });
-    builder.addCase(deleteTodoCategory.pending, (state, action) => {
-      state.errorState = ERRORSTATE.DEFAULT;
-    });
-    builder.addCase(deleteTodoCategory.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
+
+    [
+      toggleTodoDone, createTodo, createTodoCategory, 
+      duplicateTodo, postponeTodo,
+      editTodo, 
+      deleteTodo, deleteTodoCategory
+    ].forEach((reducer) => {
+      builder.addCase(reducer.pending, (state, action) => {
+        state.errorState = ERRORSTATE.DEFAULT;
+      });
+      builder.addCase(reducer.fulfilled, (state, action) => {
+        state.errorState = ERRORSTATE.SUCCESS;
+      });
     });
   },
 });

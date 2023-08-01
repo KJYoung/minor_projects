@@ -1,6 +1,12 @@
+
 export type CondRendAnimState = {
     isMounted: boolean,
     showElem: boolean,
+};
+
+export const defaultCondRendAnimState: CondRendAnimState = {
+    isMounted: false,
+    showElem: false
 };
 
 export const condRendMounted = { animation: "inAnimation 250ms ease-in" };
@@ -15,4 +21,4 @@ export const toggleCondRendAnimState = (curState: CondRendAnimState, setCurState
 };
 export const onAnimEnd = (curState: CondRendAnimState, setCurState: React.Dispatch<React.SetStateAction<CondRendAnimState>>) => {
     if(!curState.isMounted) setCurState((cS) => { return { isMounted: cS.isMounted, showElem: false }});
-}
+};

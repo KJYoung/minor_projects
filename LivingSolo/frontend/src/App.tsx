@@ -12,11 +12,13 @@ import { styled } from 'styled-components';
 import NavDrawer from './components/general/NavDrawer';
 import TodoMain from './containers/TodoMain';
 
-export enum TabState { DEPRECATED, Home, Transaction, Calendar, Stockpile, Community };
+export enum TabState { DEPRECATED, Home, Tag, Transaction, Calendar, Stockpile, Community };
 const tab2Str = (e: TabState) => {
   switch (e) {
     case TabState.Home:
       return 'Home';
+    case TabState.Tag:
+      return 'Tag';
     case TabState.Transaction:
       return 'Transaction';
     case TabState.Calendar:
@@ -66,6 +68,7 @@ function App() {
         </Box>
         {/* Main Contents */}
         {tabState === TabState.Home && <span>Home</span>}
+        {tabState === TabState.Tag && <span>Tag</span>}
         {tabState === TabState.Transaction && <TrxnMain />}
         {tabState === TabState.Calendar && <TodoMain />}
         {tabState === TabState.Stockpile && <span>Stockpile</span>}

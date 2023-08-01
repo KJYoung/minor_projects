@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
-import { CalTodoDay, GetDateTimeFormat2Django } from '../../utils/DateTime';
+import { CalTodoDay, GetDjangoDateByCalTodoDay } from '../../utils/DateTime';
 import { useDispatch, useSelector } from 'react-redux';
-import { TodoCategory, TodoCategoryCreateReqType, TodoCreateReqType, TodoElement, createTodo, createTodoCategory, deleteTodoCategory, selectTodo } from '../../store/slices/todo';
+import { TodoElement, deleteTodoCategory, postponeTodo, selectTodo } from '../../store/slices/todo';
 import { AppDispatch } from '../../store';
-import { TagInputForTodo, TagInputForTodoCategory } from '../Trxn/TagInput';
-import { TagElement } from '../../store/slices/tag';
 import { TodoItem } from './TodoItem';
-import { CondRendAnimState, toggleCondRendAnimState, condRendMounted, condRendUnmounted, onAnimEnd } from '../../utils/Rendering';
-import { getRandomHex } from '../../styles/color';
+import { CondRendAnimState, toggleCondRendAnimState, defaultCondRendAnimState } from '../../utils/Rendering';
 import { TagBubbleCompact } from '../general/TagBubble';
+import { TodoAdder, TodoEditor } from './TodoAdder';
+import { CategoryAdder } from './CategoryAdder';
 
+enum TodoListMode {
+    TodoGeneral, CategoryGeneral, TodoFunctional,
+};
 
 interface DailyTodoProps {
   curDay: CalTodoDay,
@@ -20,26 +22,13 @@ interface DailyTodoProps {
 const TODAY_ = new Date();
 const TODAY = {year: TODAY_.getFullYear(), month: TODAY_.getMonth(), day: TODAY_.getDate()};
 
-const DEFAULT_OPTION = '$NONE$';
-const todoSkeleton = {
-  name: '',
-  category: DEFAULT_OPTION,
-  priority: 0,
-  deadline: '',
-  is_hard_deadline: false,
-  period: 0,
-};
-const todoCategorySkeleton = {
-  name: '',
-  color: '#000000',
-}
-
 interface CategoricalTodos {
     id: number,
     name: string,
     color: string,
     todos: TodoElement[]
 };
+
 const categoricalSlicer = (todoItems : TodoElement[]) : CategoricalTodos[] => {
     const result: CategoricalTodos[] = [];
 
@@ -59,56 +48,87 @@ const categoricalSlicer = (todoItems : TodoElement[]) : CategoricalTodos[] => {
     return result;
 };
 
+
 export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const { elements, categories } = useSelector(selectTodo);
 
-  // Todo List
-  const [addMode, setAddMode] = useState<CondRendAnimState>({ isMounted: false, showElem: false });
-  const [fnMode, setFnMode] = useState<boolean>(false);
-  const [editID, setEditID] = useState<number>(-1);
+  // Header Mode
+  const [headerMode, setHeaderMode_] = useState<TodoListMode>(TodoListMode.TodoGeneral);
+
+  // Todo List ----------------------------------------------------------------------------------
+  const [addMode, setAddMode] = useState<CondRendAnimState>(defaultCondRendAnimState);
   const [categorySort, setCategorySort] = useState<boolean>(true);
 
-  // Category List
-  const [categoryPanel, setCategoryPanel] = useState<boolean>(false);
+  const resetTodoListState = () => {
+    setAddMode(defaultCondRendAnimState);
+    setEditID(-1);
+    setCategorySort(true);
+  };
+
+  // Category List -------------------------------------------------------------------------------
   const [categoryDelete, setCategoryDelete] = useState<boolean>(false);
+    // const [addMode, setAddMode] : also used in Category List!
 
-  // Todo Create
-  const [isPeriodic, setIsPeriodic] = useState<boolean>(false);
-  const [tags, setTags] = useState<TagElement[]>([]);
-  const [curTCateg, setCurTCateg] = useState<TodoCategory | null>(null);
-  const [newTodo, setNewTodo] = useState<TodoCreateReqType>({...todoSkeleton, tag: tags});
+  // Category List - TodoCategory Create
+  
+  
+  const resetCategoryListState = () => {
+    setAddMode(defaultCondRendAnimState);
+    setCategoryDelete(false);
+  };
 
-  // TodoCategory Create
-  const [categTags, setCategTags] = useState<TagElement[]>([]);
-  const [newTodoCategory, setNewTodoCategory] = useState<TodoCategoryCreateReqType>({...todoCategorySkeleton, tag: categTags});
+  // Todo Functional -----------------------------------------------------------------------------
+  const [editID, setEditID] = useState<number>(-1);
 
+  const resetTodoFunctionalState = () => {
+    setAddMode(defaultCondRendAnimState);
+    setEditID(-1);
+  };
 
-  const toggleCategoryPanel = () => {
-    if(categoryPanel) { // T => F
-        setCategoryPanel(false);
-        setAddMode({ isMounted: false, showElem: false});
-    }else{ // F => T
-        setCategoryPanel(true);
-        setAddMode({ isMounted: false, showElem: false});
+  const setHeaderMode = (target: TodoListMode) => {
+    switch(target){
+        case TodoListMode.TodoGeneral:
+            resetTodoListState();
+            break;
+        case TodoListMode.CategoryGeneral:
+            resetCategoryListState();
+            break;
+        case TodoListMode.TodoFunctional:
+            resetTodoFunctionalState();
+            break;
     };
+    setHeaderMode_(target);
+  };
+
+  const setEditMode = () => {
+    if(addMode.isMounted && addMode.showElem)
+        return;
+    toggleCondRendAnimState(addMode, setAddMode);
+  };
+
+  const editCompleteHandler = () => {
+    setEditID(-1);
+    setAddMode(defaultCondRendAnimState);
+  };
+  
+  const toggleCategoryPanel = () => {
+    setHeaderMode(headerMode === TodoListMode.CategoryGeneral ? TodoListMode.TodoGeneral : TodoListMode.CategoryGeneral);
   };
 
   useEffect(() => {
-    setCategoryPanel(false);
-    setAddMode({ isMounted: false, showElem: false});
+    setHeaderMode(TodoListMode.TodoGeneral);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curDay.day]);
 
   return <DailyTodoWrapper>
     <DayHeaderRow className='noselect'>
         <DayH1>{curDay.year}년 {curDay.month + 1}월 {curDay.day}{curDay.day && '일'}</DayH1>
         <DayFn>
-            <DayFnBtn onClick={() => toggleCategoryPanel()}>
-                {categoryPanel && <span>돌아가기</span>}
-                {!categoryPanel && <><span>카테고리</span><span>관리</span></>}
-            </DayFnBtn>
-
-            {categoryPanel && <>
+            {headerMode === TodoListMode.CategoryGeneral && <>
+                <DayFnBtn onClick={() => toggleCategoryPanel()}>
+                    {<span>돌아가기</span>}
+                </DayFnBtn>
                 <DayFnBtn onClick={() => toggleCondRendAnimState(addMode, setAddMode)}>
                     {addMode.showElem ? <>
                         <span>추가</span><span>완료</span>
@@ -124,10 +144,12 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                     </>}
                 </DayFnBtn>
             </>}
-
-            {!categoryPanel && <>
+            {headerMode === TodoListMode.TodoGeneral && <>
+                <DayFnBtn onClick={() => toggleCategoryPanel()}>   
+                    <span>카테고리</span><span>관리</span>
+                </DayFnBtn>
                 <DayFnBtn onClick={() => toggleCondRendAnimState(addMode, setAddMode)}>
-                    {addMode.showElem ? <>
+                    {addMode.isMounted && addMode.showElem ? <>
                         <span>추가</span><span>완료</span>
                     </> : <>
                         <span>투두</span><span>추가</span>
@@ -139,30 +161,24 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                     <span>정렬</span>
                 </DayFnBtn>     
                 <DayFnBtn onClick={() => setCurDay(TODAY)}>오늘로</DayFnBtn>
-                <DayFnBtn onClick={() => setFnMode(fM => !fM)}>
-                    {fnMode && <><span>기능</span><span>끄기</span></>}
-                    {!fnMode && <><span>추가</span><span>기능</span></>}
+                <DayFnBtn onClick={() => setHeaderMode(TodoListMode.TodoFunctional)}>
+                    <span>추가</span><span>기능</span>
+                </DayFnBtn>
+                
+            </>}
+            {headerMode === TodoListMode.TodoFunctional && <>
+                <DayFnBtn onClick={() => dispatch(postponeTodo(GetDjangoDateByCalTodoDay(curDay)))}>
+                    <span>미완료</span><span>내일로</span>
+                </DayFnBtn>
+                <DayFnBtn onClick={() => setHeaderMode(TodoListMode.TodoGeneral)}>
+                    <span>기능</span><span>끄기</span>
                 </DayFnBtn>
             </>}
         </DayFn>
     </DayHeaderRow>
     <DayBodyRow>
-        {categoryPanel && <div>
-            {addMode.showElem && <TodoAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
-                <CategoryAdderRow>
-                    <TodoElementColorCircle color={newTodoCategory.color} ishard={'false'} onClick={() => setNewTodoCategory((nTC) => { return {...nTC, color: getRandomHex()}})}></TodoElementColorCircle>
-                    <TagInputForTodoCategory tags={categTags} setTags={setCategTags} closeHandler={() => {}}/>
-                    <CategoryAdderInputWrapper>
-                        <input type="text" placeholder='Category Name' value={newTodoCategory.name} onChange={(e) => setNewTodoCategory((nTC) => { return {...nTC, name: e.target.value}})}/>
-                        <button onClick={() => { 
-                            dispatch(createTodoCategory({...newTodoCategory, tag: categTags}));
-                            setCategTags([]);
-                            setNewTodoCategory({...todoCategorySkeleton, tag: categTags});
-                        }}>Create</button>
-                    </CategoryAdderInputWrapper>
-                </CategoryAdderRow>
-                
-            </TodoAdderWrapper>}
+        {headerMode === TodoListMode.CategoryGeneral && <div>
+            {addMode.showElem && <CategoryAdder addMode={addMode} setAddMode={setAddMode} curDay={curDay} />}
 
             <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(55px)" } : { transform: "translateY(0px)" }}>
                 {categories.map((categ) => <TodoCategoryItem key={categ.id}>
@@ -180,74 +196,12 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                 </TodoCategoryItem>)}
             </TodoElementList>
         </div>}
-        {!categoryPanel && <>
-            {addMode.showElem && <TodoAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
-                <TodoAdder1stRow>
-                    <TodoAdderAddInputs>
-                        <label htmlFor="prioritySelect">중요도</label>
-                        <select id="prioritySelect" value={newTodo.priority} onChange={(e) => { setNewTodo((nT) => { return {...nT, priority: parseInt(e.target.value)}}); }}>
-                            <option disabled value={0}>- 중요도 -</option>
-                            {Array(10).fill(null).map((_, index) => <option value={index + 1} key={index + 1}>{index + 1}</option>)}
-                        </select>
-                    </TodoAdderAddInputs>
-                    <TodoAdderAddInputs>
-                        <TodoPeriodicLabel>
-                            <label htmlFor="periodInput">주기</label>
-                            <input  type="checkbox" id="isPeriodic" checked={isPeriodic}
-                                onChange={(e) => {
-                                    setIsPeriodic((ip) => !ip);
-                                    setNewTodo((nT) => { return {...nT, period: 0}});
-                                }} />
-                        </TodoPeriodicLabel>
-                        <input id="periodInput" type="number" disabled={!isPeriodic} value={newTodo.period} onChange={(e) => setNewTodo((nT) => { return {...nT, period: parseInt(e.target.value)}})}/>
-                    </TodoAdderAddInputs>
-                    <TodoAdderAddInputs>
-                        <label htmlFor="ishardDeadline">엄격성</label>
-                        <input  type="checkbox" id="ishardDeadline" checked={newTodo.is_hard_deadline}
-                            onChange={(e) => setNewTodo((nT) => { return {...nT, is_hard_deadline: !nT.is_hard_deadline}})} />
-                    </TodoAdderAddInputs>
-                    <select value={newTodo.category} onChange={(e) => {
-                        setNewTodo((nT) => { return {...nT, category: e.target.value}});
-                        const categ = categories.find((c) => c.id === parseInt(e.target.value));
-                        if(categ){
-                            console.log('categ', categ);
-                            setCurTCateg(categ);
-                            setTags(categ.tag);
-                        };
-                    }}>
-                        <option disabled value={DEFAULT_OPTION}>
-                            - 카테고리 -
-                        </option>
-                        {categories.map(categ => {
-                            return (
-                                <option value={categ.id} key={categ.id}>
-                                {categ.name}
-                                </option>
-                            );
-                            })}
-                    </select>
-                    <TagInputForTodo tags={tags} setTags={setTags} closeHandler={() => {}}/>
-                </TodoAdder1stRow>
-                <TodoAdder2ndRow>
-                    <TodoElementColorCircle color={curTCateg ? curTCateg.color : 'gray'} ishard={newTodo.is_hard_deadline.toString()}></TodoElementColorCircle>
-                    <TodoAdder2ndRowInputWrapper>
-                        <input type="text" placeholder='Todo Name' value={newTodo.name} onChange={(e) => setNewTodo((nT) => { return {...nT, name: e.target.value}})}/>
-                        <button onClick={() => { 
-                            if(curDay.day){
-                                dispatch(createTodo({
-                                    ...newTodo,
-                                    tag: tags,
-                                    deadline: GetDateTimeFormat2Django(new Date(curDay.year, curDay.month, curDay.day)),
-                                }));
-                                setTags([]);
-                                setNewTodo({...todoSkeleton, tag: tags});
-                            }else{
-                                // ERROR
-                            }
-                        }}>Create</button>
-                    </TodoAdder2ndRowInputWrapper>
-                </TodoAdder2ndRow>
-            </TodoAdderWrapper>}
+        {headerMode !== TodoListMode.CategoryGeneral && <>
+            {addMode.showElem && ( headerMode === TodoListMode.TodoGeneral ? 
+                (<TodoAdder addMode={addMode} setAddMode={setAddMode} curDay={curDay} />)
+            :
+                (elements[curDay.day!].find(((e) => e.id === editID)) && <TodoEditor addMode={addMode} setAddMode={setAddMode} curDay={curDay} editObj={elements[curDay.day!].find(((e) => e.id === editID))!} editCompleteHandler={editCompleteHandler}/>)
+            )}
             {/* Important! `addMode.showElem && addMode.isMounted` <== is required for the smooth transition! Not only one of them, But both! */}
             <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(125px)" } : { transform: "translateY(0px)" }}>
                 {categorySort && <>
@@ -261,9 +215,10 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                                 <TodoCategoryBody>
                                 {categoryElement.todos // For Read Only Array Sort, We have to copy that.
                                     .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
+                                    .filter((todo) => todo.id !== editID)
                                     .map((todo) => {
-                                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay}
-                                                        fnMode={fnMode} editID={editID} setEditID={setEditID}/>
+                                        return <TodoItem key={todo.id} todo={todo} setEditMode={setEditMode}
+                                                        fnMode={headerMode === TodoListMode.TodoFunctional} editID={editID} setEditID={setEditID}/>
                                 })}
                                 </TodoCategoryBody>
                             </TodoCategoryWrapper>
@@ -272,9 +227,10 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                 {!categorySort && <>
                     {curDay.day && elements[curDay.day] && [...elements[curDay.day]] // For Read Only Array Sort, We have to copy that.
                     .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
+                    .filter((todo) => todo.id !== editID)
                     .map((todo) => {
-                        return <TodoItem key={todo.id} todo={todo} curDay={curDay} setCurDay={setCurDay}
-                                        fnMode={fnMode}  editID={editID} setEditID={setEditID}/>
+                        return <TodoItem key={todo.id} todo={todo} setEditMode={setEditMode}
+                                        fnMode={headerMode === TodoListMode.TodoFunctional}  editID={editID} setEditID={setEditID}/>
                 })}
                 </>}
             </TodoElementList>
@@ -344,36 +300,7 @@ const DayBodyRow = styled.div`
     position: relative;
 `;
 
-const TodoAdderWrapper = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
 
-    margin-bottom: 10px;
-`;
-const CategoryAdderRow = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 5fr 13fr;
-    align-items: center;
-
-    padding: 4px;
-    padding-bottom: 10px;
-    border-bottom: 1.5px solid gray;
-`;
-const CategoryAdderInputWrapper = styled.div`
-    width  : 100%;
-    display: flex;
-    justify-content: space-between;
-
-    input {
-        width: 100%;
-        padding: 10px;
-        margin-right: 20px;
-    }
-    button {
-        padding: 10px;
-    }
-`;
 
 const TodoCategoryItem = styled.div`
     width  : 100%;
@@ -393,53 +320,7 @@ const TodoCategoryItem = styled.div`
     }
 `;
 
-const TodoAdder1stRow = styled.div`
-    width: 100%;
-    display: grid;
-    grid-gap: 15px;
-    grid-template-columns: 1fr 1fr 1fr 1fr 3fr;
-    
-    margin-bottom: 10px;
-`;
-const TodoAdderAddInputs = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    label {
-        color: var(--ls-gray_google2);
-        margin-bottom: 2px;
-    }
-`;
-const TodoPeriodicLabel = styled.div`
-    margin-bottom: 2px;
 
-    input {
-        margin-left: 10px;
-    }
-`;
-const TodoAdder2ndRow = styled.div`
-    width: 100%;
-    padding: 10px 10px 15px 10px;
-    border-bottom: 1.5px solid gray;
-    margin-bottom: 10px;
-    
-    display: flex;
-    align-items: center;
-`;
-const TodoAdder2ndRowInputWrapper = styled.div`
-    width  : 100%;
-    display: flex;
-    justify-content: space-between;
-
-    input {
-        width: 100%;
-        padding: 10px;
-        margin-right: 20px;
-    }
-    button {
-        padding: 10px;
-    }
-`;
 const TodoElementList = styled.div`
     width: 100%;
     position: absolute;
