@@ -126,6 +126,28 @@ def duplicate_todo(request):
 
 
 @require_http_methods(['POST'])
+def dup_again_todo(request):
+    """
+    POST : duplicate todo element [with changed date]
+    """
+    try:
+        req_data = json.loads(request.body.decode())
+
+        prev_todo = Todo.objects.get(pk=req_data["todo_id"])
+
+        prev_tag = prev_todo.tag.all()
+        prev_todo.pk = None
+        prev_todo.done = False  # Maybe Duplicated Jobs to be Done Again.
+        prev_todo.deadline = req_data["date"]
+        prev_todo.save()
+        prev_todo.tag.set(prev_tag)
+
+        return JsonResponse({"message": "success"}, status=200)
+    except (KeyError, JSONDecodeError):
+        return HttpResponseBadRequest()
+
+
+@require_http_methods(['POST'])
 def postpone_todo(request):
     """
     POST : postpone todo element

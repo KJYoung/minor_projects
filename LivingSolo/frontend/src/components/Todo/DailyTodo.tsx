@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
-import { CalTodoDay, GetDjangoDateByCalTodoDay } from '../../utils/DateTime';
+import { CalTodoDay, GetDjangoDateByCalTodoDay, TODAY } from '../../utils/DateTime';
 import { useDispatch, useSelector } from 'react-redux';
 import { TodoElement, deleteTodoCategory, postponeTodo, selectTodo } from '../../store/slices/todo';
 import { AppDispatch } from '../../store';
@@ -19,8 +19,7 @@ interface DailyTodoProps {
   setCurDay: React.Dispatch<React.SetStateAction<CalTodoDay>>,
 };
 
-const TODAY_ = new Date();
-const TODAY = {year: TODAY_.getFullYear(), month: TODAY_.getMonth(), day: TODAY_.getDate()};
+
 
 interface CategoricalTodos {
     id: number,

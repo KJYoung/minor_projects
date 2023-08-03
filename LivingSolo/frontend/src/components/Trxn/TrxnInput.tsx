@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Button, TextField } from '@mui/material';
 import { AppDispatch } from '../../store';
-import { ERRORSTATE } from '../../store/slices/core';
-import { createTrxn, fetchTrxns, selectTrxn } from '../../store/slices/trxn';
+import { createTrxn } from '../../store/slices/trxn';
 import { styled } from 'styled-components';
 
 import DatePicker from "react-datepicker";
@@ -25,13 +24,6 @@ function TrxnInput() {
   const [period, setPeriod] = useState<number>(0);
 
   const dispatch = useDispatch<AppDispatch>();
-  const { elements, errorState }  = useSelector(selectTrxn);
-
-  useEffect(() => {
-    if(errorState === ERRORSTATE.SUCCESS){
-      dispatch(fetchTrxns({}));
-    }
-  }, [elements, errorState, dispatch]);
 
   return (
     <TrxnInputDiv>

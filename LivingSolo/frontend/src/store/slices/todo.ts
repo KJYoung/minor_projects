@@ -108,6 +108,18 @@ export const duplicateTodo = createAsyncThunk(
     return response.data;
   }
 );
+
+interface dupAgainTodoReqType {
+  todoID: String | Number,
+  date: String,
+};
+export const dupAgainTodo = createAsyncThunk( // 오늘 또 하기, 내일 또 하기.
+  "todo/dupAgainTodo",
+  async (payload: dupAgainTodoReqType, { dispatch }) => {
+    const response = await client.post(`/api/todo/dupAgain/`, { todo_id: payload.todoID, date: payload.date });
+    return response.data;
+  }
+);
 export const postponeTodo = createAsyncThunk(
   "todo/postponeTodo",
   async (date: String, { dispatch }) => {
@@ -158,7 +170,7 @@ export const TodoSlice = createSlice({
 
     [
       toggleTodoDone, createTodo, createTodoCategory, 
-      duplicateTodo, postponeTodo,
+      duplicateTodo, dupAgainTodo, postponeTodo,
       editTodo, 
       deleteTodo, deleteTodoCategory
     ].forEach((reducer) => {

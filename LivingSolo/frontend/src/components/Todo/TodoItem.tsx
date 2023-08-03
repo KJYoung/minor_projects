@@ -1,12 +1,13 @@
 import React from 'react';
 import { styled } from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { TodoElement, deleteTodo, duplicateTodo, toggleTodoDone } from '../../store/slices/todo';
+import { TodoElement, deleteTodo, dupAgainTodo, duplicateTodo, toggleTodoDone } from '../../store/slices/todo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { AppDispatch } from '../../store';
 import { getContrastYIQ } from '../../styles/color';
 import { TagBubbleCompact } from '../general/TagBubble';
+import { A_EQUAL_B_CalTodoDay, A_LESS_THAN_B_CalTodoDay, GetDateTimeFormat2Django, TODAY, TODAY_, TOMORROW_, calTodoDayConst } from '../../utils/DateTime';
 
 interface TodoElementProps {
   todo: TodoElement,
@@ -40,6 +41,13 @@ export const TodoItem = ({ todo, fnMode, editID, setEditID, setEditMode }: TodoE
     }
   };
 
+  const dupAgainHandler = (id: number, dateObj: Date) => {
+    dispatch(dupAgainTodo({
+        todoID: id,
+        date: GetDateTimeFormat2Django(dateObj),
+    }));
+  };
+
   return <TodoElementWrapper key={todo.id}>
         <TodoElementColorCircle color={todo.color} onClick={() => doneToggle(todo.id, todo.done)} title={todo.category.name} ishard={todo.is_hard_deadline.toString()}>
             {todo.done && <FontAwesomeIcon icon={faCheck} fontSize={'13'} color={getContrastYIQ(todo.color)}/>}
@@ -54,6 +62,8 @@ export const TodoItem = ({ todo, fnMode, editID, setEditID, setEditMode }: TodoE
         </div>
         <div>
             {fnMode && <>
+                {A_EQUAL_B_CalTodoDay(calTodoDayConst(todo.deadline), TODAY) && <button onClick={() => dupAgainHandler(todo.id, TOMORROW_)}>내일또하기</button>}
+                {A_LESS_THAN_B_CalTodoDay(calTodoDayConst(todo.deadline), TODAY) && <button onClick={() => dupAgainHandler(todo.id, TODAY_)}>오늘또하기</button>}
                 <button onClick={() => editHandler(todo.id)}>수정</button>
                 <button onClick={() => dispatch(duplicateTodo(todo.id))}>복제</button>
                 <button onClick={() => deleteHandler(todo.id)}>삭제</button>    
