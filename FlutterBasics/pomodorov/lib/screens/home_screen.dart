@@ -11,6 +11,12 @@ class HomeScreen extends StatefulWidget {
 
 const timeAmount = 10;
 
+String format(int seconds) {
+  var duration = Duration(seconds: seconds);
+  var result = duration.toString().split('.')[0].substring(2);
+  return result;
+}
+
 class _HomeScreenState extends State<HomeScreen> {
   int totalSeconds = timeAmount, totalDone = 0;
   bool isRunning = false;
@@ -54,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               alignment: Alignment.center,
               child: Text(
-                '00:$totalSeconds',
+                format(totalSeconds),
                 style: TextStyle(
                   color: Theme.of(context).cardColor,
                   fontSize: 75,
