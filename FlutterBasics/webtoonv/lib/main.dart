@@ -33,7 +33,7 @@ class _AppState extends State<App> {
           ),
         ),
       ),
-      home: const HomeScreen(),
+      home: HomeScreen(),
     );
   }
 }
