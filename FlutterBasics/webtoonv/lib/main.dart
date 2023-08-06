@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:webtoonv/screens/home_screen.dart';
 
-void main() {
+void main() async {
   runApp(const App());
 }
 
@@ -32,17 +33,7 @@ class _AppState extends State<App> {
           ),
         ),
       ),
-      home: const Scaffold(
-        backgroundColor: Colors.amber,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TitleWidget(),
-            ],
-          ),
-        ),
-      ),
+      home: const HomeScreen(),
     );
   }
 }
