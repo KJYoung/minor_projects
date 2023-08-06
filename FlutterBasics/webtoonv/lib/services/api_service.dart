@@ -23,4 +23,30 @@ class ApiService {
       return webtoonList;
     }
   }
+
+  static Future<WebtoonDetailModel> getToonDetail(String id) async {
+    final response = await http.get(Uri.parse('$baseUrl/$id'));
+
+    if (response.statusCode == 200) {
+      final dynamic webtoons = jsonDecode(response.body);
+      return WebtoonDetailModel.fronJson(webtoons);
+    } else {
+      throw Error();
+    }
+  }
+
+  static Future<List<WebtoonEpisodeModel>> getToonEpisodes(String id) async {
+    List<WebtoonEpisodeModel> episodesList = [];
+    final response = await http.get(Uri.parse('$baseUrl/$id/episodes'));
+
+    if (response.statusCode == 200) {
+      final dynamic episodes = jsonDecode(response.body);
+      for (var episode in episodes) {
+        episodesList.add(WebtoonEpisodeModel.fronJson(episode));
+      }
+      return episodesList;
+    } else {
+      throw Error();
+    }
+  }
 }
