@@ -1,25 +1,27 @@
 import { Button, Typography } from "@mui/material";
-import { TabState } from "../../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { styled } from "styled-components";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
-const NavDrawer = ({ toggleDrawer }: {toggleDrawer : any}) => (
-    <NavDrawerDiv  role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
-      <CloseRowDiv onClick={toggleDrawer(false)}>
-        <div>
-            <FontAwesomeIcon icon={faClose} />
-            <Typography variant="h6" component="div">Close</Typography>
-        </div>
-      </CloseRowDiv>
-      <Button onClick={toggleDrawer(false, TabState.Home)}>Home</Button>
-      <Button onClick={toggleDrawer(false, TabState.Tag)}>Tag</Button>
-      <Button onClick={toggleDrawer(false, TabState.Transaction)}>Transaction</Button>
-      <Button onClick={toggleDrawer(false, TabState.Calendar)}>Calendar</Button>
-      <Button onClick={toggleDrawer(false, TabState.Stockpile)}>Stockpile</Button>
-      <Button onClick={toggleDrawer(false, TabState.Community)}>Community</Button>
-    </NavDrawerDiv>
-  );
+const NavDrawer = ({ toggleDrawer }: {toggleDrawer : any}) => {
+  const navigate = useNavigate();
+
+  return <NavDrawerDiv  role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+    <CloseRowDiv onClick={toggleDrawer(false)}>
+      <div>
+          <FontAwesomeIcon icon={faClose} />
+          <Typography variant="h6" component="div">Close</Typography>
+      </div>
+    </CloseRowDiv>
+    <Button onClick={() => navigate('/home')}>Home</Button>
+    <Button onClick={() => navigate('/tag')}>Tag</Button>
+    <Button onClick={() => navigate('/trxn')}>Transaction</Button>
+    <Button onClick={() => navigate('/todo')}>Calendar</Button>
+    <Button onClick={() => navigate('/stockpile')}>Stockpile</Button>
+    <Button onClick={() => navigate('/community')}>Community</Button>
+  </NavDrawerDiv>
+};
 
 const NavDrawerDiv = styled.div`
     width: 250px;

@@ -11,40 +11,41 @@ import Drawer from '@mui/material/Drawer';
 import { styled } from 'styled-components';
 import NavDrawer from './components/general/NavDrawer';
 import TodoMain from './containers/TodoMain';
-
-export enum TabState { DEPRECATED, Home, Tag, Transaction, Calendar, Stockpile, Community };
-const tab2Str = (e: TabState) => {
-  switch (e) {
-    case TabState.Home:
-      return 'Home';
-    case TabState.Tag:
-      return 'Tag';
-    case TabState.Transaction:
-      return 'Transaction';
-    case TabState.Calendar:
-      return 'Calendar(ToDo)';
-    case TabState.Stockpile:
-      return 'Stockpile';
-    case TabState.Community:
-      return 'Community';
-    default:
-      return 'Unknown';
-  }
-}
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 function App() {
-  const [tabState, setTabState] = useState<TabState>(TabState.Transaction);
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  return <>
+    {/* <GlobalStyles /> */}
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="*"
+          element={
+            <>
+              <WebComponent />
+            </>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  </>
+};
 
-  const toggleDrawer = (open: boolean, newTabState?: TabState) =>
+const WebComponent = () => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const location = useLocation();
+
+  const toggleDrawer = (open: boolean) =>
     (event: React.KeyboardEvent | React.MouseEvent) => {
       if(event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) return;
-      if(newTabState) setTabState(newTabState); // Set New Tab State.
       setIsDrawerOpen(open);
     };
-
-  return (
-      <AppDiv>
+  
+  return <Routes>
+    <Route
+      path="*"
+      element={
+        <AppDiv>
         {/* Material Style Nav Bar */}
         <Box>
           <AppBar position="static" sx={{ height: 64 }}>
@@ -60,26 +61,30 @@ function App() {
                 <MenuIcon />
               </IconButton>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                {tab2Str(tabState)}
+                {location.pathname.substring(1)}
               </Typography>
               <Button color="inherit">Login</Button>
             </Toolbar>
           </AppBar>
         </Box>
         {/* Main Contents */}
-        {tabState === TabState.Home && <span>Home</span>}
-        {tabState === TabState.Tag && <span>Tag</span>}
-        {tabState === TabState.Transaction && <TrxnMain />}
-        {tabState === TabState.Calendar && <TodoMain />}
-        {tabState === TabState.Stockpile && <span>Stockpile</span>}
-        {tabState === TabState.Community && <span>Community</span>}
+        <Routes>
+            <Route path="community" element={<span>Community</span>} />
+            <Route path="stockpile" element={<span>Stockpile</span>} />
+            <Route path="todo" element={<TodoMain />} />
+            <Route path="trxn" element={<TrxnMain />} />
+            <Route path="tag" element={<span>Tag</span>} />
+            <Route path="*" element={<span>Home</span>} />
+        </Routes>
         
         <Drawer open={isDrawerOpen}>
           <NavDrawer toggleDrawer={toggleDrawer}/>
         </Drawer>
       </AppDiv>
-      );
-    }
+      }
+    />
+  </Routes>
+};
 
 const AppDiv = styled.div`
   width: 100%;
