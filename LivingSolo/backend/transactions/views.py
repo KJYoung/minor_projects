@@ -3,6 +3,7 @@
 """
 import json
 from json.decoder import JSONDecodeError
+from calendar import monthrange
 
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
@@ -17,7 +18,7 @@ def general_transaction(request):
     POST : create element
     """
     if request.method == 'GET':
-        # Params: combined<Boolean?>, keyword<String?>, year<Number?(Number if month is valid)>, month<Number?>
+        # Params: keyword<String?>, year<Number?(Number if month is valid)>, month<Number?>
 
         query_args = {}
         query_args["combined"] = bool(request.GET.get("combined", False))
@@ -82,6 +83,39 @@ def general_transaction(request):
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
         return JsonResponse({"id": element.id, "memo": element.memo}, status=201)
+
+
+@require_http_methods(['GET'])
+def general_trxn_combined(request):
+    """
+    GET : get trxn list - Day Combined
+    """
+    # Params: year<Number>, month<Number>
+
+    query_args = {}
+    query_args["year"] = request.GET.get("year", None)
+    query_args["month"] = request.GET.get("month", None)
+
+    trxn_all = Transaction.objects.all()
+
+    # Filtering
+    # 1. Filter by Year & Month
+    if query_args["year"] and query_args["month"]:
+        filtered_trxn = trxn_all.filter(
+            date__year=query_args["year"], date__month=query_args["month"]
+        )
+    else:
+        return HttpResponseBadRequest()
+
+    # result = [[]] *(monthrange(int(query_args["year"]), int(query_args["month"]))[1] + 1)
+    # 위와 같이 하면 ex) result[27].append(~) 했을 때, 모든 Array에 append. 즉 각 element의 array reference가 같아진다.
+    result = [
+        0 for x in range((monthrange(int(query_args["year"]), int(query_args["month"]))[1] + 1))
+    ]
+    for trxn_elem in filtered_trxn:
+        result[trxn_elem.date.day] += trxn_elem.amount
+
+    return JsonResponse({"elements": result}, safe=False)
 
 
 @require_http_methods(['PUT', 'DELETE'])

@@ -38,7 +38,6 @@ export function TrxnGridNav({viewMode, setViewMode} : TrxnGridNavProps) {
     const fetchObj: TrxnFetchReqType = {
         yearMonth: CUR_MONTH,
         searchKeyword: "",
-        dayCombined: false
     };
 
     const dispatch = useDispatch<AppDispatch>();
@@ -95,6 +94,7 @@ export function TrxnGridNav({viewMode, setViewMode} : TrxnGridNavProps) {
     return <TrxnGridNavWrapper>
         <div>
             <TrxnGridModeBtn active={(viewMode === ViewMode.Detail).toString()} onClick={() => setViewMode(ViewMode.Detail)}>Detailed</TrxnGridModeBtn>
+            <TrxnGridModeBtn active={(viewMode === ViewMode.Combined).toString()} onClick={() => setViewMode(ViewMode.Combined)}>Combined</TrxnGridModeBtn>
             <TrxnGridModeBtn active={(viewMode === ViewMode.Graph).toString()} onClick={() => setViewMode(ViewMode.Graph)}>Graphic</TrxnGridModeBtn>
         </div>
         {viewMode === ViewMode.Detail && <TrxnGridDetailedSubNav>

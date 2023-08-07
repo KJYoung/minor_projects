@@ -23,10 +23,12 @@ export interface TrxnCreateReqType {
   amount: number,
 };
 export interface TrxnFetchReqType {
-  dayCombined?: boolean, // 일별 거래로 뭉쳐서 요청.
   searchKeyword?: string, // 검색 키워드.
   yearMonth?: CalMonth, // 년/월 정보.
   // fetchSize?: number, // 가져오는 Transaction 개수.
+};
+export interface CombinedTrxnFetchReqType {
+  yearMonth: CalMonth, // 년/월 정보.
 };
 
 export enum SortState {
@@ -55,6 +57,7 @@ export const defaultTrxnSortState : TrxnSortState = {
 interface TrxnState {
   rawElements: TrxnElement[], // Raw Fetched Data From Backend
   elements: TrxnElement[], // Sorted, Filtered Data in Frontend
+  combined: Number[], // Combined Daily Amount
   errorState: ERRORSTATE,
   sortState: TrxnSortState,
   filterTag: TagElement[],
@@ -63,6 +66,7 @@ interface TrxnState {
 export const initialState: TrxnState = {
   rawElements: [], 
   elements: [],
+  combined: [],
   errorState: ERRORSTATE.DEFAULT,
   sortState: defaultTrxnSortState,
   filterTag: [],
@@ -71,13 +75,7 @@ export const initialState: TrxnState = {
 export const fetchTrxns = createAsyncThunk(
   "trxn/fetchTrxns",
   async (payload: TrxnFetchReqType) => {
-    let reqLink = "/api/trxn/";
-
-    if(payload.dayCombined){
-      reqLink = `${reqLink}?combined=True`
-    }else{
-      reqLink = `${reqLink}?combined=False`
-    };
+    let reqLink = "/api/trxn/?combined=False";
 
     if(payload.yearMonth){
       if(payload.yearMonth.month)
@@ -94,6 +92,22 @@ export const fetchTrxns = createAsyncThunk(
     return response.data;
   }
 );
+
+export const fetchCombinedTrxns = createAsyncThunk(
+  "trxn/fetchCombinedTrxns",
+  async (payload: CombinedTrxnFetchReqType) => {
+    let reqLink = "/api/trxn/combined/";
+
+    if(payload.yearMonth.month)
+      reqLink = `${reqLink}?year=${payload.yearMonth.year}&month=${payload.yearMonth.month}`;
+    else
+      reqLink = `${reqLink}?year=${payload.yearMonth.year}`;
+
+    const response = await client.get(reqLink);
+    return response.data;
+  }
+);
+
 export const createTrxn = createAsyncThunk(
   "trxn/createTrxn",
   async (trxnCreateObj: TrxnCreateReqType, { dispatch }) => {
@@ -149,6 +163,8 @@ const trxnSortFn = (trxnList: TrxnElement[], trxnSortState: TrxnSortState, filte
   
   return trxnList;
 };
+
+
 export const TrxnSlice = createSlice({
   name: "trxn",
   initialState,
@@ -170,6 +186,10 @@ export const TrxnSlice = createSlice({
       state.rawElements = action.payload.elements;
       state.elements = action.payload.elements;
       state.errorState = ERRORSTATE.NORMAL;
+    });
+    builder.addCase(fetchCombinedTrxns.fulfilled, (state, action) => {
+      console.log(action.payload);
+      state.combined = action.payload.elements;
     });
     builder.addCase(createTrxn.fulfilled, (state, action) => {
       state.errorState = ERRORSTATE.SUCCESS;
