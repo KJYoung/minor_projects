@@ -69,7 +69,7 @@ def general_transaction(request):
             req_data = json.loads(request.body.decode())
             element = Transaction(
                 memo=req_data["memo"],
-                amount=req_data["amount"],
+                amount=-req_data["amount"] if req_data["isMinus"] else req_data["amount"],
                 period=req_data["period"],
                 date=req_data["date"],
             )

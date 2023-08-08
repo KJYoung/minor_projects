@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { ERRORSTATE } from '../../store/slices/core';
-import { fetchCombinedTrxns, fetchTrxns, selectTrxn } from '../../store/slices/trxn';
+import { fetchCombinedTrxns, fetchTrxns } from '../../store/slices/trxn';
 import TrxnInput from '../../components/Trxn/TrxnInput';
 import { fetchTags, fetchTagsIndex } from '../../store/slices/tag';
 import { CUR_MONTH, CalMonth } from '../../utils/DateTime';
@@ -20,16 +19,13 @@ function TrxnMain() {
   const [curMonth, setCurMonth] = useState<CalMonth>(CUR_MONTH);
 
   const dispatch = useDispatch<AppDispatch>();
-  const { errorState }  = useSelector(selectTrxn);
 
   useEffect(() => {
-    if(errorState === ERRORSTATE.SUCCESS || errorState === ERRORSTATE.DEFAULT){
-      dispatch(fetchTrxns({yearMonth: curMonth}));
-      dispatch(fetchCombinedTrxns({yearMonth: curMonth}));
-      dispatch(fetchTags());
-      dispatch(fetchTagsIndex());
-    }
-  }, [errorState, curMonth, dispatch]);
+    dispatch(fetchTrxns({yearMonth: curMonth}));
+    dispatch(fetchCombinedTrxns({yearMonth: curMonth}));
+    dispatch(fetchTags());
+    dispatch(fetchTagsIndex());
+  }, [curMonth, dispatch]);
 
   return (
     <div className="App">

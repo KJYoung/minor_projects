@@ -21,6 +21,7 @@ function TrxnInput() {
   const [tags, setTags] = useState<TagElement[]>([]);
   const [isPeriodic, setIsPeriodic] = useState<boolean>(false); // is periodic transaction?
   const [hasDiffTime, setHasDiffTime] = useState<boolean>(false); // 값을 지출한 날과 그 값을 실제로 소비한 날이 다른가?
+  const [isMinus, setIsMinus] = useState<boolean>(false);
   const [period, setPeriod] = useState<number>(0);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -34,18 +35,24 @@ function TrxnInput() {
           <input type="checkbox" id="hasDiffTimeChecker" checked={hasDiffTime} onChange={(e) => setHasDiffTime((hdt) => !hdt)} />
           {hasDiffTime && <DatePicker selected={realDate} onChange={(date: Date) => setRealDate(date)} />}
         </div>
-        <div>
-          <label htmlFor="isPeriodic">주기성?</label>
-          <input type="checkbox" id="isPeriodic" checked={isPeriodic} onChange={(e) => setIsPeriodic((ip) => !ip)} />
-          <input placeholder='주기' type='number' value={period.toString()} onChange={(e) => {
-              try{
-                const num = Number(e.target.value);
-                setPeriod(num >= 0 ? num : 0);
-              } catch {
-                console.log("NaN" + e.target.value);
-              };  
-            }} pattern="[0-9]+" min={0} disabled={!isPeriodic}/>
-        </div>
+        <Trxn1stRowDivCheckColumn>
+          <div>
+            <label htmlFor="isPeriodic">주기성?</label>
+            <input type="checkbox" id="isPeriodic" checked={isPeriodic} onChange={(e) => setIsPeriodic((ip) => !ip)} />
+            <input placeholder='주기' type='number' value={period.toString()} onChange={(e) => {
+                try{
+                  const num = Number(e.target.value);
+                  setPeriod(num >= 0 ? num : 0);
+                } catch {
+                  console.log("NaN" + e.target.value);
+                };  
+              }} pattern="[0-9]+" min={0} disabled={!isPeriodic}/>
+          </div>
+          <div>
+            <label htmlFor="isMinus">지출</label>
+            <input type="checkbox" id="isMinus" checked={isMinus} onChange={(e) => setIsMinus((iM) => !iM)} />
+          </div>
+        </Trxn1stRowDivCheckColumn>
         <TagInputForTrxnInput tags={tags} setTags={setTags}/>
         <NewAmountInput amount={amount} setAmount={setAmount}/>
       </Trxn1stRowDiv>
@@ -57,7 +64,8 @@ function TrxnInput() {
               amount,
               period,
               date: GetDateTimeFormat2Django(trxnDate),
-              tag: tags
+              tag: tags,
+              isMinus,
             }));
             setMemo(""); setAmount(0); setPeriod(0); setTags([]);
         }}>기입</Button>
@@ -91,6 +99,12 @@ const Trxn1stRowDiv = styled.div`
   margin-top: 5px;
   margin-bottom: 5px;
 `;
+
+const Trxn1stRowDivCheckColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const Trxn2ndRowDiv = styled.div`
   display: grid;
   grid-template-columns: 12fr 2fr;

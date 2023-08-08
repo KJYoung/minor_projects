@@ -21,6 +21,7 @@ export interface TrxnCreateReqType {
   tag: TagElement[],
   period: number,
   amount: number,
+  isMinus: boolean,
 };
 export interface TrxnFetchReqType {
   searchKeyword?: string, // 검색 키워드.

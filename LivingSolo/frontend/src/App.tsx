@@ -80,6 +80,8 @@ const WebComponent = () => {
         <Drawer open={isDrawerOpen}>
           <NavDrawer toggleDrawer={toggleDrawer}/>
         </Drawer>
+        
+        <Footer></Footer>
       </AppDiv>
       }
     />
@@ -89,5 +91,12 @@ const WebComponent = () => {
 const AppDiv = styled.div`
   width: 100%;
   height: 100%;
+`;
+
+const Footer = styled.div`
+  background-color: gray;
+  width: 100%;
+  height: 50px;
+  margin-top: 40px;
 `;
 export default App;
