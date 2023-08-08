@@ -114,7 +114,6 @@ def general_trxn_combined(request):
     ]
     for trxn_elem in filtered_trxn:
         result[trxn_elem.date.day] += trxn_elem.amount
-
     return JsonResponse({"elements": result}, safe=False)
 
 

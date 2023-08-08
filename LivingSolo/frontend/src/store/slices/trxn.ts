@@ -57,7 +57,7 @@ export const defaultTrxnSortState : TrxnSortState = {
 interface TrxnState {
   rawElements: TrxnElement[], // Raw Fetched Data From Backend
   elements: TrxnElement[], // Sorted, Filtered Data in Frontend
-  combined: Number[], // Combined Daily Amount
+  combined: number[], // Combined Daily Amount
   errorState: ERRORSTATE,
   sortState: TrxnSortState,
   filterTag: TagElement[],
