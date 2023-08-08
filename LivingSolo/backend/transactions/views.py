@@ -110,10 +110,22 @@ def general_trxn_combined(request):
     # result = [[]] *(monthrange(int(query_args["year"]), int(query_args["month"]))[1] + 1)
     # 위와 같이 하면 ex) result[27].append(~) 했을 때, 모든 Array에 append. 즉 각 element의 array reference가 같아진다.
     result = [
-        0 for x in range((monthrange(int(query_args["year"]), int(query_args["month"]))[1] + 1))
+        {"amount": 0, "tag": []}
+        for x in range((monthrange(int(query_args["year"]), int(query_args["month"]))[1] + 1))
     ]
     for trxn_elem in filtered_trxn:
-        result[trxn_elem.date.day] += trxn_elem.amount
+        result[trxn_elem.date.day]['amount'] += trxn_elem.amount
+
+        for tag_elem in list(trxn_elem.tag.all().values()):
+            tag_json = {
+                "id": tag_elem['id'],
+                "name": tag_elem['name'],
+                "color": tag_elem['color'],
+            }
+            if tag_json in result[trxn_elem.date.day]['tag']:
+                pass
+            else:
+                result[trxn_elem.date.day]['tag'].append(tag_json)
     return JsonResponse({"elements": result}, safe=False)
 
 

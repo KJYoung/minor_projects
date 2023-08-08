@@ -58,7 +58,7 @@ export const defaultTrxnSortState : TrxnSortState = {
 interface TrxnState {
   rawElements: TrxnElement[], // Raw Fetched Data From Backend
   elements: TrxnElement[], // Sorted, Filtered Data in Frontend
-  combined: number[], // Combined Daily Amount
+  combined: { amount: number, tag: TagElement[] }[], // Combined Daily Amount
   errorState: ERRORSTATE,
   sortState: TrxnSortState,
   filterTag: TagElement[],
@@ -189,18 +189,19 @@ export const TrxnSlice = createSlice({
       state.errorState = ERRORSTATE.NORMAL;
     });
     builder.addCase(fetchCombinedTrxns.fulfilled, (state, action) => {
-      console.log(action.payload);
       state.combined = action.payload.elements;
     });
-    builder.addCase(createTrxn.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
-    }); 
-    builder.addCase(editTrxn.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
-    }); 
-    builder.addCase(deleteTrxn.fulfilled, (state, action) => {
-      state.errorState = ERRORSTATE.SUCCESS;
-    }); 
+
+    [
+      createTrxn, editTrxn, deleteTrxn,
+    ].forEach((reducer) => {
+      builder.addCase(reducer.pending, (state, action) => {
+        state.errorState = ERRORSTATE.DEFAULT;
+      });
+      builder.addCase(reducer.fulfilled, (state, action) => {
+        state.errorState = ERRORSTATE.SUCCESS;
+      });
+    });
   },
 });
 

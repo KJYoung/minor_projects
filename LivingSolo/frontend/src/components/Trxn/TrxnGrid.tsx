@@ -112,13 +112,10 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
       );
   }else if(viewMode === ViewMode.Combined){
     return (
-        <TrxnGridDetailHeaderDiv className='noselect'>
-            <TrxnGridDetailHeaderItem>
-                <span>Index</span>
-            </TrxnGridDetailHeaderItem>
+        <TrxnGridCombinedHeaderDiv className='noselect'>
             {trxnGridDetailFilterHeader(sortState.date, "Date", TrxnSortTarget.Date)}
-            {trxnGridDetailFilterHeader(sortState.period, "Period", TrxnSortTarget.Period)}
-
+            {trxnGridDetailFilterHeader(sortState.amount, "Amount", TrxnSortTarget.Amount)}
+            
             {/* Unique Logic For Tag Filtering */}
             {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader active={'false'} onClick={() => TrxnSortStateHandler(TrxnSortTarget.Tag)}>
                 <span>Tag</span>
@@ -126,14 +123,8 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
             {sortState.tag === SortState.TagFilter && <div>
                 <TagInputForGridHeader tags={tags} setTags={setTags} closeHandler={() => TrxnSortStateHandler(TrxnSortTarget.Tag)}/>
             </div>}
-            
-            {trxnGridDetailFilterHeader(sortState.amount, "Amount", TrxnSortTarget.Amount)}
-            {trxnGridDetailFilterHeader(sortState.memo, "Memo", TrxnSortTarget.Memo)}
-            
-            <TrxnGridDetailFilterReset onClick={() => TrxnSortStateClear()}>
-                <span>{!isTrxnSortStateDefault(sortState) && 'Reset Filter'}</span>
-            </TrxnGridDetailFilterReset>
-        </TrxnGridDetailHeaderDiv>
+
+        </TrxnGridCombinedHeaderDiv>
       );
   }else if(viewMode === ViewMode.Graph){
       return <TrxnGridGraphicHeader/>
@@ -246,17 +237,19 @@ interface CombinedTrxnGridItemProps {
     index: number,
     date: string,
     amount: number,
+    tag: TagElement[],
 };
 
-export function CombinedTrxnGridItem({ index, date, amount }: CombinedTrxnGridItemProps) {
+export function CombinedTrxnGridItem({ index, date, amount, tag : tag_ }: CombinedTrxnGridItemProps) {
     if(index === 0 || amount === 0)
         return <></>;
-    
+
+    const tag = tag_.length > 5 ? tag_.slice(0, 5) : tag_;
+
     return (<TrxnGridCombinedItemDiv key={index}>
         <span>{date}</span>
-        <span>{'-'}</span>
-        {/* AMOUNT */}
         <span className='amount'>{amount.toLocaleString()}</span>
+        <span>{tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}</span>
     </TrxnGridCombinedItemDiv>);
   };
 
@@ -266,7 +259,9 @@ const TrxnGridCombinedTemplate = styled.div`
     padding-left: 70px;
     padding-right: 70px;   
 `;
-
+const TrxnGridCombinedHeaderDiv = styled(TrxnGridCombinedTemplate)`
+    min-height: 35px;
+`;
 const TrxnGridCombinedItemDiv = styled(TrxnGridCombinedTemplate)`
     background-color: var(--ls-gray_lighter2);
     &:nth-child(4) { 
