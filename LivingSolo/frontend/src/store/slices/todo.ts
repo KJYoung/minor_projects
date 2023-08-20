@@ -59,6 +59,12 @@ export interface TodoCategoryCreateReqType {
   tag: TagElement[],
   color: string,
 };
+export interface TodoCategoryEditReqType {
+  id: number,
+  name: string,
+  tag: TagElement[],
+  color: string,
+};
 
 interface TodoState {
   elements: (TodoElement[])[],
@@ -146,6 +152,13 @@ export const createTodoCategory = createAsyncThunk(
     return response.data;
   }
 );
+export const editTodoCategory = createAsyncThunk(
+  "todo/editTodoCategory",
+  async (payload: TodoCategoryEditReqType) => {
+    const response = await client.put(`/api/todo/category/${payload.id}/`, payload);
+    return response.data;
+  }
+);
 export const deleteTodoCategory = createAsyncThunk(
   "todo/deleteTodoCategory",
   async (todoCategoryID: String | Number, { dispatch }) => {
@@ -169,7 +182,7 @@ export const TodoSlice = createSlice({
     });
 
     [
-      toggleTodoDone, createTodo, createTodoCategory, 
+      toggleTodoDone, createTodo, createTodoCategory, editTodoCategory,
       duplicateTodo, dupAgainTodo, postponeTodo,
       editTodo, 
       deleteTodo, deleteTodoCategory

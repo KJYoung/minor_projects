@@ -2,18 +2,21 @@ import { styled } from "styled-components";
 import { CondRendAnimState, condRendMounted, condRendUnmounted, onAnimEnd } from "../../utils/Rendering";
 import { useState } from "react";
 import { TagElement } from "../../store/slices/tag";
-import { TodoCategoryCreateReqType, createTodoCategory } from "../../store/slices/todo";
+import { TodoCategory, TodoCategoryCreateReqType, createTodoCategory } from "../../store/slices/todo";
 import { useDispatch } from "react-redux";
 import { TagInputForTodoCategory } from "../Trxn/TagInput";
 import { AppDispatch } from "../../store";
-import { CalTodoDay } from "../../utils/DateTime";
 import { getRandomHex } from "../../styles/color";
 
 
-interface TodoAdderProps {
+interface CategoryAdderProps {
     addMode: CondRendAnimState,
     setAddMode: React.Dispatch<React.SetStateAction<CondRendAnimState>>,
-    curDay: CalTodoDay,
+};
+
+interface CategoryEditorProps extends CategoryAdderProps {
+    editObj: TodoCategory,
+    editCompleteHandler: () => void,
 };
 
 const todoCategorySkeleton = {
@@ -21,10 +24,10 @@ const todoCategorySkeleton = {
     color: '#000000',
 }
 
-export const CategoryAdder = ({ addMode, setAddMode, curDay } : TodoAdderProps) => {
+export const CategoryAdder = ({ addMode, setAddMode } : CategoryAdderProps) => {
     const dispatch = useDispatch<AppDispatch>();
 
-    // Todo List - Create
+    // Category List - Create
     const [categTags, setCategTags] = useState<TagElement[]>([]);
     const [newTodoCategory, setNewTodoCategory] = useState<TodoCategoryCreateReqType>({...todoCategorySkeleton, tag: categTags});
 
@@ -39,6 +42,30 @@ export const CategoryAdder = ({ addMode, setAddMode, curDay } : TodoAdderProps) 
                 setCategTags([]);
                 setNewTodoCategory({...todoCategorySkeleton, tag: categTags});
             }}>Create</button>
+        </CategoryAdderInputWrapper>
+    </CategoryAdderRow>
+    
+</CategoryAdderWrapper>
+};
+
+export const CategoryEditor = ({ addMode, setAddMode, editObj, editCompleteHandler } : CategoryEditorProps) => {
+    // const dispatch = useDispatch<AppDispatch>();
+
+    // Category List - Edit
+    const [categTags, setCategTags] = useState<TagElement[]>(editObj.tag);
+    const [newTodoCategory, setNewTodoCategory] = useState<TodoCategoryCreateReqType>({...editObj});
+
+    return <CategoryAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
+    <CategoryAdderRow>
+        <TodoElementColorCircle color={newTodoCategory.color} ishard={'false'} onClick={() => setNewTodoCategory((nTC) => { return {...nTC, color: getRandomHex()}})}></TodoElementColorCircle>
+        <TagInputForTodoCategory tags={categTags} setTags={setCategTags} closeHandler={() => {}}/>
+        <CategoryAdderInputWrapper>
+            <input type="text" placeholder='Category Name' value={newTodoCategory.name} onChange={(e) => setNewTodoCategory((nTC) => { return {...nTC, name: e.target.value}})}/>
+            <button onClick={() => { 
+                // dispatch(createTodoCategory({...newTodoCategory, tag: categTags}));
+                // setCategTags([]);
+                // setNewTodoCategory({...todoCategorySkeleton, tag: categTags});
+            }}>Edit</button>
         </CategoryAdderInputWrapper>
     </CategoryAdderRow>
     

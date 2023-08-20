@@ -387,13 +387,8 @@ export const TagInputForTodo = ({ tags, setTags, closeHandler }: GridTagInputPro
 };
 
 export const TagInputForTodoCategory = ({ tags, setTags, closeHandler }: GridTagInputProps) => {
-  const { elements }  = useSelector(selectTag);
   const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
   const [open, setOpen] = React.useState<boolean>(false);
-  
-  useEffect(() => {
-    setTags([]);
-  }, [elements, setTags]);
 
   const handleClickOpen = () => {
     setOpen(true);

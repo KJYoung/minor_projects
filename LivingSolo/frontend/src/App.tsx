@@ -12,11 +12,13 @@ import { styled } from 'styled-components';
 import NavDrawer from './components/general/NavDrawer';
 import TodoMain from './containers/TodoMain';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { ReactNotifications } from 'react-notifications-component';
 
 function App() {
   return <>
     {/* <GlobalStyles /> */}
     <BrowserRouter>
+      <ReactNotifications />
       <Routes>
         <Route
           path="*"

@@ -13,6 +13,8 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
+import './styles/react-notification-custom.css';
+
 document.getElementById('root')?.setAttribute('spellcheck', 'false');
 
 const GlobalStyles = createGlobalStyle`

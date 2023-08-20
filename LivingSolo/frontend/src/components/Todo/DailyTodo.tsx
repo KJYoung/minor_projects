@@ -8,7 +8,8 @@ import { TodoItem } from './TodoItem';
 import { CondRendAnimState, toggleCondRendAnimState, defaultCondRendAnimState } from '../../utils/Rendering';
 import { TagBubbleCompact } from '../general/TagBubble';
 import { TodoAdder, TodoEditor } from './TodoAdder';
-import { CategoryAdder } from './CategoryAdder';
+import { CategoryAdder, CategoryEditor } from './CategoryAdder';
+import { notificationDefault } from '../../utils/sendNoti';
 
 enum TodoListMode {
     TodoGeneral, CategoryGeneral, TodoFunctional,
@@ -47,6 +48,137 @@ const categoricalSlicer = (todoItems : TodoElement[]) : CategoricalTodos[] => {
     return result;
 };
 
+interface DailyTodoHeaderProps {
+    headerMode: TodoListMode,
+    setHeaderMode: (tLM : TodoListMode) => void,
+    addMode: CondRendAnimState,
+    setAddMode: React.Dispatch<React.SetStateAction<CondRendAnimState>>,
+    curDay: CalTodoDay,
+    setCurDay: React.Dispatch<React.SetStateAction<CalTodoDay>>,
+    categoryFn: CategoryFnMode,
+    setCategoryFn: React.Dispatch<React.SetStateAction<CategoryFnMode>>,
+    categorySort: boolean,
+    setCategorySort: React.Dispatch<React.SetStateAction<boolean>>,
+    setEditID: React.Dispatch<React.SetStateAction<number>>,
+};
+
+enum CategoryFnMode {
+    LIST, ADD, EDIT, DELETE
+};
+
+const DailyTodoHeader = ({ 
+                            headerMode, setHeaderMode, addMode, setAddMode, curDay, setCurDay,
+                            categoryFn, setCategoryFn, categorySort, setCategorySort, setEditID,
+                        }: DailyTodoHeaderProps) => 
+{
+    const dispatch = useDispatch<AppDispatch>();
+    const { categories } = useSelector(selectTodo);
+
+    const toggleCategoryPanel = () => {
+        setHeaderMode(headerMode === TodoListMode.CategoryGeneral ? TodoListMode.TodoGeneral : TodoListMode.CategoryGeneral);
+    };
+
+    const categoryAddToggleHandler = () => {
+        if(categoryFn === CategoryFnMode.LIST || categoryFn === CategoryFnMode.DELETE){
+            toggleCondRendAnimState(addMode, setAddMode); // ON
+            setCategoryFn(CategoryFnMode.ADD);
+        }else if(categoryFn === CategoryFnMode.ADD){
+            toggleCondRendAnimState(addMode, setAddMode); // OFF
+            setCategoryFn(CategoryFnMode.LIST);
+        }else{
+            notificationDefault('Category', 'EDIT 일 때는 ADD로 전환할 수 없어요.');
+        }
+    };
+
+    const categoryEditToggleHandler = () => {
+        if(categoryFn === CategoryFnMode.LIST || categoryFn === CategoryFnMode.DELETE){
+            toggleCondRendAnimState(addMode, setAddMode);
+            setCategoryFn(CategoryFnMode.EDIT);
+            setEditID(categories[0].id);
+        }else if(categoryFn === CategoryFnMode.EDIT){
+            toggleCondRendAnimState(addMode, setAddMode);
+            setCategoryFn(CategoryFnMode.LIST);
+        }else{
+            notificationDefault('Category', 'ADD 일 때는 EDIT로 전환할 수 없어요.');
+        }
+    };
+
+    const categoryDeleteToggleHandler = () => {
+        if(categoryFn === CategoryFnMode.ADD || categoryFn === CategoryFnMode.EDIT){
+            toggleCondRendAnimState(addMode, setAddMode);
+        }
+        if(categoryFn === CategoryFnMode.DELETE){
+            setCategoryFn(CategoryFnMode.LIST);
+        }else{
+            setCategoryFn(CategoryFnMode.DELETE);
+        }
+    }
+
+    return <DayHeaderRow className='noselect'>
+    <DayH1>{curDay.year}년 {curDay.month + 1}월 {curDay.day}{curDay.day && '일'}</DayH1>
+    <DayFn>
+        {headerMode === TodoListMode.CategoryGeneral && <>
+            <DayFnBtn onClick={() => toggleCategoryPanel()}>
+                {<span>돌아가기</span>}
+            </DayFnBtn>
+            <DayFnBtn onClick={categoryAddToggleHandler}>
+                {categoryFn === CategoryFnMode.ADD ? <>
+                    <span>추가</span><span>완료</span>
+                </> : <>
+                    <span>카테고리</span><span>추가</span>
+                </>}
+            </DayFnBtn>
+            <DayFnBtn onClick={categoryEditToggleHandler}>
+                {categoryFn === CategoryFnMode.EDIT ? <>
+                    <span>수정</span><span>완료</span>
+                </> : <>
+                    <span>카테고리</span><span>수정</span>
+                </>}
+            </DayFnBtn>
+            <DayFnBtn onClick={categoryDeleteToggleHandler}>
+                {categoryFn === CategoryFnMode.DELETE ? <>
+                    <span>삭제</span><span>완료</span>
+                </> : <>
+                    <span>카테고리</span><span>삭제</span>
+                </>}
+            </DayFnBtn>
+        </>}
+        {headerMode === TodoListMode.TodoGeneral && <>
+            <DayFnBtn onClick={() => toggleCategoryPanel()}>   
+                <span>카테고리</span><span>관리</span>
+            </DayFnBtn>
+            <DayFnBtn onClick={() => toggleCondRendAnimState(addMode, setAddMode)}>
+                {addMode.isMounted && addMode.showElem ? <>
+                    <span>추가</span><span>완료</span>
+                </> : <>
+                    <span>투두</span><span>추가</span>
+                </>}
+            </DayFnBtn>
+            <DayFnBtn onClick={() => setCategorySort((cM) => !cM)}>
+                {categorySort && <span>중요도</span>}
+                {!categorySort && <span>카테고리</span>}
+                <span>정렬</span>
+            </DayFnBtn>     
+            <DayFnBtn onClick={() => setCurDay(TODAY)}>오늘로</DayFnBtn>
+            <DayFnBtn onClick={() => setHeaderMode(TodoListMode.TodoFunctional)}>
+                <span>추가</span><span>기능</span>
+            </DayFnBtn>
+            
+        </>}
+        {headerMode === TodoListMode.TodoFunctional && <>
+            <DayFnBtn onClick={() => dispatch(postponeTodo({ date: GetDjangoDateByCalTodoDay(curDay), postponeDayNum: DayDiffCalTodoDay(curDay, TOMORROW)}))}>
+                <span>미완료</span><span>내일로</span>
+            </DayFnBtn>
+            <DayFnBtn onClick={() => dispatch(postponeTodo({ date: GetDjangoDateByCalTodoDay(curDay), postponeDayNum: 1}))}>
+                <span>미완료</span><span>다음날로</span>
+            </DayFnBtn>
+            <DayFnBtn onClick={() => setHeaderMode(TodoListMode.TodoGeneral)}>
+                <span>기능</span><span>끄기</span>
+            </DayFnBtn>
+        </>}
+    </DayFn>
+</DayHeaderRow>
+}
 
 export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -66,15 +198,13 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   };
 
   // Category List -------------------------------------------------------------------------------
-  const [categoryDelete, setCategoryDelete] = useState<boolean>(false);
-    // const [addMode, setAddMode] : also used in Category List!
-
+  const [categoryFn, setCategoryFn] = useState<CategoryFnMode>(CategoryFnMode.LIST);
+  // const [addMode, setAddMode] : also used in Category List!
   // Category List - TodoCategory Create
-  
   
   const resetCategoryListState = () => {
     setAddMode(defaultCondRendAnimState);
-    setCategoryDelete(false);
+    setCategoryFn(CategoryFnMode.LIST);
   };
 
   // Todo Functional -----------------------------------------------------------------------------
@@ -111,77 +241,20 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
     setAddMode(defaultCondRendAnimState);
   };
   
-  const toggleCategoryPanel = () => {
-    setHeaderMode(headerMode === TodoListMode.CategoryGeneral ? TodoListMode.TodoGeneral : TodoListMode.CategoryGeneral);
-  };
-
   useEffect(() => {
     setHeaderMode(TodoListMode.TodoGeneral);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curDay.day]);
 
   return <DailyTodoWrapper>
-    <DayHeaderRow className='noselect'>
-        <DayH1>{curDay.year}년 {curDay.month + 1}월 {curDay.day}{curDay.day && '일'}</DayH1>
-        <DayFn>
-            {headerMode === TodoListMode.CategoryGeneral && <>
-                <DayFnBtn onClick={() => toggleCategoryPanel()}>
-                    {<span>돌아가기</span>}
-                </DayFnBtn>
-                <DayFnBtn onClick={() => toggleCondRendAnimState(addMode, setAddMode)}>
-                    {addMode.showElem ? <>
-                        <span>추가</span><span>완료</span>
-                    </> : <>
-                        <span>카테고리</span><span>추가</span>
-                    </>}
-                </DayFnBtn>
-                <DayFnBtn onClick={() => setCategoryDelete((cD) => !cD)}>
-                    {categoryDelete ? <>
-                        <span>삭제</span><span>완료</span>
-                    </> : <>
-                        <span>카테고리</span><span>삭제</span>
-                    </>}
-                </DayFnBtn>
-            </>}
-            {headerMode === TodoListMode.TodoGeneral && <>
-                <DayFnBtn onClick={() => toggleCategoryPanel()}>   
-                    <span>카테고리</span><span>관리</span>
-                </DayFnBtn>
-                <DayFnBtn onClick={() => toggleCondRendAnimState(addMode, setAddMode)}>
-                    {addMode.isMounted && addMode.showElem ? <>
-                        <span>추가</span><span>완료</span>
-                    </> : <>
-                        <span>투두</span><span>추가</span>
-                    </>}
-                </DayFnBtn>
-                <DayFnBtn onClick={() => setCategorySort((cM) => !cM)}>
-                    {categorySort && <span>중요도</span>}
-                    {!categorySort && <span>카테고리</span>}
-                    <span>정렬</span>
-                </DayFnBtn>     
-                <DayFnBtn onClick={() => setCurDay(TODAY)}>오늘로</DayFnBtn>
-                <DayFnBtn onClick={() => setHeaderMode(TodoListMode.TodoFunctional)}>
-                    <span>추가</span><span>기능</span>
-                </DayFnBtn>
-                
-            </>}
-            {headerMode === TodoListMode.TodoFunctional && <>
-                <DayFnBtn onClick={() => dispatch(postponeTodo({ date: GetDjangoDateByCalTodoDay(curDay), postponeDayNum: DayDiffCalTodoDay(curDay, TOMORROW)}))}>
-                    <span>미완료</span><span>내일로</span>
-                </DayFnBtn>
-                <DayFnBtn onClick={() => dispatch(postponeTodo({ date: GetDjangoDateByCalTodoDay(curDay), postponeDayNum: 1}))}>
-                    <span>미완료</span><span>다음날로</span>
-                </DayFnBtn>
-                <DayFnBtn onClick={() => setHeaderMode(TodoListMode.TodoGeneral)}>
-                    <span>기능</span><span>끄기</span>
-                </DayFnBtn>
-            </>}
-        </DayFn>
-    </DayHeaderRow>
+    <DailyTodoHeader headerMode={headerMode} setHeaderMode={setHeaderMode} addMode={addMode} setAddMode={setAddMode}
+                     curDay={curDay} setCurDay={setCurDay} categoryFn={categoryFn} setCategoryFn={setCategoryFn}
+                     categorySort={categorySort} setCategorySort={setCategorySort} setEditID={setEditID}
+    />
     <DayBodyRow>
         {headerMode === TodoListMode.CategoryGeneral && <div>
-            {addMode.showElem && <CategoryAdder addMode={addMode} setAddMode={setAddMode} curDay={curDay} />}
-
+            {categoryFn === CategoryFnMode.ADD && <CategoryAdder addMode={addMode} setAddMode={setAddMode} />}
+            {categoryFn === CategoryFnMode.EDIT && <CategoryEditor  addMode={addMode} setAddMode={setAddMode} editObj={categories.find((e) => e.id === editID)!} editCompleteHandler={editCompleteHandler}/>}
             <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(55px)" } : { transform: "translateY(0px)" }}>
                 {categories.map((categ) => <TodoCategoryItem key={categ.id}>
                         <TodoElementColorCircle color={categ.color} ishard='false' />
@@ -189,7 +262,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                         <div>
                             {categ.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
                         </div>
-                        {categoryDelete && <div className='clickable' onClick={() => {
+                        {categoryFn === CategoryFnMode.DELETE && <div className='clickable' onClick={() => {
                             if (window.confirm('정말 카테고리를 삭제하시겠습니까?')) {
                                 dispatch(deleteTodoCategory(categ.id));
                             }}}>
