@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
-import { CalTodoDay, GetDjangoDateByCalTodoDay, TODAY } from '../../utils/DateTime';
+import { CalTodoDay, DayDiffCalTodoDay, GetDjangoDateByCalTodoDay, TODAY, TOMORROW } from '../../utils/DateTime';
 import { useDispatch, useSelector } from 'react-redux';
 import { TodoElement, deleteTodoCategory, postponeTodo, selectTodo } from '../../store/slices/todo';
 import { AppDispatch } from '../../store';
@@ -166,8 +166,11 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                 
             </>}
             {headerMode === TodoListMode.TodoFunctional && <>
-                <DayFnBtn onClick={() => dispatch(postponeTodo(GetDjangoDateByCalTodoDay(curDay)))}>
+                <DayFnBtn onClick={() => dispatch(postponeTodo({ date: GetDjangoDateByCalTodoDay(curDay), postponeDayNum: DayDiffCalTodoDay(curDay, TOMORROW)}))}>
                     <span>미완료</span><span>내일로</span>
+                </DayFnBtn>
+                <DayFnBtn onClick={() => dispatch(postponeTodo({ date: GetDjangoDateByCalTodoDay(curDay), postponeDayNum: 1}))}>
+                    <span>미완료</span><span>다음날로</span>
                 </DayFnBtn>
                 <DayFnBtn onClick={() => setHeaderMode(TodoListMode.TodoGeneral)}>
                     <span>기능</span><span>끄기</span>

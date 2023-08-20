@@ -17,11 +17,20 @@ export type CalTodoDay = {
 export const TODAY_ = new Date();
 export const TOMORROW_ = new Date(TODAY_.getFullYear(), TODAY_.getMonth(), TODAY_.getDate() + 1);
 export const TODAY = {year: TODAY_.getFullYear(), month: TODAY_.getMonth(), day: TODAY_.getDate()};
-export const TOMORROW = {year: TOMORROW_.getFullYear(), month: TOMORROW_.getMonth(), day: TOMORROW_.getDate() + 1};
+export const TOMORROW = {year: TOMORROW_.getFullYear(), month: TOMORROW_.getMonth(), day: TOMORROW_.getDate()};
 
 export const MONTH_SHORT_KR = new Intl.DateTimeFormat('kr', { month: 'short' });
 export const MONTH_SHORT_EN = new Intl.DateTimeFormat('en', { month: 'short' });
 export const MONTH_LONG_EN = new Intl.DateTimeFormat('en', { month: 'long' });
+
+export const DayDiffCalTodoDay = (a: CalTodoDay, b: CalTodoDay): number => {
+    const aDate: number = GetDateUTCByCalTodoDay(a);
+    const bDate: number = GetDateUTCByCalTodoDay(b);
+    
+    const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+  
+    return Math.floor((bDate - aDate) / _MS_PER_DAY);
+}
 
 export const A_LESS_THAN_B_CalTodoDay = (a: CalTodoDay, b: CalTodoDay): boolean => {
     if(a.year < b.year){
@@ -72,6 +81,23 @@ export const GetDateTimeFormat2Django = (dt: Date, fullTime?: boolean): string =
 export const GetDjangoDateByCalTodoDay = (dt: CalTodoDay): string => {
     if(dt.day){
         return GetDateTimeFormat2Django(new Date(dt.year, dt.month, dt.day));
+    }else{
+        throw Error();
+    }
+};
+
+// (2) CalTodoDay => (3) Date
+export const GetDateByCalTodoDay = (dt: CalTodoDay): Date => {
+    if(dt.day){
+        return new Date(dt.year, dt.month, dt.day);
+    }else{
+        throw Error();
+    }
+};
+// (2) CalTodoDay => (3-) Date.UTC
+export const GetDateUTCByCalTodoDay = (dt: CalTodoDay): number => {
+    if(dt.day){
+        return Date.UTC(dt.year, dt.month, dt.day);
     }else{
         throw Error();
     }

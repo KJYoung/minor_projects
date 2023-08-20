@@ -158,7 +158,7 @@ def postpone_todo(request):
         target_todos = Todo.objects.filter(deadline=req_data["date"], done=False)
 
         for target_todo in target_todos:
-            target_todo.deadline = target_todo.deadline + timedelta(days=1)
+            target_todo.deadline = target_todo.deadline + timedelta(days=req_data["postponeDayNum"])
             target_todo.save()
 
         return JsonResponse({"message": "success"}, status=200)

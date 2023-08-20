@@ -122,8 +122,8 @@ export const dupAgainTodo = createAsyncThunk( // 오늘 또 하기, 내일 또 �
 );
 export const postponeTodo = createAsyncThunk(
   "todo/postponeTodo",
-  async (date: String, { dispatch }) => {
-    const response = await client.post(`/api/todo/postpone/`, { date });
+  async ({date, postponeDayNum} : {date: string, postponeDayNum: number}, { dispatch }) => {
+    const response = await client.post(`/api/todo/postpone/`, { date, postponeDayNum });
     return response.data;
   }
 );
