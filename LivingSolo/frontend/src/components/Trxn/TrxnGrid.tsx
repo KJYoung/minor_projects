@@ -12,7 +12,7 @@ import { RoundButton } from '../../utils/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faX } from '@fortawesome/free-solid-svg-icons';
 import { TrxnGridGraphicHeader, TrxnGridGraphicItem } from './TrxnGridGraphics';
-import { TagInputForGridHeader } from './TagInput';
+import { TagInputForGridHeader } from '../Tag/TagInput';
 import { TagElement } from '../../store/slices/tag';
 
 interface TrxnGridHeaderProps {

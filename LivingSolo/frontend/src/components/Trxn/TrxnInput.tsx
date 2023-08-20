@@ -9,7 +9,7 @@ import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { GetDateTimeFormat2Django } from '../../utils/DateTime';
-import { TagInputForTrxnInput } from './TagInput';
+import { TagInputForTrxnInput } from '../Tag/TagInput';
 import { NewAmountInput } from './AmountInput';
 import { TagElement } from '../../store/slices/tag';
 

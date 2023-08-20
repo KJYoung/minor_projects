@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TagElement } from "../../store/slices/tag";
 import { TodoCategory, TodoCategoryCreateReqType, createTodoCategory } from "../../store/slices/todo";
 import { useDispatch } from "react-redux";
-import { TagInputForTodoCategory } from "../Trxn/TagInput";
+import { TagInputForTodoCategory } from "../Tag/TagInput";
 import { AppDispatch } from "../../store";
 import { getRandomHex } from "../../styles/color";
 

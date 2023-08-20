@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TagElement } from "../../store/slices/tag";
 import { TodoCategory, TodoCreateReqType, TodoEditReqType, TodoElement, createTodo, editTodo as editTodoDispatch, selectTodo } from "../../store/slices/todo";
 import { useDispatch, useSelector } from "react-redux";
-import { TagInputForTodo } from "../Trxn/TagInput";
+import { TagInputForTodo } from "../Tag/TagInput";
 import { AppDispatch } from "../../store";
 import { CalTodoDay, GetDateTimeFormat2Django } from "../../utils/DateTime";
 
