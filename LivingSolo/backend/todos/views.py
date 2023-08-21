@@ -286,8 +286,15 @@ def detail_todo_category(request, categ_id):
             categ_obj = TodoCategory.objects.get(pk=categ_id)
 
             categ_obj.name = data["name"]
-            categ_obj.amount = data["amount"]
+            categ_obj.color = data["color"]
             categ_obj.save()
+
+            tag_list = data["tag"]
+            tag_obj_list = []
+            for tag_bubble in tag_list:
+                tag_obj_list.append(Tag.objects.get(pk=tag_bubble["id"]))
+            categ_obj.tag.set(tag_obj_list)
+
             return JsonResponse({"message": "success"}, status=200)
         except TodoCategory.DoesNotExist:
             return HttpResponseNotFound()

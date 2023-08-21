@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import { CalTodoDay } from '../../utils/DateTime';
-import { useDispatch, useSelector } from 'react-redux';
-import { TodoElement, deleteTodoCategory, selectTodo } from '../../store/slices/todo';
-import { AppDispatch } from '../../store';
+import { useSelector } from 'react-redux';
+import { TodoElement, selectTodo } from '../../store/slices/todo';
 import { TodoItem } from './TodoItem';
 import { CondRendAnimState, toggleCondRendAnimState, defaultCondRendAnimState } from '../../utils/Rendering';
-import { TagBubbleCompact } from '../general/TagBubble';
 import { TodoAdder, TodoEditor } from './TodoAdder';
 import { CategoryAdder, CategoryEditor } from './CategoryAdder';
 import { DailyTodoHeader } from './DailyTodoHeader';
+import { TodoCategoryItem } from './TodoCategoryItem';
 
 export enum TodoFnMode {
     TodoGeneral, CategoryGeneral, TodoFunctional,
@@ -50,7 +49,6 @@ const categoricalSlicer = (todoItems : TodoElement[]) : CategoricalTodos[] => {
 };
 
 export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
-  const dispatch = useDispatch<AppDispatch>();
   const { elements, categories } = useSelector(selectTodo);
 
   // Header Mode
@@ -108,6 +106,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   const editCompleteHandler = () => {
     setEditID(-1);
     setAddMode(defaultCondRendAnimState);
+    setCategoryFn(CategoryFnMode.LIST);
   };
   
   useEffect(() => {
@@ -123,21 +122,9 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
     <DayBodyRow>
         {headerMode === TodoFnMode.CategoryGeneral && <div>
             {categoryFn === CategoryFnMode.ADD && <CategoryAdder addMode={addMode} setAddMode={setAddMode} />}
-            {categoryFn === CategoryFnMode.EDIT && <CategoryEditor  addMode={addMode} setAddMode={setAddMode} editObj={categories.find((e) => e.id === editID)!} editCompleteHandler={editCompleteHandler}/>}
+            {categoryFn === CategoryFnMode.EDIT && categories.find((e) => e.id === editID) && <CategoryEditor  addMode={addMode} setAddMode={setAddMode} editObj={categories.find((e) => e.id === editID)!} editCompleteHandler={editCompleteHandler}/>}
             <TodoElementList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(55px)" } : { transform: "translateY(0px)" }}>
-                {categories.map((categ) => <TodoCategoryItem key={categ.id}>
-                        <TodoElementColorCircle color={categ.color} ishard='false' />
-                        <span>{categ.name}</span>
-                        <div>
-                            {categ.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
-                        </div>
-                        {categoryFn === CategoryFnMode.DELETE && <div className='clickable' onClick={() => {
-                            if (window.confirm('정말 카테고리를 삭제하시겠습니까?')) {
-                                dispatch(deleteTodoCategory(categ.id));
-                            }}}>
-                            삭제
-                        </div>}
-                </TodoCategoryItem>)}
+                {categories.map((categ) => <TodoCategoryItem category={categ} categoryFn={categoryFn} editID={editID} setEditID={setEditID} key={categ.id}/>)}
             </TodoElementList>
         </div>}
         {headerMode !== TodoFnMode.CategoryGeneral && <>
@@ -198,24 +185,6 @@ const DayBodyRow = styled.div`
     margin-top: 20px;
 
     position: relative;
-`;
-
-const TodoCategoryItem = styled.div`
-    width  : 100%;
-
-    display: grid;
-    grid-template-columns: 1fr 12fr 5fr 2fr;
-    align-items: center;
-    
-    padding: 4px;
-    margin-top: 10px;
-    border-bottom: 1px solid var(--ls-gray);
-
-    > span {
-        font-size: 24px;
-        font-weight: 300;
-        /* color: var(--ls-gray); */
-    }
 `;
 
 const TodoElementList = styled.div`
