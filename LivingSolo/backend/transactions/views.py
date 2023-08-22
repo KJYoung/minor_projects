@@ -1,12 +1,12 @@
 """
     Transaction, Trxn, 거래에 관한 처리 로직입니다.
 """
-import json
+import json, csv
 from json.decoder import JSONDecodeError
 from calendar import monthrange
 
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse, HttpResponse
 from transactions.models import Transaction
 from tags.models import Tag
 
@@ -156,3 +156,20 @@ def detail_transaction(request, trxn_id):
             return JsonResponse({"message": "success"}, status=200)
         except Transaction.DoesNotExist:
             return HttpResponseNotFound()
+
+
+from transactions.models import trxn_fields
+
+
+def export_trxn_csv(request):
+    response = HttpResponse(content_type='text/csv; charset=EUC-KR')
+    response['Content-Disposition'] = 'attachment; filename="trxn.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(trxn_fields)
+
+    trxns = Transaction.objects.all().values_list(*trxn_fields)
+    for trxn in trxns:
+        writer.writerow(trxn)
+
+    return response

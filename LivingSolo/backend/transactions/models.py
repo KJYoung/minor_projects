@@ -28,6 +28,18 @@ CURRENCY_TYPE_CHOICES = (
     (CURRENCY_TYPE_JPY, "JPY"),
 )
 
+trxn_fields = [
+    'created',
+    'updated',
+    'date',
+    'tag',
+    'amount',
+    'memo',
+    'period',
+    'stockpile_transaction',
+    'method',
+]
+
 
 class PayMethod(AbstractTimeStampedModel):
     """PayMethod definition"""
