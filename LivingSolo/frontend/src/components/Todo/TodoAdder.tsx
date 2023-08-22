@@ -6,7 +6,9 @@ import { TodoCategory, TodoCreateReqType, TodoEditReqType, TodoElement, createTo
 import { useDispatch, useSelector } from "react-redux";
 import { TagInputForTodo } from "../Tag/TagInput";
 import { AppDispatch } from "../../store";
-import { CalTodoDay, GetDateTimeFormat2Django } from "../../utils/DateTime";
+import { CalTodoDay, GetDateObjFromDjango, GetDateTimeFormat2Django } from "../../utils/DateTime";
+
+import DatePicker from "react-datepicker";
 
 const DEFAULT_OPTION = '$NONE$';
 
@@ -113,15 +115,20 @@ export const TodoEditor = ({ addMode, setAddMode, curDay, editObj, editCompleteH
     const dispatch = useDispatch<AppDispatch>();
     const { categories } = useSelector(selectTodo);
 
-    // Todo List - Create
+    // Todo List - Edit
     const [isPeriodic, setIsPeriodic] = useState<boolean>(editObj.period > 0);
     const [tags, setTags] = useState<TagElement[]>(editObj.tag);
     const [curTCateg, setCurTCateg] = useState<TodoCategory | null>(editObj.category);
     const [editTodo, setEditTodo] = useState<TodoEditReqType>({ ...editObj, category: editObj.category.id });
+    const [todoDate, setTodoDate] = useState<Date>(GetDateObjFromDjango(editObj.deadline));
 
     return <TodoAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted}
                             onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
-    <TodoAdder1stRow>
+    <TodoEditor1stRow>
+        <TodoAdderAddInputs>
+            <label htmlFor="prioritySelect">날짜</label>
+            <DatePicker selected={todoDate} onChange={(date: Date) => setTodoDate(date)} />
+        </TodoAdderAddInputs>
         <TodoAdderAddInputs>
             <label htmlFor="prioritySelect">중요도</label>
             <select id="prioritySelect" value={editTodo.priority} onChange={(e) => { setEditTodo((eT) => { return {...eT, priority: parseInt(e.target.value)}}); }}>
@@ -165,7 +172,7 @@ export const TodoEditor = ({ addMode, setAddMode, curDay, editObj, editCompleteH
                 })}
         </select>
         <TagInputForTodo tags={tags} setTags={setTags} closeHandler={() => {}}/>
-    </TodoAdder1stRow>
+    </TodoEditor1stRow>
     <TodoAdder2ndRow>
         <TodoElementColorCircle color={curTCateg ? curTCateg.color : 'gray'} ishard={editTodo.is_hard_deadline.toString()}></TodoElementColorCircle>
         <TodoAdder2ndRowInputWrapper>
@@ -175,7 +182,7 @@ export const TodoEditor = ({ addMode, setAddMode, curDay, editObj, editCompleteH
                     dispatch(editTodoDispatch({
                         ...editTodo,
                         tag: tags,
-                        deadline: GetDateTimeFormat2Django(new Date(curDay.year, curDay.month, curDay.day)),
+                        deadline: GetDateTimeFormat2Django(todoDate),
                     }));
                     editCompleteHandler();
                 }else{
@@ -205,6 +212,19 @@ const TodoAdder1stRow = styled.div`
     grid-template-columns: 1fr 1fr 1fr 1fr 3fr;
     
     margin-bottom: 10px;
+`;
+const TodoEditor1stRow = styled.div`
+    width: 100%;
+    display: grid;
+    grid-gap: 15px;
+    grid-template-columns: 3fr 1fr 1fr 1fr 3fr 5fr;
+    
+    margin-bottom: 10px;
+
+    input {
+        max-width: 80px; // For Amount Input
+        text-align: center;
+    }
 `;
 const TodoAdderAddInputs = styled.div`
     display: flex;
