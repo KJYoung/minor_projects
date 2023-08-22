@@ -12,7 +12,7 @@ export const EditTextInput = styled.input`
 export const UnderlineEditText = styled.input`
     border: none;
     border-bottom: 1px solid gray;
-    padding: 4px 0px 4px 0px;
+    padding: 4px 0px 4px 4px;
 
     width: 100%;
 

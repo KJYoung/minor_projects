@@ -112,8 +112,12 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
   
   useEffect(() => {
     setHeaderMode(TodoFnMode.TodoGeneral);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [curDay.day]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [curDay.day]);
+
+  useEffect(() => {
+    setFastAddCategID(-1);
+  }, [curDay.day, headerMode]);
 
   return <DailyTodoWrapper>
     <DailyTodoHeader headerMode={headerMode} setHeaderMode={setHeaderMode} addMode={addMode} setAddMode={setAddMode}
@@ -145,9 +149,9 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                                     <span>{categoryElement.name}</span>
                                     {
                                         fastAddCategID === categoryElement.id ?
-                                            <span className='clickable' onClick={() => setFastAddCategID(-1)}>-</span>
+                                            <span className='clickable noselect' onClick={() => setFastAddCategID(-1)}>-</span>
                                         :  
-                                            <span className='clickable' onClick={() => setFastAddCategID(categoryElement.id)}>+</span>
+                                            <span className='clickable noselect' onClick={() => setFastAddCategID(categoryElement.id)}>+</span>
                                     }
                                 </TodoCategoryHeader>
                                 <TodoCategoryBody>

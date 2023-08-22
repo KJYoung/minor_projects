@@ -56,7 +56,10 @@ export const TodoItem = ({ todo, fnMode, editID, setEditID, setEditMode }: TodoI
         </TodoElementColorCircle>
         <div>
             <span>
-                {todo.name}{`  <${todo.priority}>`}
+                {todo.name}
+            </span>
+            <span className='noselect'>
+                {todo.priority !== 0 && `  <${todo.priority}>`}
             </span>
         </div>
         <div>
