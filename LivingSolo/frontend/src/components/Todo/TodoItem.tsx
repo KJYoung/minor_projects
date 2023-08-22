@@ -131,7 +131,7 @@ export const TodoFastAdder = ({ categ, curDay, addCompleteHandler }: TodoFastAdd
           <TodoElementColorCircle color={categ.color} title={categ.name} ishard={'false'} />
 
           <div>
-            <UnderlineEditText type="text" value={todoName} 
+            <UnderlineEditText type="text" value={todoName} placeholder='Todo Name...'
                 onChange={(e) => setTodoName(e.target.value)}
                 onKeyUp={(e) => {
                 if (e.key === 'Enter') {
