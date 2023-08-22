@@ -33,8 +33,8 @@ export const TodoCategoryItem = ({ category, categoryFn, editID, setEditID }: To
             {category.tag.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
         </div>
         {
-            categoryFn === CategoryFnMode.EDIT && 
-            <div className={editID !== category.id ? 'clickable' : ''} onClick={() => editHandler(category.id)}>
+            categoryFn === CategoryFnMode.EDIT && editID !== category.id &&
+            <div className='clickable' onClick={() => editHandler(category.id)}>
                 수정
             </div>
         }

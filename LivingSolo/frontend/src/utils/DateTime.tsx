@@ -23,13 +23,16 @@ export const MONTH_SHORT_KR = new Intl.DateTimeFormat('kr', { month: 'short' });
 export const MONTH_SHORT_EN = new Intl.DateTimeFormat('en', { month: 'short' });
 export const MONTH_LONG_EN = new Intl.DateTimeFormat('en', { month: 'long' });
 
+const _MS_PER_DAY = 1000 * 60 * 60 * 24;
 export const DayDiffCalTodoDay = (a: CalTodoDay, b: CalTodoDay): number => {
     const aDate: number = GetDateUTCByCalTodoDay(a);
     const bDate: number = GetDateUTCByCalTodoDay(b);
     
-    const _MS_PER_DAY = 1000 * 60 * 60 * 24;
-  
-    return Math.floor((bDate - aDate) / _MS_PER_DAY);
+    if(aDate < bDate){
+        return Math.floor((bDate - aDate) / _MS_PER_DAY);
+    }else{
+        return -Math.floor((aDate - bDate) / _MS_PER_DAY);
+    }
 }
 
 export const A_LESS_THAN_B_CalTodoDay = (a: CalTodoDay, b: CalTodoDay): boolean => {
