@@ -3,7 +3,7 @@ import { styled } from 'styled-components';
 import { CalTodoDay } from '../../utils/DateTime';
 import { useSelector } from 'react-redux';
 import { TodoElement, selectTodo } from '../../store/slices/todo';
-import { TodoItem } from './TodoItem';
+import { TodoFastAdder, TodoItem } from './TodoItem';
 import { CondRendAnimState, toggleCondRendAnimState, defaultCondRendAnimState } from '../../utils/Rendering';
 import { TodoAdder, TodoEditor } from './TodoAdder';
 import { CategoryAdder, CategoryEditor } from './CategoryAdder';
@@ -56,6 +56,7 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
 
   // Todo List ----------------------------------------------------------------------------------
   const [addMode, setAddMode] = useState<CondRendAnimState>(defaultCondRendAnimState);
+  const [fastAddCategID, setFastAddCategID] = useState<number>(-1);
   const [categorySort, setCategorySort] = useState<boolean>(true);
 
   const resetTodoListState = () => {
@@ -142,15 +143,24 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                                 <TodoCategoryHeader>
                                     <TodoElementColorCircle color={categoryElement.color} ishard='false' />
                                     <span>{categoryElement.name}</span>
+                                    {
+                                        fastAddCategID === categoryElement.id ?
+                                            <span className='clickable' onClick={() => setFastAddCategID(-1)}>-</span>
+                                        :  
+                                            <span className='clickable' onClick={() => setFastAddCategID(categoryElement.id)}>+</span>
+                                    }
                                 </TodoCategoryHeader>
                                 <TodoCategoryBody>
-                                {categoryElement.todos // For Read Only Array Sort, We have to copy that.
-                                    .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
-                                    .filter((todo) => todo.id !== editID)
-                                    .map((todo) => {
-                                        return <TodoItem key={todo.id} todo={todo} setEditMode={setEditMode}
-                                                        fnMode={headerMode === TodoFnMode.TodoFunctional} editID={editID} setEditID={setEditID}/>
-                                })}
+                                    {fastAddCategID === categoryElement.id && 
+                                        <TodoFastAdder categ={categories.find((e) => e.id === categoryElement.id)!} addCompleteHandler={() => setFastAddCategID(-1)} curDay={curDay} />
+                                    }
+                                    {categoryElement.todos // For Read Only Array Sort, We have to copy that.
+                                        .sort((a, b) => b.priority - a.priority) // Descending Order! High Priority means Important Job.
+                                        .filter((todo) => todo.id !== editID)
+                                        .map((todo) => {
+                                            return <TodoItem key={todo.id} todo={todo} setEditMode={setEditMode}
+                                                            fnMode={headerMode === TodoFnMode.TodoFunctional} editID={editID} setEditID={setEditID}/>
+                                    })}
                                 </TodoCategoryBody>
                             </TodoCategoryWrapper>
                         })}
@@ -215,6 +225,9 @@ const TodoCategoryHeader = styled.div`
         font-size: 24px;
         font-weight: 300;
         /* color: var(--ls-gray); */
+    }
+    span:last-child{
+        margin-left: 10px;
     }
 `;
 

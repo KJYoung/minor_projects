@@ -9,3 +9,14 @@ export const EditTextInput = styled.input`
     text-align: right;
 `;
 
+export const UnderlineEditText = styled.input`
+    border: none;
+    border-bottom: 1px solid gray;
+    padding: 4px 0px 4px 0px;
+
+    width: 100%;
+
+    &:active, &:focus{
+        border-bottom: 1px solid var(--ls-blue);
+    }
+`;

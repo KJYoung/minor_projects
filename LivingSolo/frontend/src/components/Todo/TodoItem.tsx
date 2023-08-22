@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { TodoElement, deleteTodo, dupAgainTodo, duplicateTodo, toggleTodoDone } from '../../store/slices/todo';
+import { TodoCategory, TodoElement, createTodo, deleteTodo, dupAgainTodo, duplicateTodo, toggleTodoDone } from '../../store/slices/todo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { AppDispatch } from '../../store';
 import { getContrastYIQ } from '../../styles/color';
 import { TagBubbleCompact } from '../general/TagBubble';
-import { A_EQUAL_B_CalTodoDay, A_LESS_THAN_B_CalTodoDay, GetDateTimeFormat2Django, TODAY, TODAY_, TOMORROW_, calTodoDayConst } from '../../utils/DateTime';
+import { A_EQUAL_B_CalTodoDay, A_LESS_THAN_B_CalTodoDay, CalTodoDay, GetDateTimeFormat2Django, GetDjangoDateByCalTodoDay, TODAY, TODAY_, TOMORROW_, calTodoDayConst } from '../../utils/DateTime';
+import { UnderlineEditText } from '../../utils/EditText';
+import { notificationFailure, notificationSuccess } from '../../utils/sendNoti';
 
-interface TodoElementProps {
+interface TodoItemProps {
   todo: TodoElement,
   fnMode: boolean,
   editID: number,
@@ -17,7 +19,7 @@ interface TodoElementProps {
   setEditMode: () => void, 
 };
 
-export const TodoItem = ({ todo, fnMode, editID, setEditID, setEditMode }: TodoElementProps) => {
+export const TodoItem = ({ todo, fnMode, editID, setEditID, setEditMode }: TodoItemProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const doneToggle = (id: number, curDone: boolean) => {
@@ -101,3 +103,49 @@ const TodoElementColorCircle = styled.div<{ color: string, ishard: string }>`
 
     cursor: pointer;
 `;
+
+interface TodoFastAdderProps {
+    categ: TodoCategory,
+    curDay: CalTodoDay,
+    addCompleteHandler: () => void,
+    // fnMode: boolean,
+    // editID: number,
+    // setEditID: React.Dispatch<React.SetStateAction<number>>,
+    // setEditMode: () => void, 
+};
+
+export const TodoFastAdder = ({ categ, curDay, addCompleteHandler }: TodoFastAdderProps) => {
+    const dispatch = useDispatch<AppDispatch>();
+    const [todoName, setTodoName] = useState<string>("");
+  
+    const todoFastAddSkeleton = {
+        name: '',
+        category: categ.id.toString(),
+        priority: 0,
+        deadline: GetDjangoDateByCalTodoDay(curDay),
+        is_hard_deadline: false,
+        period: 0,
+    };
+
+    return <TodoElementWrapper>
+          <TodoElementColorCircle color={categ.color} title={categ.name} ishard={'false'} />
+
+          <div>
+            <UnderlineEditText type="text" value={todoName} 
+                onChange={(e) => setTodoName(e.target.value)}
+                onKeyUp={(e) => {
+                if (e.key === 'Enter') {
+                    if(todoName === ''){
+                        notificationFailure('Todo', 'Empty Text Cannot be registered!');
+                    }else{
+                        notificationSuccess('Todo', 'Fast Add Complete!');
+                        dispatch(createTodo({...todoFastAddSkeleton, name: todoName, tag: categ.tag}));
+                        addCompleteHandler();
+                    }
+                }
+            }}/>
+          </div>
+          <div></div>
+          <div></div>
+      </TodoElementWrapper>
+  };
