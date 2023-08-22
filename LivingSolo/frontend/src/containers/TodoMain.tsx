@@ -8,7 +8,7 @@ import { AppDispatch } from '../store';
 import { fetchTodoCategory, fetchTodos, selectTodo } from '../store/slices/todo';
 import { DailyTodo } from '../components/Todo/DailyTodo';
 import { ERRORSTATE } from '../store/slices/core';
-import { fetchTagsIndex } from '../store/slices/tag';
+import { fetchTags, fetchTagsIndex } from '../store/slices/tag';
 
 const TodoMain = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -34,6 +34,7 @@ const TodoMain = () => {
 
   useEffect(() => {
     dispatch(fetchTodoCategory());
+    dispatch(fetchTags());
     dispatch(fetchTagsIndex());
   }, [dispatch]);
 
