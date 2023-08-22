@@ -8,7 +8,7 @@ import { CondRendAnimState, toggleCondRendAnimState, defaultCondRendAnimState } 
 import { TodoAdder, TodoEditor } from './TodoAdder';
 import { CategoryAdder, CategoryEditor } from './CategoryAdder';
 import { DailyTodoHeader } from './DailyTodoHeader';
-import { TodoCategoryItem } from './TodoCategoryItem';
+import { TodoCategoryItem } from './CategoryItem';
 
 export enum TodoFnMode {
     TodoGeneral, CategoryGeneral, TodoFunctional,

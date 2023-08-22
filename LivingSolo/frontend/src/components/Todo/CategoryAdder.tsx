@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { TagInputForTodoCategory } from "../Tag/TagInput";
 import { AppDispatch } from "../../store";
 import { getRandomHex } from "../../styles/color";
+import { ColorDialog } from "../general/ColorDialog";
 
 
 interface CategoryAdderProps {
@@ -31,20 +32,35 @@ export const CategoryAdder = ({ addMode, setAddMode } : CategoryAdderProps) => {
     const [categTags, setCategTags] = useState<TagElement[]>([]);
     const [newTodoCategory, setNewTodoCategory] = useState<TodoCategoryCreateReqType>({...todoCategorySkeleton, tag: categTags});
 
+    // Color Dialog
+    const [open, setOpen] = useState<boolean>(false);
+    const [color, setColor] = useState<string>(newTodoCategory.color);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const colorDialogOpenHandler = () => {
+        setOpen(true);
+    };
+
     return <CategoryAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
     <CategoryAdderRow>
-        <TodoElementColorCircle color={newTodoCategory.color} ishard={'false'} onClick={() => setNewTodoCategory((nTC) => { return {...nTC, color: getRandomHex()}})}></TodoElementColorCircle>
+        <CategoryColorCircle color={color} ishard={'false'}>
+                <div onClick={() => { setColor(getRandomHex()); }}></div>
+                <div className="clickable" onClick={colorDialogOpenHandler}>...</div>
+        </CategoryColorCircle>
         <TagInputForTodoCategory tags={categTags} setTags={setCategTags} closeHandler={() => {}}/>
         <CategoryAdderInputWrapper>
             <input type="text" placeholder='Category Name' value={newTodoCategory.name} onChange={(e) => setNewTodoCategory((nTC) => { return {...nTC, name: e.target.value}})}/>
             <button onClick={() => { 
-                dispatch(createTodoCategory({...newTodoCategory, tag: categTags}));
+                dispatch(createTodoCategory({...newTodoCategory, tag: categTags, color }));
                 setCategTags([]);
                 setNewTodoCategory({...todoCategorySkeleton, tag: categTags});
             }}>Create</button>
         </CategoryAdderInputWrapper>
     </CategoryAdderRow>
-    
+    <ColorDialog open={open} handleClose={handleClose}
+                 color={color} setColor={setColor}/>
 </CategoryAdderWrapper>
 };
 
@@ -61,35 +77,67 @@ export const CategoryEditor = ({ addMode, setAddMode, editObj, editCompleteHandl
     const [categTags, setCategTags] = useState<TagElement[]>(editObj.tag);
     const [editCategory, setEditCategory] = useState<TodoCategoryEditReqType>({...editObj});
 
+    // Color Dialog
+    const [open, setOpen] = useState<boolean>(false);
+    const [color, setColor] = useState<string>(editCategory.color);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const colorDialogOpenHandler = () => {
+        setOpen(true);
+    };
+
     return <CategoryAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
         <CategoryAdderRow>
-            <TodoElementColorCircle color={editCategory.color} ishard={'false'} onClick={() => setEditCategory((eC) => { return {...eC, color: getRandomHex()}})}></TodoElementColorCircle>
+            <CategoryColorCircle color={color} ishard={'false'}>
+                    <div onClick={() => { setColor(getRandomHex()); }}></div>
+                    <div className="clickable" onClick={colorDialogOpenHandler}>...</div>
+            </CategoryColorCircle>
             <TagInputForTodoCategory tags={categTags} setTags={setCategTags} closeHandler={() => {}}/>
             <CategoryAdderInputWrapper>
                 <input type="text" placeholder='Category Name' value={editCategory.name} onChange={(e) => setEditCategory((eC) => { return {...eC, name: e.target.value}})}/>
                 <button onClick={() => { 
-                    dispatch(editTodoCategory({...editCategory, tag: categTags}));
+                    dispatch(editTodoCategory({...editCategory, tag: categTags, color}));
                     editCompleteHandler();
                 }}>Edit</button>
             </CategoryAdderInputWrapper>
         </CategoryAdderRow>
+        <ColorDialog open={open} handleClose={handleClose}
+                 color={color} setColor={setColor}/>
     </CategoryAdderWrapper>
 };
 
-const TodoElementColorCircle = styled.div<{ color: string, ishard: string }>`
+const CategoryColorCircle = styled.div<{ color: string, ishard: string }>`
+    position: relative;
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    border: ${props => ((props.ishard === 'true') ? '2px solid var(--ls-red)' : 'none')};
-    background-color: ${props => (props.color)};;
-    
-    margin-right: 10px;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    > div {
+        cursor: pointer;
+    }
 
-    cursor: pointer;
+    > div:first-child {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: ${props => ((props.ishard === 'true') ? '2px solid var(--ls-red)' : 'none')};
+        background-color: ${props => (props.color)};;
+        
+        margin-right: 10px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    > div:last-child {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        width: 20px;
+        height: 20px;
+    }
 `;
 
 const CategoryAdderWrapper = styled.div`

@@ -65,20 +65,6 @@ const TodoCategoryItemWrapper = styled.div`
     }
 `;
 
-// const TodoElementWrapper = styled.div`
-//     width: 100%;
-//     padding: 10px;
-//     border-bottom: 0.5px solid green;
-    
-//     display: grid;
-//     grid-template-columns: 1fr 10fr 5fr 4fr;
-//     align-items: center;
-
-//     &:last-child {
-//         border-bottom: none;
-//     };
-// `;
-
 const TodoElementColorCircle = styled.div<{ color: string, ishard: string }>`
     width: 20px;
     height: 20px;
