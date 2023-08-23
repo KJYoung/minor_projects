@@ -3,7 +3,7 @@ import client from "../store/apis/client";
 
 const downloadBlob = (content : string, filename : string , contentType: string) => {
   // Create a blob
-  const blob = new Blob(["\ufeff"+content], { type: contentType });
+  const blob = new Blob([content], { type: contentType });
   const url = URL.createObjectURL(blob);
 
   // Create a link to download it
@@ -24,7 +24,7 @@ const downloadXLSX = (content : string, filename : string) => {
 
 export const csvFileExporter = async (link : string, name: string) => {
   const response = await client.get(link);
-  downloadBlob(response.data, `${name}.csv`, 'text/csv; charset=euc-kr');
+  downloadBlob("\ufeff"+response.data, `${name}.csv`, 'text/csv; charset=euc-kr');
 };
 
 export const xlsxFileExporter = async (link : string, name: string) => {
