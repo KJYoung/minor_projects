@@ -3,7 +3,7 @@
 """
 from django.db import models
 from core.models import AbstractTimeStampedModel
-from tags.models import Tag
+from tags.models import Tag, TagPreset
 from stockpiles.models import StockpileTransaction
 
 PAY_TYPE_CASH = "현금"
@@ -42,7 +42,7 @@ trxn_fields = [
 
 
 class PayMethod(AbstractTimeStampedModel):
-    """PayMethod definition"""
+    """PayMethod model definition"""
 
     type = models.CharField(max_length=20, choices=PAY_TYPE_CHOICES, default=PAY_TYPE_CASH)
     name = models.CharField(max_length=30, null=False)
@@ -52,7 +52,7 @@ class PayMethod(AbstractTimeStampedModel):
 
 
 class Transaction(AbstractTimeStampedModel):
-    """Transaction definition"""
+    """Transaction model definition"""
 
     date = models.DateTimeField(blank=True)
     tag = models.ManyToManyField(Tag, related_name="transaction")
@@ -71,3 +71,13 @@ class Transaction(AbstractTimeStampedModel):
 
     class Meta:
         ordering = ("-date",)
+
+
+class Budget(AbstractTimeStampedModel):
+    """Budget model definition"""
+
+    name = models.CharField(max_length=20, null=False)
+    tag_preset = models.ForeignKey(
+        TagPreset, related_name="budget", on_delete=models.SET_NULL, null=True
+    )
+    amount = models.IntegerField()

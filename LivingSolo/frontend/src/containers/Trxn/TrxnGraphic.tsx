@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TrxnGridHeader, TrxnGridItem } from "../../components/Trxn/TrxnGrid";
-import { ViewMode } from "./TrxnMain";
+import { ViewMode } from "../TrxnMain";
 import { CalMonth } from "../../utils/DateTime";
 import { useSelector } from "react-redux";
 import { selectTrxn } from "../../store/slices/trxn";

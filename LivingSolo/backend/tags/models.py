@@ -6,7 +6,7 @@ from core.models import AbstractTimeStampedModel
 
 # Create your models here.
 class TagClass(AbstractTimeStampedModel):
-    """Tag Class definition"""
+    """Tag Class model definition"""
 
     name = models.CharField(max_length=30, null=False)
     color = models.CharField(max_length=7, null=False)
@@ -20,11 +20,22 @@ class TagClass(AbstractTimeStampedModel):
 
 
 class Tag(AbstractTimeStampedModel):
-    """Tag definition"""
+    """Tag model definition"""
 
     name = models.CharField(max_length=30, null=False)
     color = models.CharField(max_length=7, null=False)
     tag_class = models.ForeignKey(TagClass, related_name='tag', on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        """To string method"""
+        return str(self.name)
+
+
+class TagPreset(AbstractTimeStampedModel):
+    """TagPreset model definition"""
+
+    name = models.CharField(max_length=20, null=False)
+    tags = models.ManyToManyField(Tag, related_name="tag_preset")
 
     def __str__(self):
         """To string method"""

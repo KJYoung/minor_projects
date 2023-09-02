@@ -7,7 +7,7 @@ import { AppDispatch } from '../../store';
 import { TagBubbleCompact } from '../general/TagBubble';
 import { GetDateTimeFormatFromDjango } from '../../utils/DateTime';
 import { EditAmountInput } from './AmountInput';
-import { ViewMode } from '../../containers/Trxn/TrxnMain';
+import { ViewMode } from '../../containers/TrxnMain';
 import { RoundButton } from '../../utils/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faX } from '@fortawesome/free-solid-svg-icons';

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../../store';
-import { fetchCombinedTrxns, fetchTrxns, selectTrxn } from '../../store/slices/trxn';
-import TrxnInput from '../../components/Trxn/TrxnInput';
-import { fetchTags, fetchTagsIndex } from '../../store/slices/tag';
-import { CUR_MONTH, CalMonth } from '../../utils/DateTime';
-import { TrxnNav } from '../../components/Trxn/TrxnNav';
-import { TrxnDetail } from './TrxnDetail';
-import { TrxnCombined } from './TrxnCombined';
-import { TrxnGraphic } from './TrxnGraphic';
+import { AppDispatch } from '../store';
+import { fetchCombinedTrxns, fetchTrxns, selectTrxn } from '../store/slices/trxn';
+import TrxnInput from '../components/Trxn/TrxnInput';
+import { fetchTags, fetchTagsIndex } from '../store/slices/tag';
+import { CUR_MONTH, CalMonth } from '../utils/DateTime';
+import { TrxnNav } from '../components/Trxn/TrxnNav';
+import { TrxnDetail } from './Trxn/TrxnDetail';
+import { TrxnCombined } from './Trxn/TrxnCombined';
+import { TrxnGraphic } from './Trxn/TrxnGraphic';
 
 export enum ViewMode {
   Detail, Combined, Graph
@@ -24,9 +24,13 @@ function TrxnMain() {
   useEffect(() => {
     dispatch(fetchTrxns({yearMonth: curMonth}));
     dispatch(fetchCombinedTrxns({yearMonth: curMonth}));
+  }, [errorState, curMonth, dispatch]);
+
+  // Fetch Tag Related Things!
+  useEffect(() => {
     dispatch(fetchTags());
     dispatch(fetchTagsIndex());
-  }, [errorState, curMonth, dispatch]);
+  }, [dispatch]);
 
   return (
     <div className="App">

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ViewMode } from "../../containers/Trxn/TrxnMain";
+import { ViewMode } from "../../containers/TrxnMain";
 import { CUR_MONTH, CUR_YEAR, CalMonth } from "../../utils/DateTime";
 import { TrxnFetchReqType, fetchCombinedTrxns, fetchTrxns } from "../../store/slices/trxn";
 import { AppDispatch } from "../../store";

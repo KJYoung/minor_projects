@@ -13,7 +13,7 @@
 
 #### Backend ERD Model Structure
 - [ERD Cloud Link](https://www.erdcloud.com/d/FicREAFG6x97kzDmw)
-![ERD Image 0720](record/ERD_230727.png)
+![ERD Image 0903](record/ERD_230903.png)
 #### MEMO
 - [React Native Dev](https://reactnative.dev/)
   

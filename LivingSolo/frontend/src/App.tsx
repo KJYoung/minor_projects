@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import TrxnMain from './containers/Trxn/TrxnMain';
+import TrxnMain from './containers/TrxnMain';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -13,6 +13,7 @@ import NavDrawer from './components/general/NavDrawer';
 import TodoMain from './containers/TodoMain';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { ReactNotifications } from 'react-notifications-component';
+import TagMain from './containers/TagMain';
 
 function App() {
   return <>
@@ -75,7 +76,7 @@ const WebComponent = () => {
             <Route path="stockpile" element={<span>Stockpile</span>} />
             <Route path="todo" element={<TodoMain />} />
             <Route path="trxn" element={<TrxnMain />} />
-            <Route path="tag" element={<span>Tag</span>} />
+            <Route path="tag" element={<TagMain />} />
             <Route path="*" element={<span>Home</span>} />
         </Routes>
         
