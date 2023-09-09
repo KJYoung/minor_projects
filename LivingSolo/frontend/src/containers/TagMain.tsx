@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
 import { fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
 import { TagBubbleCompact } from '../components/general/TagBubble';
-import { IPropsColor } from '../utils/Interfaces';
+import { IPropsActive, IPropsColor } from '../utils/Interfaces';
 import { getContrastYIQ } from '../styles/color';
 import { CondRendAnimState, defaultCondRendAnimState, toggleCondRendAnimState } from '../utils/Rendering';
 import { TagClassAdder, TagClassAdderHeight, TagClassEditor } from '../components/Tag/TagClassAdder';
@@ -51,12 +51,12 @@ const TagMain = () => {
           <ListWrapper>
             <TagTabHeader>
               <div>
-                <span onClick={() => tabChangeHandler(TagViewerMode.TagClass)}>TagClass</span>
-                <span onClick={() => tabChangeHandler(TagViewerMode.Tag)}>Tag</span>
-                <span onClick={() => tabChangeHandler(TagViewerMode.TagPreset)}>TagPreset</span>
+                <TagTabName isActive={(tagViewerMode === TagViewerMode.TagClass).toString()} onClick={() => tabChangeHandler(TagViewerMode.TagClass)}>TagClass</TagTabName>
+                <TagTabName isActive={(tagViewerMode === TagViewerMode.Tag).toString()}  onClick={() => tabChangeHandler(TagViewerMode.Tag)}>Tag</TagTabName>
+                <TagTabName isActive={(tagViewerMode === TagViewerMode.TagPreset).toString()} onClick={() => tabChangeHandler(TagViewerMode.TagPreset)}>TagPreset</TagTabName>
               </div>
               <div>
-                <span onClick={classAddToggleHandler}>+</span>
+                <span className='clickable' onClick={classAddToggleHandler}>+</span>
               </div>
             </TagTabHeader>
             {
@@ -184,6 +184,13 @@ const TagTabHeader = styled.div`
   }
 `;
 
+const TagTabName = styled.span<IPropsActive>`
+  color: ${props => ((props.isActive === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
+  cursor: ${props => ((props.isActive === 'true') ? 'pointer' : 'default')};
+  &:hover {
+    color: var(--ls-green);
+  }
+`;
 
 const TagClassListPosition = styled.div`
   width: 100%;

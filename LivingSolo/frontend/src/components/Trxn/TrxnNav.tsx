@@ -6,6 +6,7 @@ import { AppDispatch } from "../../store";
 import { useDispatch } from "react-redux";
 import { TextField } from "@mui/material";
 import { styled } from "styled-components";
+import { IPropsActive } from "../../utils/Interfaces";
 
 interface TrxnNavProps {
     viewMode: ViewMode,
@@ -78,9 +79,9 @@ export function TrxnNav({viewMode, setViewMode, curMonth, setCurMonth} : TrxnNav
     }
     return <TrxnNavWrapper>
         <div>
-            <TrxnGridModeBtn active={(viewMode === ViewMode.Detail).toString()} onClick={() => setViewMode(ViewMode.Detail)}>Detailed</TrxnGridModeBtn>
-            <TrxnGridModeBtn active={(viewMode === ViewMode.Combined).toString()} onClick={() => setViewMode(ViewMode.Combined)}>Combined</TrxnGridModeBtn>
-            <TrxnGridModeBtn active={(viewMode === ViewMode.Graph).toString()} onClick={() => setViewMode(ViewMode.Graph)}>Graphic</TrxnGridModeBtn>
+            <TrxnGridModeBtn isActive={(viewMode === ViewMode.Detail).toString()} onClick={() => setViewMode(ViewMode.Detail)}>Detailed</TrxnGridModeBtn>
+            <TrxnGridModeBtn isActive={(viewMode === ViewMode.Combined).toString()} onClick={() => setViewMode(ViewMode.Combined)}>Combined</TrxnGridModeBtn>
+            <TrxnGridModeBtn isActive={(viewMode === ViewMode.Graph).toString()} onClick={() => setViewMode(ViewMode.Graph)}>Graphic</TrxnGridModeBtn>
         </div>
         <TrxnGridDetailedSubNav>
             <TrxnNavCalendar />
@@ -176,8 +177,10 @@ const TrxnGridDetailedSubNav = styled.div`
     }
 
 `;
-const TrxnGridModeBtn = styled.span<{ active: string }>`
+const TrxnGridModeBtn = styled.span<IPropsActive>`
     font-size: 22px;
-    color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
     margin-left: 20px;
+    
+    color: ${props => ((props.isActive === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
+    cursor: ${props => ((props.isActive === 'true') ? 'pointer' : 'default')};
 `;

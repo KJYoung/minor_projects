@@ -6,6 +6,7 @@ import { styled } from "styled-components";
 import { Button, DialogActions, DialogContent } from "@mui/material";
 import { TagBubbleCompactPointer, TagBubbleWithFunc, TagBubbleX } from "../general/TagBubble";
 import { DEFAULT_OPTION } from "../../utils/Constants";
+import { IPropsActive } from "../../utils/Interfaces";
 
 interface TagDialogProps {
     open: boolean,
@@ -43,9 +44,9 @@ export const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, set
             <SetTagHeaderWrapper>
               <SetTagHeader>
                 설정된 태그{' '} 
-                <TagLengthIndicator active={(tags.length >= tag_max_length).toString()}>{tags.length}</TagLengthIndicator> / {tag_max_length}
+                <TagLengthIndicator isActive={(tags.length >= tag_max_length).toString()}>{tags.length}</TagLengthIndicator> / {tag_max_length}
               </SetTagHeader>
-              <TagInputClearSpan onClick={() => clearTagInput()}active={(tags.length !== 0).toString()}>Clear</TagInputClearSpan>
+              <TagInputClearSpan onClick={() => clearTagInput()} isActive={(tags.length !== 0).toString()}>Clear</TagInputClearSpan>
             </SetTagHeaderWrapper>
             <SetTagList>{tags?.map((ee) =>
               <TagBubbleWithFunc key={ee.id} color={ee.color}>
@@ -90,7 +91,6 @@ export const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, set
                   </select>
                   <select data-testid="tagSelect2" value={tagSelect} onChange={(e) => {
                     const matchedElem = index.find((elem) => {
-                      // console.log(`${elem.id.toString()} vs ${e.target.value}`);
                       return elem.id.toString() === e.target.value;
                     });
                     if(matchedElem)
@@ -137,8 +137,8 @@ const SetTagHeaderWrapper = styled.div`
 const SetTagHeader = styled.span`
 `;
 
-const TagLengthIndicator = styled.span<{ active: string }>`
-    color: ${props => ((props.active === 'true') ? 'var(--ls-red)' : 'var(--ls-blue)')};
+const TagLengthIndicator = styled.span<IPropsActive>`
+    color: ${props => ((props.isActive === 'true') ? 'var(--ls-red)' : 'var(--ls-blue)')};
 `;
 
 const SetTagList = styled.div`
@@ -168,11 +168,13 @@ const TagListBody = styled.div`
     min-height: 50px;
 `;
 
-const TagInputClearSpan = styled.span<{ active: string }>`
+const TagInputClearSpan = styled.span<IPropsActive>`
     margin-top: 3px;
     font-size: 17px;
-    color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
     background-color: transparent;
-    cursor: ${props => ((props.active === 'true') ? 'pointer' : 'default')};;
+
     margin-left: 20px;
+    
+    color: ${props => ((props.isActive === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
+    cursor: ${props => ((props.isActive === 'true') ? 'pointer' : 'default')};
 `;

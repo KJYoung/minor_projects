@@ -3,6 +3,7 @@ import { ChromePicker } from 'react-color';
 
 import { styled } from "styled-components";
 import { BootstrapDialog, BootstrapDialogTitle } from "./Dialog";
+import { IPropsActive } from "../../utils/Interfaces";
 
 interface ColorDialogProps {
     open: boolean,
@@ -31,7 +32,7 @@ export const ColorDialog = ({open, handleClose, color, setColor } : ColorDialogP
             <SetColorHeader>
               설정된 색상{'  '}{color}
             </SetColorHeader>
-            <ColorClearSpan onClick={() => clearColor()}active={(color !== '#000000').toString()}>Clear</ColorClearSpan>
+            <ColorClearSpan onClick={() => clearColor()} isActive={(color !== '#000000').toString()}>Clear</ColorClearSpan>
           </SetColorHeaderWrapper>
           <ColorPickerWrapper>
             <ChromePicker color={color} onChange={color => setColor(color.hex)} />
@@ -59,13 +60,14 @@ const SetColorHeaderWrapper = styled.div`
 const SetColorHeader = styled.span`
 `;
 
-const ColorClearSpan = styled.span<{ active: string }>`
+const ColorClearSpan = styled.span<IPropsActive>`
     margin-top: 3px;
     font-size: 17px;
-    color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
     background-color: transparent;
-    cursor: ${props => ((props.active === 'true') ? 'pointer' : 'default')};;
     margin-left: 20px;
+
+    color: ${props => ((props.isActive === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
+    cursor: ${props => ((props.isActive === 'true') ? 'pointer' : 'default')};;
 `;
 
 const ColorPickerWrapper = styled.div`
