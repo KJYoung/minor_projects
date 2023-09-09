@@ -5,6 +5,7 @@ import { BootstrapDialog, BootstrapDialogTitle } from "../general/Dialog";
 import { styled } from "styled-components";
 import { Button, DialogActions, DialogContent } from "@mui/material";
 import { TagBubbleCompactPointer, TagBubbleWithFunc, TagBubbleX } from "../general/TagBubble";
+import { DEFAULT_OPTION } from "../../utils/Constants";
 
 interface TagDialogProps {
     open: boolean,
@@ -15,8 +16,6 @@ interface TagDialogProps {
     setTagClassSelect: React.Dispatch<React.SetStateAction<string>>,
     tag_max_length: number,
 };
-
-const DEFAULT_OPTION = '$NONE$';
 
 
 export const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, setTagClassSelect, tag_max_length} : TagDialogProps) => {

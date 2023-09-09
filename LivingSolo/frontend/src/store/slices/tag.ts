@@ -50,11 +50,23 @@ export interface TagClassCreateReqType {
   name: string,
   color: string,
 };
+export interface TagCreateReqType {
+  name: string,
+  color: string,
+  class: string,
+};
 
 export const createTagClass = createAsyncThunk(
   "tag/createTagCategory",
   async (payload: TagClassCreateReqType) => {
     const response = await client.post(`/api/tag/class/`, payload);
+    return response.data;
+  }
+);
+export const createTag = createAsyncThunk(
+  "tag/createTag",
+  async (payload: TagCreateReqType) => {
+    const response = await client.post(`/api/tag/`, payload);
     return response.data;
   }
 );
@@ -73,7 +85,7 @@ export const TagSlice = createSlice({
       state.errorState = ERRORSTATE.NORMAL;
     }); 
     [
-      createTagClass,
+      createTagClass, createTag
     ].forEach((reducer) => {
       builder.addCase(reducer.pending, (state, action) => {
         state.errorState = ERRORSTATE.DEFAULT;

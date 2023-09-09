@@ -9,8 +9,7 @@ import { AppDispatch } from "../../store";
 import { CalTodoDay, GetDateObjFromDjango, GetDateTimeFormat2Django } from "../../utils/DateTime";
 
 import DatePicker from "react-datepicker";
-
-const DEFAULT_OPTION = '$NONE$';
+import { DEFAULT_OPTION } from "../../utils/Constants";
 
 interface TodoAdderProps {
     addMode: CondRendAnimState,

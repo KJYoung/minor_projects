@@ -47,7 +47,7 @@ export const TagClassAdder = ({ addMode, setAddMode } : TagClassAdderProps) => {
                 <div className="clickable" onClick={colorDialogOpenHandler}>...</div>
             </ColorCircleLarge>
             <input type="text" placeholder='Tag Class Name' value={tagClassName} onChange={(e) => setTagClassName(e.target.value)}/>
-            <button onClick={() => { 
+            <button disabled={tagClassName === ''} onClick={() => { 
                 dispatch(createTagClass({name: tagClassName, color }));
                 setTagClassName("");
                 setColor(DEFAULT_COLOR);

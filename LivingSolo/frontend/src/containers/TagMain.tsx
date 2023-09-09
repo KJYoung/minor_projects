@@ -9,6 +9,7 @@ import { IPropsColor } from '../utils/Interfaces';
 import { getContrastYIQ } from '../styles/color';
 import { CondRendAnimState, defaultCondRendAnimState, toggleCondRendAnimState } from '../utils/Rendering';
 import { TagClassAdder, TagClassAdderHeight, TagClassEditor } from '../components/Tag/TagClassAdder';
+import { TagAdder, TagEditor } from '../components/Tag/TagAdder';
 
 enum TagViewerMode {
   TagClass, Tag, TagPreset
@@ -33,19 +34,31 @@ const TagMain = () => {
 
   const classAddToggleHandler = () => {
     toggleCondRendAnimState(addMode, setAddMode); // ON
-};
+  };
+
+  const tabChangeHandler = (newTabState : TagViewerMode) => {
+    if(newTabState === tagViewerMode)
+      return;
+    if(addMode.showElem)
+      classAddToggleHandler();
+    setTagViewerMode(newTabState);
+  };
 
   return (
     <Wrapper>
       <InnerWrapper>
         <LeftWrapper>
           <ListWrapper>
-            <TagClassHeader>
-              <span onClick={() => setTagViewerMode(TagViewerMode.TagClass)}>TagClass</span>
-              <span onClick={() => setTagViewerMode(TagViewerMode.Tag)}>Tag</span>
-              <span onClick={() => setTagViewerMode(TagViewerMode.TagPreset)}>TagPreset</span>
-              <span onClick={classAddToggleHandler}>+</span>
-            </TagClassHeader>
+            <TagTabHeader>
+              <div>
+                <span onClick={() => tabChangeHandler(TagViewerMode.TagClass)}>TagClass</span>
+                <span onClick={() => tabChangeHandler(TagViewerMode.Tag)}>Tag</span>
+                <span onClick={() => tabChangeHandler(TagViewerMode.TagPreset)}>TagPreset</span>
+              </div>
+              <div>
+                <span onClick={classAddToggleHandler}>+</span>
+              </div>
+            </TagTabHeader>
             {
               tagViewerMode === TagViewerMode.TagClass && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
@@ -70,9 +83,9 @@ const TagMain = () => {
             {
               tagViewerMode === TagViewerMode.Tag && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                    (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
+                    (<TagAdder addMode={addMode} setAddMode={setAddMode} />)
               :
-                    (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
+                    (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
                 <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagClassAdderHeight})` } : { transform: "translateY(0px)" }}>
                     {index.map((tag) => {
@@ -152,11 +165,25 @@ const ListWrapper = styled.div`
   width: 100%;
 `;
 
-const TagClassHeader = styled.div`
+const TagTabHeader = styled.div`
   font-size: 28px;
   padding: 4px;
   border-bottom: 1px solid black;
+
+  display: grid;
+  grid-template-columns: 8fr 2fr;
+  
+  > div:first-child {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  > div:last-child {
+    display: flex;
+    justify-content: center;
+  }
 `;
+
 
 const TagClassListPosition = styled.div`
   width: 100%;

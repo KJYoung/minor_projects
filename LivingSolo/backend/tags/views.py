@@ -49,10 +49,11 @@ def general_tag_class(request):
 
 
 ## Tag
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'POST'])
 def general_tag(request):
     """
     GET : get tag list
+    POST : create tag category(tag class)
     """
     if request.method == 'GET':
         try:
@@ -76,3 +77,12 @@ def general_tag(request):
         except (KeyError, JSONDecodeError, TagClass.DoesNotExist):
             print("ERROR from general_tag")
             return HttpResponseBadRequest()
+    else:  # POST REQUEST
+        try:
+            req_data = json.loads(request.body.decode())
+            tag_class = TagClass.objects.get(pk=req_data["class"])
+            element = Tag(name=req_data["name"], color=req_data["color"], tag_class=tag_class)
+            element.save()
+        except (KeyError, JSONDecodeError):
+            return HttpResponseBadRequest()
+        return JsonResponse({"id": element.id, "name": element.name}, status=201)

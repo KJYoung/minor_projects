@@ -7,9 +7,8 @@ import { TagBubbleCompact } from '../general/TagBubble';
 import { useSelector } from 'react-redux';
 import { TagElement, selectTag } from '../../store/slices/tag';
 import { TagDialog } from './TagDialog';
+import { DEFAULT_OPTION } from '../../utils/Constants';
 
-
-const DEFAULT_OPTION = '$NONE$';
 // const NEW_OPTION = '$NEW$';
 // const SEARCH_OPTION = '$SEARCH$';
 
@@ -37,12 +36,12 @@ export const TagInputForTrxnInput = ({ tags, setTags }: TagInputProps) => {
 
   return (
     <TagInputDiv>
-        <div>
-          {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
-        </div>
-        <RoundButton onClick={handleClickOpen}>+</RoundButton>
-        <TagDialog open={open} handleClose={handleClose}
-                    tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={5}/>
+      <div>
+        {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
+      </div>
+      <RoundButton onClick={handleClickOpen}>+</RoundButton>
+      <TagDialog open={open} handleClose={handleClose}
+                  tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={5}/>
     </TagInputDiv>
   );
 };
@@ -87,16 +86,16 @@ export const TagInputForGridHeader = ({ tags, setTags, closeHandler }: GridTagIn
 
   return (
     <GridTagInputDiv>
-        <div>
-          {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
-        </div>
-        <GridTagOpenBtn onClick={handleClickOpen}>+</GridTagOpenBtn>
-        <GridTagCap>
-          <span onClick={closeHandler}>Tag Filter...</span>
-          <span onClick={closeHandler}>x</span>
-        </GridTagCap>
-        <TagDialog open={open} handleClose={handleClose}
-                    tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={3}/>
+      <div>
+        {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
+      </div>
+      <GridTagOpenBtn onClick={handleClickOpen}>+</GridTagOpenBtn>
+      <GridTagCap>
+        <span onClick={closeHandler}>Tag Filter...</span>
+        <span onClick={closeHandler}>x</span>
+      </GridTagCap>
+      <TagDialog open={open} handleClose={handleClose}
+                  tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={3}/>
     </GridTagInputDiv>
   );
 };
@@ -170,15 +169,15 @@ export const TagInputForTodo = ({ tags, setTags, closeHandler }: GridTagInputPro
 
   return (
     <TodoInputDiv>
-        <div>
-          {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
-        </div>
-        <TodoTagOpenBtn onClick={handleClickOpen}>+</TodoTagOpenBtn>
-        <TodoTagCap>
-          <span onClick={closeHandler}>Tag</span>
-        </TodoTagCap>
-        <TagDialog open={open} handleClose={handleClose}
-                    tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={5}/>
+      <div>
+        {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
+      </div>
+      <TodoTagOpenBtn onClick={handleClickOpen}>+</TodoTagOpenBtn>
+      <TodoTagCap>
+        <span onClick={closeHandler}>Tag</span>
+      </TodoTagCap>
+      <TagDialog open={open} handleClose={handleClose}
+                  tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={5}/>
     </TodoInputDiv>
   );
 };
@@ -196,35 +195,35 @@ export const TagInputForTodoCategory = ({ tags, setTags, closeHandler }: GridTag
 
   return (
     <TodoInputDiv>
-        <div>
-          {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
-        </div>
-        <TodoTagOpenBtn onClick={handleClickOpen}>+</TodoTagOpenBtn>
-        <TodoTagCap>
-          <span onClick={closeHandler}>Tag</span>
-        </TodoTagCap>
-        <TagDialog open={open} handleClose={handleClose}
-                    tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={3}/>
+      <div>
+        {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
+      </div>
+      <TodoTagOpenBtn onClick={handleClickOpen}>+</TodoTagOpenBtn>
+      <TodoTagCap>
+        <span onClick={closeHandler}>Tag</span>
+      </TodoTagCap>
+      <TagDialog open={open} handleClose={handleClose}
+                  tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={3}/>
     </TodoInputDiv>
   );
 };
 
 const TodoInputDiv = styled.div`
-    border: 1px solid var(--ls-gray_lighter);
-    padding: 12px 0px 5px 5px;
-    border-radius: 8px;
-    margin-right: 10px;
-    
-    display: grid;
-    grid-template-columns: 12fr 1fr;
+  border: 1px solid var(--ls-gray_lighter);
+  padding: 12px 0px 5px 5px;
+  border-radius: 8px;
+  margin-right: 10px;
+  
+  display: grid;
+  grid-template-columns: 12fr 1fr;
 
-    position: relative;
+  position: relative;
 
-    > div:first-child {
-      > button {
-        margin-right: 5px;
-      }
+  > div:first-child {
+    > button {
+      margin-right: 5px;
     }
+  }
 `;
 const TodoTagOpenBtn = styled.span`
   cursor: pointer;
