@@ -1,8 +1,37 @@
 const {app, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url');
+const { spawn } = require('child_process');
+
+const startDjangoServer = () =>
+{
+  const djangoBackend = spawn(`/Applications/anaconda3/bin/python`, ['/Users/junyoungkim/workspace/minor_projects/LivingSolo/backend/manage.py', 'runserver', '--noreload']);
+  djangoBackend.stdout.on('data', data =>
+  {
+    console.log(`stdout:\n${data}`);
+  });
+  djangoBackend.stderr.on('data', data =>
+  {
+    console.log(`stderr: ${data}`);
+  });
+  djangoBackend.on('error', (error) =>
+  {
+    console.log(`error: ${error.message}`);
+  });
+  djangoBackend.on('close', (code) =>
+  {
+    console.log(`child process exited with code ${code}`);
+  });
+  djangoBackend.on('message', (message) =>
+  {
+    console.log(`message:\n${message}`);
+  });
+  return djangoBackend;
+}
 
 function createWindow() {
+    startDjangoServer();
+
     /*
     * 넓이 1920에 높이 1080의 FHD 풀스크린 앱을 실행시킵니다.
     * */

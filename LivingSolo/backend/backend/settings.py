@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "stockpiles",
     "tags",
     "todos",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
