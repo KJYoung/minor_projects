@@ -77,7 +77,7 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
   };
 
   const trxnGridDetailFilterHeader = (targetState: SortState, name: string, targetEnum: TrxnSortTarget) => {
-    return <TrxnGridDetailFilterHeader isActive={(targetState !== SortState.NotSort).toString()} onClick={() => TrxnSortStateHandler(targetEnum)}>
+    return <TrxnGridDetailFilterHeader active={(targetState !== SortState.NotSort).toString()} onClick={() => TrxnSortStateHandler(targetEnum)}>
         <span>{name}</span>
         <span>
             {targetState === SortState.Descend && '▼'}
@@ -96,7 +96,7 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
             {trxnGridDetailFilterHeader(sortState.period, "Period", TrxnSortTarget.Period)}
 
             {/* Unique Logic For Tag Filtering */}
-            {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader isActive={'false'} onClick={() => TrxnSortStateHandler(TrxnSortTarget.Tag)}>
+            {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader active={'false'} onClick={() => TrxnSortStateHandler(TrxnSortTarget.Tag)}>
                 <span>Tag</span>
             </TrxnGridDetailFilterHeader>}
             {sortState.tag === SortState.TagFilter && <div>
@@ -118,7 +118,7 @@ export function TrxnGridHeader({ viewMode }: TrxnGridHeaderProps ) {
             {trxnGridDetailFilterHeader(sortState.amount, "Amount", TrxnSortTarget.Amount)}
             
             {/* Unique Logic For Tag Filtering */}
-            {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader isActive={'false'} onClick={() => TrxnSortStateHandler(TrxnSortTarget.Tag)}>
+            {sortState.tag === SortState.NotSort && <TrxnGridDetailFilterHeader active={'false'} onClick={() => TrxnSortStateHandler(TrxnSortTarget.Tag)}>
                 <span>Tag</span>
             </TrxnGridDetailFilterHeader>}
             {sortState.tag === SortState.TagFilter && <div>
@@ -202,7 +202,7 @@ const TrxnGridDetailHeaderItem = styled.div`
     padding: 0px 20px 0px 20px;
 `;
 const TrxnGridDetailFilterHeader = styled(TrxnGridDetailHeaderItem)<IPropsActive>`
-    color: ${props => ((props.isActive === 'true') ? 'var(--ls-blue)' : 'var(--ls-black)')};
+    color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-black)')};
     cursor: pointer;
 `;
 const TrxnGridDetailFilterReset = styled(TrxnGridDetailHeaderItem)`

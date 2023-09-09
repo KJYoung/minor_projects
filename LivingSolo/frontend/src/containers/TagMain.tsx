@@ -51,9 +51,9 @@ const TagMain = () => {
           <ListWrapper>
             <TagTabHeader>
               <div>
-                <TagTabName isActive={(tagViewerMode === TagViewerMode.TagClass).toString()} onClick={() => tabChangeHandler(TagViewerMode.TagClass)}>TagClass</TagTabName>
-                <TagTabName isActive={(tagViewerMode === TagViewerMode.Tag).toString()}  onClick={() => tabChangeHandler(TagViewerMode.Tag)}>Tag</TagTabName>
-                <TagTabName isActive={(tagViewerMode === TagViewerMode.TagPreset).toString()} onClick={() => tabChangeHandler(TagViewerMode.TagPreset)}>TagPreset</TagTabName>
+                <TagTabName active={(tagViewerMode === TagViewerMode.TagClass).toString()} onClick={() => tabChangeHandler(TagViewerMode.TagClass)}>TagClass</TagTabName>
+                <TagTabName active={(tagViewerMode === TagViewerMode.Tag).toString()}  onClick={() => tabChangeHandler(TagViewerMode.Tag)}>Tag</TagTabName>
+                <TagTabName active={(tagViewerMode === TagViewerMode.TagPreset).toString()} onClick={() => tabChangeHandler(TagViewerMode.TagPreset)}>TagPreset</TagTabName>
               </div>
               <div>
                 <span className='clickable' onClick={classAddToggleHandler}>+</span>
@@ -185,10 +185,10 @@ const TagTabHeader = styled.div`
 `;
 
 const TagTabName = styled.span<IPropsActive>`
-  color: ${props => ((props.isActive === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
-  cursor: ${props => ((props.isActive === 'true') ? 'pointer' : 'default')};
-  &:hover {
-    color: var(--ls-green);
+  color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
+  cursor: ${props => ((props.active === 'true') ? 'default' : 'pointer')};
+  &:hover { 
+    ${({ active }) => active === 'false' && `color: var(--ls-green)`}
   }
 `;
 

@@ -1,7 +1,7 @@
 import { styled } from "styled-components";
 import { CondRendAnimState, condRendMounted, condRendUnmounted, onAnimEnd } from "../../utils/Rendering";
 import { useState } from "react";
-import { TagElement, createTag, selectTag } from "../../store/slices/tag";
+import { TagClassElement, TagElement, createTag, selectTag } from "../../store/slices/tag";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store";
 import { ColorCircleLarge, DEFAULT_COLOR, getRandomHex } from "../../styles/color";
@@ -43,13 +43,22 @@ export const TagAdder = ({ addMode, setAddMode } : TagAdderProps) => {
     setOpen(true);
   };
 
+  const tagClassChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const target: string = e.target.value;
+    const targetClass = elements.find((e) => (e.id.toString() === target));
+
+    if(targetClass === undefined){
+      console.log("Critical Error from tagClassChangeHandler");
+      return;
+    }
+    
+    setTagClass(targetClass.id.toString());
+    setColor(targetClass.color);
+  };
+
   return <TagAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
     <TagAdderRow>
-      <ColorCircleLarge color={color}>
-        <div onClick={() => { setColor(getRandomHex()); }}></div>
-        <div className="clickable" onClick={colorDialogOpenHandler}>...</div>
-      </ColorCircleLarge>
-      <select data-testid="tagSelect" value={tagClass} onChange={(e) => setTagClass(e.target.value)}>
+      <select data-testid="tagSelect" value={tagClass} onChange={tagClassChangeHandler}>
         <option disabled value={DEFAULT_OPTION}>
           - 태그 클래스 -
         </option>
@@ -61,6 +70,10 @@ export const TagAdder = ({ addMode, setAddMode } : TagAdderProps) => {
           );
         })}
       </select>
+      <ColorCircleLarge color={color}>
+        <div onClick={() => { setColor(getRandomHex()); }}></div>
+        <div className="clickable" onClick={colorDialogOpenHandler}>...</div>
+      </ColorCircleLarge>
       <input type="text" placeholder='Tag  Name' value={tagName} onChange={(e) => setTagName(e.target.value)}/>
       <button disabled={tagName === '' || tagClass === DEFAULT_OPTION} onClick={() => { 
         dispatch(createTag({name: tagName, color, class: tagClass }));

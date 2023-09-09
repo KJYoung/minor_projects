@@ -32,7 +32,7 @@ export const ColorDialog = ({open, handleClose, color, setColor } : ColorDialogP
             <SetColorHeader>
               설정된 색상{'  '}{color}
             </SetColorHeader>
-            <ColorClearSpan onClick={() => clearColor()} isActive={(color !== '#000000').toString()}>Clear</ColorClearSpan>
+            <ColorClearSpan onClick={() => clearColor()} active={(color !== '#000000').toString()}>Clear</ColorClearSpan>
           </SetColorHeaderWrapper>
           <ColorPickerWrapper>
             <ChromePicker color={color} onChange={color => setColor(color.hex)} />
@@ -66,8 +66,8 @@ const ColorClearSpan = styled.span<IPropsActive>`
     background-color: transparent;
     margin-left: 20px;
 
-    color: ${props => ((props.isActive === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
-    cursor: ${props => ((props.isActive === 'true') ? 'pointer' : 'default')};;
+    color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
+    cursor: ${props => ((props.active === 'true') ? 'pointer' : 'default')};;
 `;
 
 const ColorPickerWrapper = styled.div`

@@ -44,9 +44,9 @@ export const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, set
             <SetTagHeaderWrapper>
               <SetTagHeader>
                 설정된 태그{' '} 
-                <TagLengthIndicator isActive={(tags.length >= tag_max_length).toString()}>{tags.length}</TagLengthIndicator> / {tag_max_length}
+                <TagLengthIndicator active={(tags.length >= tag_max_length).toString()}>{tags.length}</TagLengthIndicator> / {tag_max_length}
               </SetTagHeader>
-              <TagInputClearSpan onClick={() => clearTagInput()} isActive={(tags.length !== 0).toString()}>Clear</TagInputClearSpan>
+              <TagInputClearSpan onClick={() => clearTagInput()} active={(tags.length !== 0).toString()}>Clear</TagInputClearSpan>
             </SetTagHeaderWrapper>
             <SetTagList>{tags?.map((ee) =>
               <TagBubbleWithFunc key={ee.id} color={ee.color}>
@@ -138,7 +138,7 @@ const SetTagHeader = styled.span`
 `;
 
 const TagLengthIndicator = styled.span<IPropsActive>`
-    color: ${props => ((props.isActive === 'true') ? 'var(--ls-red)' : 'var(--ls-blue)')};
+    color: ${props => ((props.active === 'true') ? 'var(--ls-red)' : 'var(--ls-blue)')};
 `;
 
 const SetTagList = styled.div`
@@ -175,6 +175,6 @@ const TagInputClearSpan = styled.span<IPropsActive>`
 
     margin-left: 20px;
     
-    color: ${props => ((props.isActive === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
-    cursor: ${props => ((props.isActive === 'true') ? 'pointer' : 'default')};
+    color: ${props => ((props.active === 'true') ? 'var(--ls-blue)' : 'var(--ls-gray)')};
+    cursor: ${props => ((props.active === 'true') ? 'pointer' : 'default')};
 `;
