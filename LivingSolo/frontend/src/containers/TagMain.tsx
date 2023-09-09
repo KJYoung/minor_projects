@@ -40,13 +40,24 @@ const TagMain = () => {
               })}
             </TagCategoryList>         
           </TagCategoryListWrapper>
-            
-            <span>Tag</span>
-            {index.map((tag) => {
-                return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
-            })}
-            <span>TagPreset</span>
-            <span>Not Yet</span>
+          <TagListWrapper>
+            <TagHeader>
+              <span>Tag</span>
+            </TagHeader>
+            <TagList>
+              {index.map((tag) => {
+                  return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
+              })}
+            </TagList>         
+          </TagListWrapper>
+          <TagPresetListWrapper>
+            <TagPresetHeader>
+              <span>TagPreset</span>
+            </TagPresetHeader>
+            <TagPresetList>
+
+            </TagPresetList>         
+          </TagPresetListWrapper>
         </LeftWrapper>
         <RightWrapper></RightWrapper>
         
@@ -101,7 +112,6 @@ const RightWrapper = styled.div`
 `;
 
 const TagCategoryListWrapper = styled.div`
-  border: 1px solid red;
   width: 100%;
 `;
 
@@ -112,6 +122,7 @@ const TagCategoryHeader = styled.div`
 `;
 
 const TagCategoryList = styled.div`
+  margin-bottom: 20px;
 `;
 
 const TagCategoryListElement = styled.div`
@@ -138,4 +149,40 @@ const TagCategoryListElementHeader = styled.div<IPropsColor>`
       background: ${color};
       color: ${getContrastYIQ(color)}
     `}
+`;
+
+const TagListWrapper = styled.div`
+  width: 100%;
+  margin-bottom: 20px;
+`;
+
+const TagHeader = styled.div`
+  font-size: 28px;
+  padding: 4px;
+  border-bottom: 1px solid black;
+  margin-bottom: 10px;
+`;
+
+const TagList = styled.div`
+  > button {
+    margin: 3px 0px 0px 5px;
+  }
+`;
+
+const TagPresetListWrapper = styled.div`
+  width: 100%;
+  margin-bottom: 20px;
+`;
+
+const TagPresetHeader = styled.div`
+  font-size: 28px;
+  padding: 4px;
+  border-bottom: 1px solid black;
+  margin-bottom: 10px;
+`;
+
+const TagPresetList = styled.div`
+  > button {
+    margin: 3px 0px 0px 5px;
+  }
 `;
