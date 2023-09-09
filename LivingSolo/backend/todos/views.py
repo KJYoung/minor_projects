@@ -228,6 +228,7 @@ def toggle_todo(request, todo_id):
 def general_todo_category(request):
     """
     GET : get todo category list
+    POST : create todo category
     """
     if request.method == 'GET':
         try:

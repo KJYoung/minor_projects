@@ -8,15 +8,15 @@ import { TagBubbleCompact } from '../components/general/TagBubble';
 import { IPropsColor } from '../utils/Interfaces';
 import { getContrastYIQ } from '../styles/color';
 import { CondRendAnimState, defaultCondRendAnimState, toggleCondRendAnimState } from '../utils/Rendering';
-import { TagAdder, TagEditor } from '../components/Tag/TagAdder';
+import { TagClassAdder, TagClassAdderHeight, TagClassEditor } from '../components/Tag/TagClassAdder';
 
 enum TagViewerMode {
-  TagCategory, Tag, TagPreset
+  TagClass, Tag, TagPreset
 };
 
 const TagMain = () => {
   const [addMode, setAddMode] = useState<CondRendAnimState>(defaultCondRendAnimState);
-  const [tagViewerMode, setTagViewerMode] = useState<TagViewerMode>(TagViewerMode.TagCategory);
+  const [tagViewerMode, setTagViewerMode] = useState<TagViewerMode>(TagViewerMode.TagClass);
   const dispatch = useDispatch<AppDispatch>();
 
   const { elements, index, errorState } = useSelector(selectTag);
@@ -27,11 +27,11 @@ const TagMain = () => {
       dispatch(fetchTagsIndex());
     }, [dispatch, errorState]);
 
-  const categoryEditHandler = () => {
+  const classEditHandler = () => {
 
   }
 
-  const categoryAddToggleHandler = () => {
+  const classAddToggleHandler = () => {
     toggleCondRendAnimState(addMode, setAddMode); // ON
 };
 
@@ -40,63 +40,64 @@ const TagMain = () => {
       <InnerWrapper>
         <LeftWrapper>
           <ListWrapper>
-            <TagCategoryHeader>
-              <span onClick={() => setTagViewerMode(TagViewerMode.TagCategory)}>TagCategory</span>
+            <TagClassHeader>
+              <span onClick={() => setTagViewerMode(TagViewerMode.TagClass)}>TagClass</span>
               <span onClick={() => setTagViewerMode(TagViewerMode.Tag)}>Tag</span>
               <span onClick={() => setTagViewerMode(TagViewerMode.TagPreset)}>TagPreset</span>
-              <span onClick={categoryAddToggleHandler}>+</span>
-            </TagCategoryHeader>
+              <span onClick={classAddToggleHandler}>+</span>
+            </TagClassHeader>
             {
-              tagViewerMode === TagViewerMode.TagCategory && <TagCategoryListPosition>
+              tagViewerMode === TagViewerMode.TagClass && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                    (<TagAdder addMode={addMode} setAddMode={setAddMode} />)
+                    (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
               :
-                    (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={categoryEditHandler}/>)
+                    (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
-                <TagCategoryList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(125px)" } : { transform: "translateY(0px)" }}>
+                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagClassAdderHeight})` } : { transform: "translateY(0px)" }}>
                   {elements.map((tagClass) => {
-                      return <TagCategoryListElement key={tagClass.id}>
-                          <TagCategoryListElementHeader color={tagClass.color}>{tagClass.name}</TagCategoryListElementHeader>
+                      return <TagClassListElement key={tagClass.id}>
+                          <TagClassListElementHeader color={tagClass.color}>{tagClass.name}</TagClassListElementHeader>
                           <div>
                               {tagClass.tags?.map((tag) => {
                                   return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
                               })}
                           </div>
-                      </TagCategoryListElement>
+                      </TagClassListElement>
                   })}
-                </TagCategoryList>         
-              </TagCategoryListPosition>
+                </TagClassList>         
+              </TagClassListPosition>
             }
             {
-              tagViewerMode === TagViewerMode.Tag && <TagCategoryListPosition>
+              tagViewerMode === TagViewerMode.Tag && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                    (<TagAdder addMode={addMode} setAddMode={setAddMode} />)
+                    (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
               :
-                    (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={categoryEditHandler}/>)
+                    (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
-                <TagCategoryList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(125px)" } : { transform: "translateY(0px)" }}>
+                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagClassAdderHeight})` } : { transform: "translateY(0px)" }}>
                     {index.map((tag) => {
                         return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
                     })}     
-                </TagCategoryList>         
-              </TagCategoryListPosition>
+                </TagClassList>         
+              </TagClassListPosition>
             }
             {
-              tagViewerMode === TagViewerMode.TagPreset && <TagCategoryListPosition>
+              tagViewerMode === TagViewerMode.TagPreset && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                    (<TagAdder addMode={addMode} setAddMode={setAddMode} />)
+                    (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
               :
-                    (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={categoryEditHandler}/>)
+                    (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
-                <TagCategoryList style={addMode.showElem && addMode.isMounted ? { transform: "translateY(125px)" } : { transform: "translateY(0px)" }}>
+                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagClassAdderHeight})` } : { transform: "translateY(0px)" }}>
                   Preset
-                </TagCategoryList>         
-              </TagCategoryListPosition>
+                </TagClassList>         
+              </TagClassListPosition>
             }
           </ListWrapper>
         </LeftWrapper>
-        <RightWrapper></RightWrapper>
-        
+        <RightWrapper>
+
+        </RightWrapper>
       </InnerWrapper>
     </Wrapper>
   );
@@ -151,18 +152,18 @@ const ListWrapper = styled.div`
   width: 100%;
 `;
 
-const TagCategoryHeader = styled.div`
+const TagClassHeader = styled.div`
   font-size: 28px;
   padding: 4px;
   border-bottom: 1px solid black;
 `;
 
-const TagCategoryListPosition = styled.div`
+const TagClassListPosition = styled.div`
   width: 100%;
   position: relative;
 `;
 
-const TagCategoryList = styled.div`
+const TagClassList = styled.div`
   margin-bottom: 20px;
 
   position: absolute;
@@ -173,7 +174,7 @@ const TagCategoryList = styled.div`
   transition-delay: 0s;
 `;
 
-const TagCategoryListElement = styled.div`
+const TagClassListElement = styled.div`
   margin-bottom: 10px;
   padding-bottom: 10px;
   padding-left: 10px;
@@ -184,7 +185,7 @@ const TagCategoryListElement = styled.div`
   }
 `;
 
-const TagCategoryListElementHeader = styled.div<IPropsColor>`
+const TagClassListElementHeader = styled.div<IPropsColor>`
   padding: 6px 10px 6px 10px;
   width: 200px;
   border-radius: 10px;

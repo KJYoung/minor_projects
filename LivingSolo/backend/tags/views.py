@@ -2,16 +2,18 @@
     Tag, 각종 모델에 사용되는 태그에 관한 처리 로직입니다.
 """
 
+import json
 from json.decoder import JSONDecodeError
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, JsonResponse
 from tags.models import TagClass, Tag
 
 ## TagClass
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'POST'])
 def general_tag_class(request):
     """
     GET : get tag class list
+    POST : create tag category(tag class)
     """
     if request.method == 'GET':
         try:
@@ -33,6 +35,17 @@ def general_tag_class(request):
         except (TagClass.DoesNotExist):
             print("ERROR from general_tag_class")
             return HttpResponseBadRequest()
+    else:  # POST REQUEST
+        try:
+            req_data = json.loads(request.body.decode())
+            element = TagClass(
+                name=req_data["name"],
+                color=req_data["color"],
+            )
+            element.save()
+        except (KeyError, JSONDecodeError):
+            return HttpResponseBadRequest()
+        return JsonResponse({"id": element.id, "name": element.name}, status=201)
 
 
 ## Tag

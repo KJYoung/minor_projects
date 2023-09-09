@@ -19,7 +19,6 @@ export type TagElement = {
   tag_class?: TagElement
 };
 
-
 interface TagState {
   elements: TagClassElement[],
   index: TagElement[],
@@ -33,16 +32,29 @@ export const initialState: TagState = {
 };
 
 export const fetchTags = createAsyncThunk(
-  "trxn/fetchTags",
+  "tag/fetchTags",
   async () => {
     const response = await client.get(`/api/tag/class/`);
     return response.data;
   }
 );
 export const fetchTagsIndex = createAsyncThunk(
-  "trxn/fetchTagsIndex",
+  "tag/fetchTagsIndex",
   async () => {
     const response = await client.get(`/api/tag/`);
+    return response.data;
+  }
+);
+// Post
+export interface TagClassCreateReqType {
+  name: string,
+  color: string,
+};
+
+export const createTagClass = createAsyncThunk(
+  "tag/createTagCategory",
+  async (payload: TagClassCreateReqType) => {
+    const response = await client.post(`/api/tag/class/`, payload);
     return response.data;
   }
 );
@@ -60,6 +72,16 @@ export const TagSlice = createSlice({
       state.index = action.payload.elements;
       state.errorState = ERRORSTATE.NORMAL;
     }); 
+    [
+      createTagClass,
+    ].forEach((reducer) => {
+      builder.addCase(reducer.pending, (state, action) => {
+        state.errorState = ERRORSTATE.DEFAULT;
+      });
+      builder.addCase(reducer.fulfilled, (state, action) => {
+        state.errorState = ERRORSTATE.SUCCESS;
+      });
+    });
   },
 });
 

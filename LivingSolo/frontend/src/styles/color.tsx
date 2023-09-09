@@ -1,3 +1,7 @@
+import { styled } from "styled-components";
+
+export const DEFAULT_COLOR = "#000000";
+
 export const getRandomHex = () => {
     return hslToHex(360 * Math.random(), 25 + 70 * Math.random(), 75 + 10 * Math.random());
 };
@@ -24,3 +28,52 @@ export const getContrastYIQ = (hexcolor: string) => {
     return yiq >= 128 ? 'black' : 'white';
 };
   
+export const ColorCircle = styled.div<{ color: string, ishard?: string }>`
+    position: relative;
+    width: 20px;
+    height: 20px;
+
+    > div {
+        cursor: pointer;
+    }
+
+    > div:first-child {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: ${props => ((props.ishard === 'true') ? '2px solid var(--ls-red)' : 'none')};
+        background-color: ${props => (props.color)};;
+        
+        margin-right: 10px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    > div:last-child {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        width: 20px;
+        height: 20px;
+    }
+`;
+
+export const ColorCircleLarge = styled(ColorCircle)`
+    width: 25px;
+    height: 25px;
+
+    margin-left: 8px;
+
+    > div:first-child {
+        width: 25px;
+        height: 25px;
+    }
+
+    > div:last-child {
+        position: absolute;
+        top: 13px;
+        left: 22px;
+    }
+`;
