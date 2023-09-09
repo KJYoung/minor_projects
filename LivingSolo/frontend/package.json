@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:8000",
+  "main": "public/electron.js",
+  "homepage": "./",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
@@ -46,7 +48,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "react-start": "BROWSER=none yarn start",
+    "electron-start": "ELECTRON_START_URL=http://localhost:3000 electron .",
+    "electron-pack": "yarn build && electron-builder build -c.extraMetadata.main=build/electron.js"
   },
   "eslintConfig": {
     "extends": [
@@ -65,5 +70,65 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "electron": "^26.2.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "productName": "LivingSolo",
+    "appId": "VMP1",
+    "asar": true,
+    "extends": null,
+    "files": [
+      "src/**/*",
+      "public/**/*",
+      "electron-main.js",
+      "dist/**/*",
+      "build/**/*",
+      "package.json"
+    ],
+    "protocols": {
+      "name": "LivingSolo",
+      "schemes": [
+        "LivingSolo"
+      ]
+    },
+    "mac": {
+      "target": [
+        "default"
+      ]
+    },
+    "dmg": {
+      "title": "tournant"
+    },
+    "win": {
+      "target": [
+        "zip",
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm",
+        "zip",
+        "tar.gz"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": false,
+      "installerLanguages": [
+        "en_US",
+        "ko_KR"
+      ],
+      "language": "1042"
+    },
+    "directories": {
+      "output": "dist/",
+      "app": "."
+    }
   }
 }
