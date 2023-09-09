@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
 import { fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
 import { TagBubbleCompact } from '../components/general/TagBubble';
+import { IPropsColor } from '../utils/Interfaces';
+import { getContrastYIQ } from '../styles/color';
 
 const TagMain = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,21 +23,27 @@ const TagMain = () => {
     <Wrapper>
       <InnerWrapper>
         <LeftWrapper>
-            <span>TagCategory</span>
-            {elements.map((tagClass) => {
-                return <div key={tagClass.id}>
-                    <span>Tag Class Name : {tagClass.name}</span>
-                    <span>---</span>
-                    <div>
-                        {tagClass.tags?.map((tag) => {
-                            return <TagBubbleCompact color={tag.color}>{tag.name}</TagBubbleCompact>
-                        })}
-                    </div>
-                </div>
-            })}
+          <TagCategoryListWrapper>
+            <TagCategoryHeader>
+              <span>TagCategory</span>
+            </TagCategoryHeader>
+            <TagCategoryList>
+              {elements.map((tagClass) => {
+                  return <TagCategoryListElement key={tagClass.id}>
+                      <TagCategoryListElementHeader color={tagClass.color}>{tagClass.name}</TagCategoryListElementHeader>
+                      <div>
+                          {tagClass.tags?.map((tag) => {
+                              return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
+                          })}
+                      </div>
+                  </TagCategoryListElement>
+              })}
+            </TagCategoryList>         
+          </TagCategoryListWrapper>
+            
             <span>Tag</span>
             {index.map((tag) => {
-                return <TagBubbleCompact color={tag.color}>{tag.name}</TagBubbleCompact>
+                return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
             })}
             <span>TagPreset</span>
             <span>Not Yet</span>
@@ -70,7 +78,7 @@ const InnerWrapper = styled.div`
 `;
 
 const LeftWrapper = styled.div`
-  width: 900px;
+  width: 1500px;
   height: 100%;
   padding: 30px 0px 0px 30px;
 
@@ -90,4 +98,44 @@ const RightWrapper = styled.div`
     width: 100%;
     height: 100%;
   }
+`;
+
+const TagCategoryListWrapper = styled.div`
+  border: 1px solid red;
+  width: 100%;
+`;
+
+const TagCategoryHeader = styled.div`
+  font-size: 28px;
+  padding: 4px;
+  border-bottom: 1px solid black;
+`;
+
+const TagCategoryList = styled.div`
+`;
+
+const TagCategoryListElement = styled.div`
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  border-bottom: 1px solid black;
+
+  &:first-child{
+    padding-top: 10px;
+  }
+`;
+
+const TagCategoryListElementHeader = styled.div<IPropsColor>`
+  padding: 6px 10px 6px 10px;
+  width: 200px;
+  border-radius: 10px;
+  text-align: center;
+
+  margin-bottom: 4px;
+  ${({ color }) =>
+    color &&
+    `
+      background: ${color};
+      color: ${getContrastYIQ(color)}
+    `}
 `;
