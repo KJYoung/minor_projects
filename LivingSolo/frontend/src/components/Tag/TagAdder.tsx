@@ -1,7 +1,7 @@
 import { styled } from "styled-components";
 import { CondRendAnimState, condRendMounted, condRendUnmounted, onAnimEnd } from "../../utils/Rendering";
 import { useState } from "react";
-import { TagClassElement, TagElement, createTag, selectTag } from "../../store/slices/tag";
+import { TagElement, createTag, selectTag } from "../../store/slices/tag";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store";
 import { ColorCircleLarge, DEFAULT_COLOR, getRandomHex } from "../../styles/color";
@@ -45,6 +45,7 @@ export const TagAdder = ({ addMode, setAddMode } : TagAdderProps) => {
 
   const tagClassChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const target: string = e.target.value;
+    const prevClass = (tagClass === DEFAULT_OPTION) ? undefined :  elements.find((e) => (e.id.toString() === tagClass));
     const targetClass = elements.find((e) => (e.id.toString() === target));
 
     if(targetClass === undefined){
@@ -52,8 +53,18 @@ export const TagAdder = ({ addMode, setAddMode } : TagAdderProps) => {
       return;
     }
     
+    if(
+      (tagClass === DEFAULT_OPTION && color !== DEFAULT_COLOR) ||
+      (prevClass !== undefined && prevClass.color !== color)
+    ){
+      if(window.confirm('현재 색상이 기본값과 다릅니다. 색상을 선택한 태그 클래스의 색상으로 변경하시겠습니까?')){
+        setColor(targetClass.color);
+      }
+    }else{
+      setColor(targetClass.color);
+    }
+
     setTagClass(targetClass.id.toString());
-    setColor(targetClass.color);
   };
 
   return <TagAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>

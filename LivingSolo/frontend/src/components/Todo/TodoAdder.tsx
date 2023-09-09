@@ -71,6 +71,12 @@ export const TodoAdder = ({ addMode, setAddMode, curDay } : TodoAdderProps) => {
             setNewTodo((nT) => { return {...nT, category: e.target.value}});
             const categ = categories.find((c) => c.id === parseInt(e.target.value));
             if(categ){
+                if(tags.length !== 0 && JSON.stringify(tags) !== JSON.stringify(curTCateg?.tag)){
+                    if (!window.confirm('현재 설정된 태그를 지금 변경할 카테고리의 태그들로 대체하시겠습니까?')) {
+                        setCurTCateg(categ);
+                        return;
+                    }
+                }
                 setCurTCateg(categ);
                 setTags(categ.tag);
             };
