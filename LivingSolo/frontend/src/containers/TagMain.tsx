@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
-import { fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
+import { fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
 import { TagBubbleCompact } from '../components/general/TagBubble';
 import { IPropsActive, IPropsColor } from '../utils/Interfaces';
 import { getContrastYIQ } from '../styles/color';
 import { CondRendAnimState, defaultCondRendAnimState, toggleCondRendAnimState } from '../utils/Rendering';
 import { TagClassAdder, TagClassAdderHeight, TagClassEditor } from '../components/Tag/TagClassAdder';
-import { TagAdder, TagEditor } from '../components/Tag/TagAdder';
+import { TagAdder, TagAdderHeight, TagEditor } from '../components/Tag/TagAdder';
+import { TagPresetAdder, TagPresetAdderHeight, TagPresetEditor } from '../components/Tag/TagPresetAdder';
 
 enum TagViewerMode {
   TagClass, Tag, TagPreset
@@ -20,12 +21,13 @@ const TagMain = () => {
   const [tagViewerMode, setTagViewerMode] = useState<TagViewerMode>(TagViewerMode.TagClass);
   const dispatch = useDispatch<AppDispatch>();
 
-  const { elements, index, errorState } = useSelector(selectTag);
+  const { elements, index, preset, errorState } = useSelector(selectTag);
 
   // Fetch Tag Related Things!
   useEffect(() => {
       dispatch(fetchTags());
       dispatch(fetchTagsIndex());
+      dispatch(fetchTagPresets());
     }, [dispatch, errorState]);
 
   const classEditHandler = () => {
@@ -62,20 +64,20 @@ const TagMain = () => {
             {
               tagViewerMode === TagViewerMode.TagClass && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                    (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
-              :
-                    (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
+                  (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
+                :
+                  (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
                 <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagClassAdderHeight})` } : { transform: "translateY(0px)" }}>
                   {elements.map((tagClass) => {
-                      return <TagClassListElement key={tagClass.id}>
-                          <TagClassListElementHeader color={tagClass.color}>{tagClass.name}</TagClassListElementHeader>
-                          <div>
-                              {tagClass.tags?.map((tag) => {
-                                  return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
-                              })}
-                          </div>
-                      </TagClassListElement>
+                    return <TagClassListElement key={tagClass.id}>
+                      <TagClassListElementHeader color={tagClass.color}>{tagClass.name}</TagClassListElementHeader>
+                      <div>
+                        {tagClass.tags?.map((tag) => {
+                          return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
+                        })}
+                      </div>
+                    </TagClassListElement>
                   })}
                 </TagClassList>         
               </TagClassListPosition>
@@ -83,26 +85,31 @@ const TagMain = () => {
             {
               tagViewerMode === TagViewerMode.Tag && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                    (<TagAdder addMode={addMode} setAddMode={setAddMode} />)
-              :
-                    (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
+                  (<TagAdder addMode={addMode} setAddMode={setAddMode} />)
+                :
+                  (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
-                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagClassAdderHeight})` } : { transform: "translateY(0px)" }}>
-                    {index.map((tag) => {
-                        return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
-                    })}     
+                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagAdderHeight})` } : { transform: "translateY(0px)" }}>
+                  {index.map((tag) => {
+                    return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
+                  })}     
                 </TagClassList>         
               </TagClassListPosition>
             }
             {
               tagViewerMode === TagViewerMode.TagPreset && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                    (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
-              :
-                    (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
+                  (<TagPresetAdder addMode={addMode} setAddMode={setAddMode} />)
+                :
+                  (elements[0] && <TagPresetEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
-                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagClassAdderHeight})` } : { transform: "translateY(0px)" }}>
-                  Preset
+                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagPresetAdderHeight})` } : { transform: "translateY(0px)" }}>
+                  {preset.map((preset) => {
+                    return <div key={preset.id}>
+                        {preset.name}
+                        {preset.tags.map((tag) => <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>)}
+                    </div>
+                  })} 
                 </TagClassList>         
               </TagClassListPosition>
             }

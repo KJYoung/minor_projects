@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
 import { fetchCombinedTrxns, fetchTrxns, selectTrxn } from '../store/slices/trxn';
 import TrxnInput from '../components/Trxn/TrxnInput';
-import { fetchTags, fetchTagsIndex } from '../store/slices/tag';
+import { fetchTagPresets, fetchTags, fetchTagsIndex } from '../store/slices/tag';
 import { CUR_MONTH, CalMonth } from '../utils/DateTime';
 import { TrxnNav } from '../components/Trxn/TrxnNav';
 import { TrxnDetail } from './Trxn/TrxnDetail';
@@ -30,6 +30,7 @@ function TrxnMain() {
   useEffect(() => {
     dispatch(fetchTags());
     dispatch(fetchTagsIndex());
+    dispatch(fetchTagPresets());
   }, [dispatch]);
 
   return (

@@ -6,7 +6,7 @@ import json
 from json.decoder import JSONDecodeError
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, JsonResponse
-from tags.models import TagClass, Tag
+from tags.models import TagClass, Tag, TagPreset
 
 ## TagClass
 @require_http_methods(['GET', 'POST'])
@@ -31,7 +31,12 @@ def general_tag_class(request):
                         "tags": tags_list,
                     }
                 )
-            return JsonResponse({"elements": result}, safe=False)
+            return JsonResponse(
+                {
+                    "elements": result,
+                },
+                safe=False,
+            )
         except (TagClass.DoesNotExist):
             print("ERROR from general_tag_class")
             return HttpResponseBadRequest()
@@ -74,7 +79,7 @@ def general_tag(request):
                     }
                 )
             return JsonResponse({"elements": result}, safe=False)
-        except (KeyError, JSONDecodeError, TagClass.DoesNotExist):
+        except (KeyError, JSONDecodeError):
             print("ERROR from general_tag")
             return HttpResponseBadRequest()
     else:  # POST REQUEST
@@ -84,5 +89,47 @@ def general_tag(request):
             element = Tag(name=req_data["name"], color=req_data["color"], tag_class=tag_class)
             element.save()
         except (KeyError, JSONDecodeError):
+            return HttpResponseBadRequest()
+        return JsonResponse({"id": element.id, "name": element.name}, status=201)
+
+
+## Tag Preset
+@require_http_methods(['GET', 'POST'])
+def general_tag_preset(request):
+    """
+    GET : get tag preset list
+    POST : create tag preset
+    """
+    if request.method == 'GET':
+        try:
+            result = []
+            for tp_elem in TagPreset.objects.all():
+                tags_list = []
+                for tag in list(tp_elem.tags.all().values()):
+                    # {'id': 1, 'created': datetime.datetime(2023, 7, 12, 22, 43, 56, 23036), 'updated': datetime.datetime(2023, 7, 12, 22, 43, 56, 27034), 'name': '클1타1', 'color': '#000000', 'type_class_id': 1}
+                    tags_list.append({"id": tag['id'], "name": tag['name'], "color": tag['color']})
+                result.append(
+                    {
+                        "id": tp_elem.id,
+                        "name": tp_elem.name,
+                        "tags": tags_list,
+                    }
+                )
+            return JsonResponse({"elements": result}, safe=False)
+        except (KeyError, JSONDecodeError):
+            print("ERROR from general_tagpreset")
+            return HttpResponseBadRequest()
+    else:  # POST REQUEST
+        try:
+            req_data = json.loads(request.body.decode())
+            element = TagPreset(name=req_data["name"])
+            element.save()
+
+            # Set tags
+            tag_list = req_data["tags"]
+            for tag in tag_list:
+                tag_elem = Tag.objects.get(pk=tag["id"])
+                element.tags.add(tag_elem)
+        except (KeyError, JSONDecodeError, Tag.DoesNotExist):
             return HttpResponseBadRequest()
         return JsonResponse({"id": element.id, "name": element.name}, status=201)

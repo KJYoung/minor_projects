@@ -19,15 +19,23 @@ export type TagElement = {
   tag_class?: TagElement
 };
 
+export type TagPreset = {
+  id: number,
+  name: string,
+  tags: TagElement[],
+};
+
 interface TagState {
   elements: TagClassElement[],
   index: TagElement[],
+  preset: TagPreset[],
   errorState: ERRORSTATE,
 };
 
 export const initialState: TagState = {
   elements: [],
   index: [],
+  preset: [],
   errorState: ERRORSTATE.DEFAULT
 };
 
@@ -45,6 +53,13 @@ export const fetchTagsIndex = createAsyncThunk(
     return response.data;
   }
 );
+export const fetchTagPresets = createAsyncThunk(
+  "tag/fetchTagPresets",
+  async () => {
+    const response = await client.get(`/api/tag/preset/`);
+    return response.data;
+  }
+);
 // Post
 export interface TagClassCreateReqType {
   name: string,
@@ -54,6 +69,10 @@ export interface TagCreateReqType {
   name: string,
   color: string,
   class: string,
+};
+export interface TagPresetReqType {
+  name: string,
+  tags: TagElement[],
 };
 
 export const createTagClass = createAsyncThunk(
@@ -67,6 +86,13 @@ export const createTag = createAsyncThunk(
   "tag/createTag",
   async (payload: TagCreateReqType) => {
     const response = await client.post(`/api/tag/`, payload);
+    return response.data;
+  }
+);
+export const createTagPreset = createAsyncThunk(
+  "tag/createTagPreset",
+  async (payload: TagPresetReqType) => {
+    const response = await client.post(`/api/tag/preset/`, payload);
     return response.data;
   }
 );
@@ -84,8 +110,12 @@ export const TagSlice = createSlice({
       state.index = action.payload.elements;
       state.errorState = ERRORSTATE.NORMAL;
     }); 
+    builder.addCase(fetchTagPresets.fulfilled, (state, action) => {
+      state.preset = action.payload.elements;
+      state.errorState = ERRORSTATE.NORMAL;
+    }); 
     [
-      createTagClass, createTag
+      createTagClass, createTag, createTagPreset
     ].forEach((reducer) => {
       builder.addCase(reducer.pending, (state, action) => {
         state.errorState = ERRORSTATE.DEFAULT;
