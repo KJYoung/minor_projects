@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
-import { fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
+import { TagElement, fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
 import { TagBubbleCompact } from '../components/general/TagBubble';
 import { IPropsActive, IPropsColor } from '../utils/Interfaces';
 import { getContrastYIQ } from '../styles/color';
@@ -19,6 +19,8 @@ enum TagViewerMode {
 const TagMain = () => {
   const [addMode, setAddMode] = useState<CondRendAnimState>(defaultCondRendAnimState);
   const [tagViewerMode, setTagViewerMode] = useState<TagViewerMode>(TagViewerMode.TagClass);
+  const [selectedTag, setSelectedTag] = useState<TagElement | undefined>();
+
   const dispatch = useDispatch<AppDispatch>();
 
   const { elements, index, preset, errorState } = useSelector(selectTag);
@@ -32,7 +34,7 @@ const TagMain = () => {
 
   const classEditHandler = () => {
 
-  }
+  };
 
   const classAddToggleHandler = () => {
     toggleCondRendAnimState(addMode, setAddMode); // ON
@@ -44,6 +46,10 @@ const TagMain = () => {
     if(addMode.showElem)
       classAddToggleHandler();
     setTagViewerMode(newTabState);
+  };
+
+  const tagSelectHandler = (tag: TagElement) => {
+    setSelectedTag(tag);
   };
 
   return (
@@ -74,7 +80,7 @@ const TagMain = () => {
                       <TagClassListElementHeader color={tagClass.color}>{tagClass.name}</TagClassListElementHeader>
                       <div>
                         {tagClass.tags?.map((tag) => {
-                          return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
+                          return <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>
                         })}
                       </div>
                     </TagClassListElement>
@@ -89,11 +95,11 @@ const TagMain = () => {
                 :
                   (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
-                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagAdderHeight})` } : { transform: "translateY(0px)" }}>
+                <TagList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagAdderHeight})` } : { transform: "translateY(0px)" }}>
                   {index.map((tag) => {
-                    return <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>
+                    return <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>
                   })}     
-                </TagClassList>         
+                </TagList>         
               </TagClassListPosition>
             }
             {
@@ -103,20 +109,20 @@ const TagMain = () => {
                 :
                   (elements[0] && <TagPresetEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
-                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagPresetAdderHeight})` } : { transform: "translateY(0px)" }}>
+                <TagList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagPresetAdderHeight})` } : { transform: "translateY(0px)" }}>
                   {preset.map((preset) => {
                     return <div key={preset.id}>
                         {preset.name}
-                        {preset.tags.map((tag) => <TagBubbleCompact color={tag.color} key={tag.id}>{tag.name}</TagBubbleCompact>)}
+                        {preset.tags.map((tag) => <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>)}
                     </div>
                   })} 
-                </TagClassList>         
+                </TagList>         
               </TagClassListPosition>
             }
           </ListWrapper>
         </LeftWrapper>
         <RightWrapper>
-
+          {selectedTag && <TagBubbleCompact color={selectedTag.color}>{selectedTag.name}</TagBubbleCompact>}
         </RightWrapper>
       </InnerWrapper>
     </Wrapper>
@@ -205,6 +211,19 @@ const TagClassListPosition = styled.div`
 `;
 
 const TagClassList = styled.div`
+  margin-bottom: 20px;
+
+  width: 100%;
+  position: absolute;
+  top: 0px;
+
+  transition-property: all;
+  transition-duration: 250ms;
+  transition-delay: 0s;
+`;
+
+const TagList = styled.div`
+  margin-top: 10px;
   margin-bottom: 20px;
 
   position: absolute;
