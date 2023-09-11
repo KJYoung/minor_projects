@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TagElement, createTagPreset } from "../../store/slices/tag";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
-import { TagInputForTrxnInput } from "./TagInput";
+import { TagInputForTagPreset } from "./TagInput";
 
 export const TagPresetAdderHeight = '70px';
 
@@ -27,7 +27,7 @@ export const TagPresetAdder = ({ addMode, setAddMode } : TagPresetAdderProps) =>
 
   return <TagPresetAdderWrapper style={addMode.isMounted ? condRendMounted : condRendUnmounted} onAnimationEnd={() => onAnimEnd(addMode, setAddMode)}>
     <TagPresetAdderRow>
-      <TagInputForTrxnInput tags={tags} setTags={setTags}/>
+      <TagInputForTagPreset tags={tags} setTags={setTags}/>
       <input type="text" placeholder='Tag  Name' value={tagName} onChange={(e) => setTagName(e.target.value)}/>
       <button disabled={tagName === '' || tags.length === 0} onClick={() => { 
         dispatch(createTagPreset({name: tagName, tags }));
@@ -59,7 +59,7 @@ const TagPresetAdderWrapper = styled.div`
 
 const TagPresetAdderRow = styled.div`
   display: grid;
-  grid-template-columns: 2fr 3fr 15fr 2.5fr;
+  grid-template-columns: 10fr 8fr 2fr;
   align-items: center;
 
   padding: 10px 4px 10px 4px;

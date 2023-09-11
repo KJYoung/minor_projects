@@ -253,3 +253,31 @@ const TodoTagCap = styled.div`
     font-size: 13px;
   };
 `;
+
+export const TagInputForTagPreset = ({ tags, setTags }: TagInputProps) => {
+  const { elements }  = useSelector(selectTag);
+  const [tagClassSelect, setTagClassSelect] = useState<string>(DEFAULT_OPTION); // Tag Class select value
+  const [open, setOpen] = React.useState<boolean>(false);
+  
+  useEffect(() => {
+    setTags([]);
+  }, [elements, setTags]);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <TagInputDiv>
+      <div>
+        {tags.map((ee) => <TagBubbleCompact key={ee.id} color={ee.color}>{ee.name}</TagBubbleCompact>)}
+      </div>
+      <RoundButton onClick={handleClickOpen}><span>+</span></RoundButton>
+      <TagDialog open={open} handleClose={handleClose}
+                  tags={tags} setTags={setTags} tagClassSelect={tagClassSelect} setTagClassSelect={setTagClassSelect} tag_max_length={5}/>
+    </TagInputDiv>
+  );
+};

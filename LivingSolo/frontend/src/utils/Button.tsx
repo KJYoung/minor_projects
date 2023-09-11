@@ -9,8 +9,13 @@ export const RoundButton = styled.button`
     color: var(--ls-white);
 
     font-size: 26px;
+    font-weight: 100;
     text-align: center;
 
     cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
