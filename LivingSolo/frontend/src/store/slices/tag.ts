@@ -3,6 +3,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import client from '../apis/client';
 import { RootState } from '..';
 import { ERRORSTATE } from './core';
+import { TrxnElement } from './trxn';
+import { TodoCategory, TodoElement } from './todo';
 
 export type TagClassElement = {
   id: number,
@@ -25,24 +27,38 @@ export type TagPreset = {
   tags: TagElement[],
 };
 
+export type TagDetail = {
+  transaction: TrxnElement[],
+  todo: TodoElement[],
+};
+
 interface TagState {
   elements: TagClassElement[],
   index: TagElement[],
   preset: TagPreset[],
   errorState: ERRORSTATE,
+  tagDetail: TagDetail | undefined,
 };
 
 export const initialState: TagState = {
   elements: [],
   index: [],
   preset: [],
-  errorState: ERRORSTATE.DEFAULT
+  errorState: ERRORSTATE.DEFAULT,
+  tagDetail: undefined,
 };
 
 export const fetchTags = createAsyncThunk(
   "tag/fetchTags",
   async () => {
     const response = await client.get(`/api/tag/class/`);
+    return response.data;
+  }
+);
+export const fetchTagDetail = createAsyncThunk(
+  "tag/fetchTagDetail",
+  async (id: number) => {
+    const response = await client.get(`/api/tag/${id}/`);
     return response.data;
   }
 );
@@ -112,6 +128,10 @@ export const TagSlice = createSlice({
     }); 
     builder.addCase(fetchTagPresets.fulfilled, (state, action) => {
       state.preset = action.payload.elements;
+      state.errorState = ERRORSTATE.NORMAL;
+    }); 
+    builder.addCase(fetchTagDetail.fulfilled, (state, action) => {
+      state.tagDetail = action.payload.elements;
       state.errorState = ERRORSTATE.NORMAL;
     }); 
     [

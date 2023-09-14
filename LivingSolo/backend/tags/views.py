@@ -6,7 +6,9 @@ import json
 from json.decoder import JSONDecodeError
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, JsonResponse
+from django.forms.models import model_to_dict
 from tags.models import TagClass, Tag, TagPreset
+from todos.views import NULL_COLOR
 
 ## TagClass
 @require_http_methods(['GET', 'POST'])
@@ -91,6 +93,91 @@ def general_tag(request):
         except (KeyError, JSONDecodeError):
             return HttpResponseBadRequest()
         return JsonResponse({"id": element.id, "name": element.name}, status=201)
+
+
+## Tag Detail
+@require_http_methods(['GET'])
+def tag_detail(request, tag_id):
+    """
+    GET : get tag detail
+    """
+    if request.method == 'GET':
+        try:
+            tag_id = int(tag_id)
+            tag_obj = Tag.objects.get(pk=tag_id)
+
+            trxns, todos = [], []
+            for trxn_elem in tag_obj.transaction.all():
+                tags = []
+                for tag_elem in list(trxn_elem.tag.values()):
+                    tags.append(
+                        {
+                            "id": tag_elem['id'],
+                            "name": tag_elem['name'],
+                            "color": tag_elem['color'],
+                        }
+                    )
+                trxn_elem = model_to_dict(trxn_elem)
+                trxns.append(
+                    {
+                        "id": trxn_elem["id"],
+                        "memo": trxn_elem["memo"],
+                        "date": trxn_elem["date"],
+                        "tag": tags,
+                        "period": trxn_elem["period"],
+                        "amount": trxn_elem["amount"],
+                    }
+                )
+
+            for todo_elem in tag_obj.todo.all():
+                tags = []
+                for tag_elem in list(todo_elem.tag.values()):
+                    tags.append(
+                        {
+                            "id": tag_elem['id'],
+                            "name": tag_elem['name'],
+                            "color": tag_elem['color'],
+                        }
+                    )
+                todo_cate = todo_elem.category
+                categ_json = (
+                    {
+                        "id": todo_cate.id,
+                        "name": todo_cate.name,
+                        "color": todo_cate.color,
+                    }
+                    if todo_cate
+                    else {
+                        "id": -1,
+                        "name": '삭제된 카테고리',
+                        "color": NULL_COLOR,
+                    }
+                )
+                todos.append(
+                    {
+                        "id": todo_elem.id,
+                        "name": todo_elem.name,
+                        "tag": tags,
+                        "done": todo_elem.done,
+                        "color": todo_cate.color if todo_cate else NULL_COLOR,
+                        "category": categ_json,
+                        "priority": todo_elem.priority,
+                        "deadline": todo_elem.deadline,
+                        "is_hard_deadline": todo_elem.is_hard_deadline,
+                        "period": todo_elem.period,
+                    }
+                )
+
+            result = {
+                "transaction": trxns,
+                "todo": todos,
+            }
+            return JsonResponse({"elements": result}, safe=False)
+        except (KeyError, JSONDecodeError):
+            print("ERROR from tag_detail")
+            return HttpResponseBadRequest()
+    else:
+        return HttpResponseBadRequest()
 
 
 ## Tag Preset

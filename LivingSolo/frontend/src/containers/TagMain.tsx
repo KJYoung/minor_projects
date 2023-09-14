@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
-import { TagElement, fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
+import { TagElement, fetchTagDetail, fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
 import { TagBubbleCompact } from '../components/general/TagBubble';
 import { IPropsActive, IPropsColor } from '../utils/Interfaces';
 import { getContrastYIQ } from '../styles/color';
@@ -23,14 +23,20 @@ const TagMain = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const { elements, index, preset, errorState } = useSelector(selectTag);
+  const { elements, index, preset, errorState, tagDetail } = useSelector(selectTag);
 
   // Fetch Tag Related Things!
   useEffect(() => {
-      dispatch(fetchTags());
-      dispatch(fetchTagsIndex());
-      dispatch(fetchTagPresets());
-    }, [dispatch, errorState]);
+    dispatch(fetchTags());
+    dispatch(fetchTagsIndex());
+    dispatch(fetchTagPresets());
+  }, [dispatch, errorState]);
+
+  useEffect(() => {
+    if(selectedTag){
+      dispatch(fetchTagDetail(selectedTag.id));
+    }
+  }, [dispatch, selectedTag]);
 
   const classEditHandler = () => {
 
@@ -109,20 +115,30 @@ const TagMain = () => {
                 :
                   (elements[0] && <TagPresetEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
-                <TagList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagPresetAdderHeight})` } : { transform: "translateY(0px)" }}>
+                <TagPresetList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagPresetAdderHeight})` } : { transform: "translateY(0px)" }}>
                   {preset.map((preset) => {
-                    return <div key={preset.id}>
-                        {preset.name}
+                    return <TagPresetListElement key={preset.id}>
+                      <span>{preset.name}</span>
+                      <div>
                         {preset.tags.map((tag) => <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>)}
-                    </div>
+                      </div>
+                    </TagPresetListElement>
                   })} 
-                </TagList>         
+                </TagPresetList>         
               </TagClassListPosition>
             }
           </ListWrapper>
         </LeftWrapper>
         <RightWrapper>
           {selectedTag && <TagBubbleCompact color={selectedTag.color}>{selectedTag.name}</TagBubbleCompact>}
+          {tagDetail && <div>
+            {tagDetail.transaction.map((trxn) => {
+              return <div key={trxn.id}>Trxn {trxn.memo}</div>
+            })}  
+            {tagDetail.todo.map((todo) => {
+              return <div key={todo.id}>Todo {todo.name}</div>
+            })}
+          </div>}
         </RightWrapper>
       </InnerWrapper>
     </Wrapper>
@@ -232,6 +248,32 @@ const TagList = styled.div`
   transition-property: all;
   transition-duration: 250ms;
   transition-delay: 0s;
+`;
+
+const TagPresetList = styled.div`
+  margin-top: 10px;
+  margin-bottom: 20px;
+
+  position: absolute;
+  top: 0px;
+
+  transition-property: all;
+  transition-duration: 250ms;
+  transition-delay: 0s;
+
+  width: 100%;
+`;
+
+const TagPresetListElement = styled.div`
+  padding: 10px;
+  border-bottom: 1px solid gray;
+
+  display: grid;
+  grid-template-columns: 4fr 10fr;
+  align-items: center;
+  span {
+
+  }
 `;
 
 const TagClassListElement = styled.div`
