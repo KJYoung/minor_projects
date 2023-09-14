@@ -10,8 +10,8 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from todos.models import Todo, TodoCategory
 from tags.models import Tag
-
-NULL_COLOR = '#333333'
+from tags.utils import get_tag_dict_from_obj
+from todos.utils import get_todo_category_and_color_dict_nullcheck
 
 
 @require_http_methods(['GET', 'POST'])
@@ -44,36 +44,16 @@ def general_todo(request):
             for x in range((monthrange(int(query_args["year"]), int(query_args["month"]))[1] + 1))
         ]
         for todo_elem in filtered_todo:
-            tags = []
-            for tag_elem in list(todo_elem.tag.all().values()):
-                tags.append(
-                    {
-                        "id": tag_elem['id'],
-                        "name": tag_elem['name'],
-                        "color": tag_elem['color'],
-                    }
-                )
-            todo_cate = todo_elem.category
-            categ_json = (
-                {
-                    "id": todo_cate.id,
-                    "name": todo_cate.name,
-                    "color": todo_cate.color,
-                }
-                if todo_cate
-                else {
-                    "id": -1,
-                    "name": '삭제된 카테고리',
-                    "color": NULL_COLOR,
-                }
-            )
+            tags = get_tag_dict_from_obj(list(todo_elem.tag.all().values()))
+            categ_json, categ_color = get_todo_category_and_color_dict_nullcheck(todo_elem.category)
+
             result[todo_elem.deadline.day].append(
                 {
                     "id": todo_elem.id,
                     "name": todo_elem.name,
                     "tag": tags,
                     "done": todo_elem.done,
-                    "color": todo_cate.color if todo_cate else NULL_COLOR,
+                    "color": categ_color,
                     "category": categ_json,
                     "priority": todo_elem.priority,
                     "deadline": todo_elem.deadline,
@@ -234,15 +214,8 @@ def general_todo_category(request):
         try:
             result = []
             for tc_elem in TodoCategory.objects.all():
-                tags = []
-                for tag_elem in list(tc_elem.tag.all().values()):
-                    tags.append(
-                        {
-                            "id": tag_elem['id'],
-                            "name": tag_elem['name'],
-                            "color": tag_elem['color'],
-                        }
-                    )
+                tags = get_tag_dict_from_obj(list(tc_elem.tag.all().values()))
+
                 result.append(
                     {
                         "id": tc_elem.id,

@@ -8,7 +8,8 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.forms.models import model_to_dict
 from tags.models import TagClass, Tag, TagPreset
-from todos.views import NULL_COLOR
+from tags.utils import get_tag_dict_from_obj
+from todos.utils import get_todo_category_and_color_dict_nullcheck
 
 ## TagClass
 @require_http_methods(['GET', 'POST'])
@@ -21,10 +22,7 @@ def general_tag_class(request):
         try:
             result = []
             for trc_elem in TagClass.objects.all():
-                tags_list = []
-                for tag in list(trc_elem.tag.all().values()):
-                    # {'id': 1, 'created': datetime.datetime(2023, 7, 12, 22, 43, 56, 23036), 'updated': datetime.datetime(2023, 7, 12, 22, 43, 56, 27034), 'name': '클1타1', 'color': '#000000', 'type_class_id': 1}
-                    tags_list.append({"id": tag['id'], "name": tag['name'], "color": tag['color']})
+                tags_list = get_tag_dict_from_obj(list(trc_elem.tag.all().values()))
                 result.append(
                     {
                         "id": trc_elem.id,
@@ -108,15 +106,8 @@ def tag_detail(request, tag_id):
 
             trxns, todos = [], []
             for trxn_elem in tag_obj.transaction.all():
-                tags = []
-                for tag_elem in list(trxn_elem.tag.values()):
-                    tags.append(
-                        {
-                            "id": tag_elem['id'],
-                            "name": tag_elem['name'],
-                            "color": tag_elem['color'],
-                        }
-                    )
+                tags = get_tag_dict_from_obj(list(trxn_elem.tag.values()))
+
                 trxn_elem = model_to_dict(trxn_elem)
                 trxns.append(
                     {
@@ -130,36 +121,18 @@ def tag_detail(request, tag_id):
                 )
 
             for todo_elem in tag_obj.todo.all():
-                tags = []
-                for tag_elem in list(todo_elem.tag.values()):
-                    tags.append(
-                        {
-                            "id": tag_elem['id'],
-                            "name": tag_elem['name'],
-                            "color": tag_elem['color'],
-                        }
-                    )
-                todo_cate = todo_elem.category
-                categ_json = (
-                    {
-                        "id": todo_cate.id,
-                        "name": todo_cate.name,
-                        "color": todo_cate.color,
-                    }
-                    if todo_cate
-                    else {
-                        "id": -1,
-                        "name": '삭제된 카테고리',
-                        "color": NULL_COLOR,
-                    }
+                tags = get_tag_dict_from_obj(list(todo_elem.tag.values()))
+                categ_json, categ_color = get_todo_category_and_color_dict_nullcheck(
+                    todo_elem.category
                 )
+
                 todos.append(
                     {
                         "id": todo_elem.id,
                         "name": todo_elem.name,
                         "tag": tags,
                         "done": todo_elem.done,
-                        "color": todo_cate.color if todo_cate else NULL_COLOR,
+                        "color": categ_color,
                         "category": categ_json,
                         "priority": todo_elem.priority,
                         "deadline": todo_elem.deadline,
@@ -191,10 +164,7 @@ def general_tag_preset(request):
         try:
             result = []
             for tp_elem in TagPreset.objects.all():
-                tags_list = []
-                for tag in list(tp_elem.tags.all().values()):
-                    # {'id': 1, 'created': datetime.datetime(2023, 7, 12, 22, 43, 56, 23036), 'updated': datetime.datetime(2023, 7, 12, 22, 43, 56, 27034), 'name': '클1타1', 'color': '#000000', 'type_class_id': 1}
-                    tags_list.append({"id": tag['id'], "name": tag['name'], "color": tag['color']})
+                tags_list = get_tag_dict_from_obj(list(tp_elem.tags.all().values()))
                 result.append(
                     {
                         "id": tp_elem.id,

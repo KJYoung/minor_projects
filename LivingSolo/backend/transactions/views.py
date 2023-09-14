@@ -9,6 +9,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse, HttpResponse
 from transactions.models import Transaction
 from tags.models import Tag
+from tags.utils import get_tag_dict_from_obj
 
 
 @require_http_methods(['GET', 'POST'])
@@ -44,15 +45,8 @@ def general_transaction(request):
 
         result = []
         for tr_elem in searched_trxn:
-            tags = []
-            for tag_elem in list(tr_elem.tag.all().values()):
-                tags.append(
-                    {
-                        "id": tag_elem['id'],
-                        "name": tag_elem['name'],
-                        "color": tag_elem['color'],
-                    }
-                )
+            tags = get_tag_dict_from_obj(list(tr_elem.tag.all().values()))
+
             result.append(
                 {
                     "id": tr_elem.id,
