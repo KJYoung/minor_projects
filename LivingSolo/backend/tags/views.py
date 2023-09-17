@@ -8,7 +8,13 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.forms.models import model_to_dict
 from tags.models import TagClass, Tag, TagPreset
-from tags.utils import get_tag_dict_from_obj
+from tags.utils import (
+    get_tag_brief_dict_from_tag_obj,
+    get_tag_preset_dict_from_obj,
+    get_tag_class_dict_from_obj,
+    get_tag_class_brief_dict_from_obj,
+    get_tag_dict_from_tag_obj,
+)
 from todos.utils import get_todo_category_and_color_dict_nullcheck
 
 ## TagClass
@@ -20,23 +26,8 @@ def general_tag_class(request):
     """
     if request.method == 'GET':
         try:
-            result = []
-            for trc_elem in TagClass.objects.all():
-                tags_list = get_tag_dict_from_obj(list(trc_elem.tag.all().values()))
-                result.append(
-                    {
-                        "id": trc_elem.id,
-                        "name": trc_elem.name,
-                        "color": trc_elem.color,
-                        "tags": tags_list,
-                    }
-                )
-            return JsonResponse(
-                {
-                    "elements": result,
-                },
-                safe=False,
-            )
+            result = [get_tag_class_dict_from_obj(tc_elem) for tc_elem in TagClass.objects.all()]
+            return JsonResponse({"elements": result}, safe=False)
         except (TagClass.DoesNotExist):
             print("ERROR from general_tag_class")
             return HttpResponseBadRequest()
@@ -62,22 +53,7 @@ def general_tag(request):
     """
     if request.method == 'GET':
         try:
-            result = []
-            for tr_elem in Tag.objects.all():
-                class_elem = tr_elem.tag_class
-                # tr_elem.tag_class(FK field) : TagClass Object
-                result.append(
-                    {
-                        "id": tr_elem.id,
-                        "name": tr_elem.name,
-                        "color": tr_elem.color,
-                        "tag_class": {
-                            "id": class_elem.id,
-                            "name": class_elem.name,
-                            "color": class_elem.color,
-                        },
-                    }
-                )
+            result = [get_tag_dict_from_tag_obj(t_elem) for t_elem in Tag.objects.all()]
             return JsonResponse({"elements": result}, safe=False)
         except (KeyError, JSONDecodeError):
             print("ERROR from general_tag")
@@ -106,7 +82,7 @@ def tag_detail(request, tag_id):
 
             trxns, todos = [], []
             for trxn_elem in tag_obj.transaction.all():
-                tags = get_tag_dict_from_obj(list(trxn_elem.tag.values()))
+                tags = get_tag_brief_dict_from_tag_obj(list(trxn_elem.tag.values()))
 
                 trxn_elem = model_to_dict(trxn_elem)
                 trxns.append(
@@ -121,7 +97,7 @@ def tag_detail(request, tag_id):
                 )
 
             for todo_elem in tag_obj.todo.all():
-                tags = get_tag_dict_from_obj(list(todo_elem.tag.values()))
+                tags = get_tag_brief_dict_from_tag_obj(list(todo_elem.tag.values()))
                 categ_json, categ_color = get_todo_category_and_color_dict_nullcheck(
                     todo_elem.category
                 )
@@ -162,16 +138,7 @@ def general_tag_preset(request):
     """
     if request.method == 'GET':
         try:
-            result = []
-            for tp_elem in TagPreset.objects.all():
-                tags_list = get_tag_dict_from_obj(list(tp_elem.tags.all().values()))
-                result.append(
-                    {
-                        "id": tp_elem.id,
-                        "name": tp_elem.name,
-                        "tags": tags_list,
-                    }
-                )
+            result = [get_tag_preset_dict_from_obj(tp_elem) for tp_elem in TagPreset.objects.all()]
             return JsonResponse({"elements": result}, safe=False)
         except (KeyError, JSONDecodeError):
             print("ERROR from general_tagpreset")

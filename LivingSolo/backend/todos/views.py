@@ -10,7 +10,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from todos.models import Todo, TodoCategory
 from tags.models import Tag
-from tags.utils import get_tag_dict_from_obj
+from tags.utils import get_tag_dict_from_obj_list
 from todos.utils import get_todo_category_and_color_dict_nullcheck
 
 
@@ -44,7 +44,7 @@ def general_todo(request):
             for x in range((monthrange(int(query_args["year"]), int(query_args["month"]))[1] + 1))
         ]
         for todo_elem in filtered_todo:
-            tags = get_tag_dict_from_obj(list(todo_elem.tag.all().values()))
+            tags = get_tag_dict_from_obj_list(list(todo_elem.tag.all().values()))
             categ_json, categ_color = get_todo_category_and_color_dict_nullcheck(todo_elem.category)
 
             result[todo_elem.deadline.day].append(
@@ -214,7 +214,7 @@ def general_todo_category(request):
         try:
             result = []
             for tc_elem in TodoCategory.objects.all():
-                tags = get_tag_dict_from_obj(list(tc_elem.tag.all().values()))
+                tags = get_tag_dict_from_obj_list(list(tc_elem.tag.all().values()))
 
                 result.append(
                     {
