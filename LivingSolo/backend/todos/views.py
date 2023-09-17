@@ -10,8 +10,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from todos.models import Todo, TodoCategory
 from tags.models import Tag
-from tags.utils import get_tag_dict_from_obj_list
-from todos.utils import get_todo_category_and_color_dict_nullcheck
+from todos.utils import get_todo_dict_from_tag_obj, get_todo_category_dict_from_obj
 
 
 @require_http_methods(['GET', 'POST'])
@@ -44,23 +43,8 @@ def general_todo(request):
             for x in range((monthrange(int(query_args["year"]), int(query_args["month"]))[1] + 1))
         ]
         for todo_elem in filtered_todo:
-            tags = get_tag_dict_from_obj_list(list(todo_elem.tag.all().values()))
-            categ_json, categ_color = get_todo_category_and_color_dict_nullcheck(todo_elem.category)
+            result[todo_elem.deadline.day].append(get_todo_dict_from_tag_obj(todo_elem))
 
-            result[todo_elem.deadline.day].append(
-                {
-                    "id": todo_elem.id,
-                    "name": todo_elem.name,
-                    "tag": tags,
-                    "done": todo_elem.done,
-                    "color": categ_color,
-                    "category": categ_json,
-                    "priority": todo_elem.priority,
-                    "deadline": todo_elem.deadline,
-                    "is_hard_deadline": todo_elem.is_hard_deadline,
-                    "period": todo_elem.period,
-                }
-            )
         return JsonResponse({"elements": result}, safe=False)
     else:  # POST
         try:
@@ -212,18 +196,9 @@ def general_todo_category(request):
     """
     if request.method == 'GET':
         try:
-            result = []
-            for tc_elem in TodoCategory.objects.all():
-                tags = get_tag_dict_from_obj_list(list(tc_elem.tag.all().values()))
-
-                result.append(
-                    {
-                        "id": tc_elem.id,
-                        "name": tc_elem.name,
-                        "color": tc_elem.color,
-                        "tag": tags,
-                    }
-                )
+            result = [
+                get_todo_category_dict_from_obj(tc_elem) for tc_elem in TodoCategory.objects.all()
+            ]
             return JsonResponse({"elements": result}, safe=False)
         except (KeyError, JSONDecodeError, TodoCategory.DoesNotExist):
             print("ERROR from general_todo_category")

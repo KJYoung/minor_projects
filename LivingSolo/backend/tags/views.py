@@ -9,13 +9,12 @@ from django.http import HttpResponseBadRequest, JsonResponse
 from django.forms.models import model_to_dict
 from tags.models import TagClass, Tag, TagPreset
 from tags.utils import (
-    get_tag_brief_dict_from_tag_obj,
+    get_tag_dict_from_obj_list,
     get_tag_preset_dict_from_obj,
     get_tag_class_dict_from_obj,
-    get_tag_class_brief_dict_from_obj,
     get_tag_dict_from_tag_obj,
 )
-from todos.utils import get_todo_category_and_color_dict_nullcheck
+from todos.utils import get_todo_dict_from_tag_obj
 
 ## TagClass
 @require_http_methods(['GET', 'POST'])
@@ -80,9 +79,10 @@ def tag_detail(request, tag_id):
             tag_id = int(tag_id)
             tag_obj = Tag.objects.get(pk=tag_id)
 
-            trxns, todos = [], []
+            trxns = []
+            todos = [get_todo_dict_from_tag_obj(todo_elem) for todo_elem in tag_obj.todo.all()]
             for trxn_elem in tag_obj.transaction.all():
-                tags = get_tag_brief_dict_from_tag_obj(list(trxn_elem.tag.values()))
+                tags = get_tag_dict_from_obj_list(list(trxn_elem.tag.values()))
 
                 trxn_elem = model_to_dict(trxn_elem)
                 trxns.append(
@@ -93,27 +93,6 @@ def tag_detail(request, tag_id):
                         "tag": tags,
                         "period": trxn_elem["period"],
                         "amount": trxn_elem["amount"],
-                    }
-                )
-
-            for todo_elem in tag_obj.todo.all():
-                tags = get_tag_brief_dict_from_tag_obj(list(todo_elem.tag.values()))
-                categ_json, categ_color = get_todo_category_and_color_dict_nullcheck(
-                    todo_elem.category
-                )
-
-                todos.append(
-                    {
-                        "id": todo_elem.id,
-                        "name": todo_elem.name,
-                        "tag": tags,
-                        "done": todo_elem.done,
-                        "color": categ_color,
-                        "category": categ_json,
-                        "priority": todo_elem.priority,
-                        "deadline": todo_elem.deadline,
-                        "is_hard_deadline": todo_elem.is_hard_deadline,
-                        "period": todo_elem.period,
                     }
                 )
 
