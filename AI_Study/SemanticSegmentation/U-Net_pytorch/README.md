@@ -1,5 +1,6 @@
 ### From Scratch
 [Source](https://youtu.be/IHq1t7NxS8k?si=T7iWtx50SZgPT6Ew)
+[Dataset](https://www.kaggle.com/competitions/carvana-image-masking-challenge/data)
 ```
     conda create --name seg_study
 
