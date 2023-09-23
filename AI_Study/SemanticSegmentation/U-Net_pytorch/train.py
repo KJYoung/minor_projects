@@ -11,7 +11,7 @@ from utils import (
     save_checkpoint,
     get_loaders,
     check_accuracy,
-    save_predictions_as_imags,
+    save_predictions_as_imgs,
 )
 
 # HyperParameters
@@ -103,13 +103,22 @@ def main():
         PIN_MEMORY,
     )
 
+    if LOAD_MODEL:
+        load_checkpoint(torch.load("my_checkpoint.pth.tar"))
+
     scaler = torch.cuda.amp.GradScaler()
     for epoch in range(NUM_EPOCHS):
         train_fn(train_loader, model, optimizer, loss_fn, scaler)
 
         # save checkpoint
+        checkpoint = {"state_dict": model.state_dict(), "optimizer": optimizer.state_dict()}
+        save_checkpoint(checkpoint)
+
         # check accuracy
+        check_accuracy(val_loader, model, device=DEVICE)
+
         # print some examples to a directory
+        save_predictions_as_imgs(val_loader, model, folder="saved_images/", device=DEVICE)
 
 
 if __name__ == "__main__":
