@@ -3,8 +3,8 @@ from transactions.views import (
     general_transaction,
     general_trxn_combined,
     detail_transaction,
-    export_trxn_csv,
 )
+from transactions.utils import export_trxn_csv
 
 urlpatterns = [
     path('', general_transaction, name="trxn"),

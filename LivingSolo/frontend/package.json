@@ -84,7 +84,6 @@
     "files": [
       "src/**/*",
       "public/**/*",
-      "electron-main.js",
       "dist/**/*",
       "build/**/*",
       "package.json"

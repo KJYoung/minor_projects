@@ -15,6 +15,7 @@ from tags.utils import (
     get_tag_dict_from_tag_obj,
 )
 from todos.utils import get_todo_dict_from_tag_obj
+from transactions.utils import get_transaction_dict_from_obj
 
 ## TagClass
 @require_http_methods(['GET', 'POST'])
@@ -79,22 +80,10 @@ def tag_detail(request, tag_id):
             tag_id = int(tag_id)
             tag_obj = Tag.objects.get(pk=tag_id)
 
-            trxns = []
+            trxns = [
+                get_transaction_dict_from_obj(trxn_elem) for trxn_elem in tag_obj.transaction.all()
+            ]
             todos = [get_todo_dict_from_tag_obj(todo_elem) for todo_elem in tag_obj.todo.all()]
-            for trxn_elem in tag_obj.transaction.all():
-                tags = get_tag_dict_from_obj_list(list(trxn_elem.tag.values()))
-
-                trxn_elem = model_to_dict(trxn_elem)
-                trxns.append(
-                    {
-                        "id": trxn_elem["id"],
-                        "memo": trxn_elem["memo"],
-                        "date": trxn_elem["date"],
-                        "tag": tags,
-                        "period": trxn_elem["period"],
-                        "amount": trxn_elem["amount"],
-                    }
-                )
 
             result = {
                 "transaction": trxns,
