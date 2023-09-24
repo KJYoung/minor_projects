@@ -23,3 +23,4 @@
 ## Memos
 [nn.ReLU inplace=True?](https://keepgoingrunner.tistory.com/79)
 [pin_memory](https://mopipe.tistory.com/191)
+[fp16 Training(CUDA)](https://youtu.be/ks3oZ7Va8HU?si=Jf2mWdJhJE1DECUZ)
