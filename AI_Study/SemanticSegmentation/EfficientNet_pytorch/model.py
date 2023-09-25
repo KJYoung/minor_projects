@@ -27,6 +27,8 @@ phi_values = {
     'b7': (6, 600, 0.5),
 }
 
+channel_b0 = [32, 16, 24, 40, 80, 112, 192, 320, 1280]
+
 
 class CNNBlock(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride, padding, groups=1):
@@ -112,8 +114,69 @@ class InvertedResidualBlock(nn.Module):
         if self.use_residual:
             return self.stochastic_depth(self.conv(x)) + x0
         else:
-            return self.conv(x0)
+            return self.conv(x)  # self.conv(x0)라고 써놨다가 10분 헤멨음;
 
 
 class EfficientNet(nn.Module):
-    pass
+    def __init__(self, version, num_classes):
+        super(EfficientNet, self).__init__()
+        width_factor, depth_factor, dropout_rate = self.calculate_factors(version)
+        last_channels = ceil(channel_b0[-1] * width_factor)  # channel_b0[-1] : 1280
+
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.features = self.create_features(width_factor, depth_factor, last_channels)
+        self.classifier = nn.Sequential(
+            nn.Dropout(dropout_rate),
+            nn.Linear(last_channels, num_classes),
+        )
+
+    def calculate_factors(self, version, alpha=1.2, beta=1.1):
+        phi, resolution, drop_rate = phi_values[version]
+        depth_factor = alpha**phi
+        width_factor = beta**phi
+        return width_factor, depth_factor, drop_rate
+
+    def create_features(self, width_factor, depth_factor, last_channels):
+        channels = int(channel_b0[0] * width_factor)  # channel_b0[0] : 32
+        features = [CNNBlock(3, channels, 3, stride=2, padding=1)]
+
+        in_channels = channels
+        for expand_ratio, channels, repeats, stride, kernel_size in base_model:
+            out_channels = 4 * ceil(int(channels * width_factor) / 4)
+            layers_repeats = ceil(repeats * depth_factor)
+
+            for layer in range(layers_repeats):
+                # print(f"ADDING... {in_channels} => {out_channels}")
+                features.append(
+                    InvertedResidualBlock(
+                        in_channels,
+                        out_channels,
+                        kernel_size=kernel_size,
+                        expand_ratio=expand_ratio,
+                        stride=stride if layer == 0 else 1,
+                        padding=kernel_size // 2,  # if k=1: pad=0, k=3: pad=1, k=5: pad=2
+                    )
+                )
+
+                in_channels = out_channels
+
+        features.append(CNNBlock(in_channels, last_channels, kernel_size=1, stride=1, padding=0))
+        return nn.Sequential(*features)
+
+    def forward(self, x):
+        x = self.pool(self.features(x))
+        return self.classifier(x.view(x.shape[0], -1))
+
+
+def test():
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    version = "b0"
+    phi, res, drop_rate = phi_values[version]
+    num_examples, num_classes = 4, 10
+
+    x = torch.randn((num_examples, 3, res, res)).to(device)
+    model = EfficientNet(version=version, num_classes=num_classes).to(device)
+    print(model(x).shape)
+
+
+test()
