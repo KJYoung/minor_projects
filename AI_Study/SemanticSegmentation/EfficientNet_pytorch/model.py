@@ -38,6 +38,7 @@ class CNNBlock(nn.Module):
             stride=stride,
             padding=padding,
             groups=groups,  # depth-wise conv를 하기 위해서 groups 옵션을 둬야 함.
+            bias=False,
         )
         # groups = 1 : Normal Conv
         # groups = in_channels : Depthwise Conv.
@@ -65,12 +66,53 @@ class SqueezeExcitation(nn.Module):
 
 # MBConv
 class InvertedResidualBlock(nn.Module):
-    def __init__(self):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        kernel_size,
+        stride,
+        padding,
+        expand_ratio,
+        reduction=4,  # for SqueezeExcitation
+        survival_prob=0.8,  # for stochastic depth
+    ):
         super(InvertedResidualBlock, self).__init__()
-        pass
+        self.survival_prob = survival_prob
+        self.use_residual = in_channels == out_channels and stride == 1
 
-    def forward(self, x):
-        pass
+        hidden_dim = in_channels * expand_ratio
+        self.expand = in_channels != hidden_dim  # self.expand는 expand_ratio가 1이 아니면 True
+
+        reduced_dim = int(in_channels / reduction)
+
+        if self.expand:
+            self.expand_conv = CNNBlock(in_channels, hidden_dim, kernel_size=3, stride=1, padding=1)
+            # 1x1 conv로 할 수도 있는데, padding=1이므로 3x3 conv로 해도 W*H는 그대로 유지되어 채널 증폭용으로 이용 가능.
+
+        self.conv = nn.Sequential(
+            CNNBlock(
+                hidden_dim, hidden_dim, kernel_size, stride, padding, groups=hidden_dim
+            ),  # Depthwise Conv.
+            SqueezeExcitation(hidden_dim, reduced_dim),
+            nn.Conv2d(hidden_dim, out_channels, kernel_size=1, bias=False),
+            nn.BatchNorm2d(out_channels),
+        )
+
+    def stochastic_depth(self, x):
+        if not self.training:
+            return x  # Deterministic test time
+
+        binary_tensor = torch.rand(x.shape[0], 1, 1, 1, device=x.device) < self.survival_prob
+        return torch.div(x, self.survival_prob) * binary_tensor  # maintaining the magnitude!
+
+    def forward(self, x0):
+        x = self.expand_conv(x0) if self.expand else x0
+
+        if self.use_residual:
+            return self.stochastic_depth(self.conv(x)) + x0
+        else:
+            return self.conv(x0)
 
 
 class EfficientNet(nn.Module):
