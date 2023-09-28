@@ -1,3 +1,4 @@
+import time
 import torch
 import torchvision.transforms as transforms
 import torch.optim as optim
@@ -29,8 +30,9 @@ WEIGHT_DECAY = 0
 EPOCHS = 100
 NUM_WORKERS = 2
 PIN_MEMORY = True
+
 LOAD_MODEL = False
-LOAD_MODEL_FILE = "overfit.pth.tar"
+LOAD_MODEL_FILE = "trained_models/overfit.pth.tar_epoch950"
 
 IMG_DIR = "data/images"
 LABEL_DIR = "data/labels"
@@ -77,7 +79,7 @@ def main():
     if LOAD_MODEL:
         load_checkpoint(torch.load(LOAD_MODEL_FILE), model, optimizer)
 
-    train_dataset = VOCDataset("data/8examples.csv", IMG_DIR, LABEL_DIR, transform=transforms)
+    train_dataset = VOCDataset("data/100examples.csv", IMG_DIR, LABEL_DIR, transform=transforms)
     test_dataset = VOCDataset("data/test.csv", IMG_DIR, LABEL_DIR, transform=transforms)
 
     train_loader = DataLoader(
@@ -98,11 +100,30 @@ def main():
     )
 
     for epoch in range(EPOCHS):
+        # for x, y in train_loader:
+        #     x = x.to(DEVICE)
+        #     for idx in range(8):
+        #         bboxes = cellboxes_to_boxes(model(x))
+        #         bboxes = non_max_suppression(
+        #             bboxes[idx], iou_threshold=0.5, threshold=0.4, box_format="midpoint"
+        #         )
+        #         plot_image(x[idx].permute(1, 2, 0).to("cpu"), bboxes)
+
+        #     import sys
+        #     sys.exit()
+
         pred_boxes, target_boxes = get_bboxes(train_loader, model, 0.5, 0.4)
         mAP = mean_average_precision(
             pred_boxes, target_boxes, iou_threshold=0.5, box_format="midpoint"
         )
-        print(f"Trained mAP: {mAP}")
+        print(f"Epoch {epoch} - Trained mAP: {mAP}")
+
+        if epoch % 100 == 0 and epoch != 0:
+            checkpoint = {
+                "state_dict": model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+            }
+            save_checkpoint(checkpoint, filename=f"trial2_100_epochs{epoch}.pth.tar")
 
         train_fn(train_loader, model, optimizer, loss_fn)
 
