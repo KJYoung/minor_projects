@@ -30,7 +30,7 @@ class YoloLoss(nn.Module):
         box_target = exists_box * target[..., 21:25]
 
         box_predictions[..., 2:4] = torch.sign(box_predictions[..., 2:4]) * torch.sqrt(
-            torch.abs(box_predictions[..., 2:4]) + 1e-6
+            torch.abs(box_predictions[..., 2:4] + 1e-6)
         )
 
         box_target[..., 2:4] = torch.sqrt(box_target[..., 2:4])
