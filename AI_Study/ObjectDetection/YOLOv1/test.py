@@ -1,7 +1,6 @@
-import time
+import sys
 import torch
 import torchvision.transforms as transforms
-import torch.optim as optim
 import torchvision.transforms.functional as FT
 from tqdm import tqdm
 from torch.utils.data import DataLoader
@@ -31,8 +30,8 @@ EPOCHS = 1000
 NUM_WORKERS = 2
 PIN_MEMORY = True
 
-LOAD_MODEL = False
-LOAD_MODEL_FILE = "trained_models/overfit.pth.tar_epoch950"
+LOAD_MODEL = True
+LOAD_MODEL_FILE = "trial2_100_epochs800.pth.tar"
 
 IMG_DIR = "data/images"
 LABEL_DIR = "data/labels"
@@ -56,7 +55,7 @@ def train_fn(train_loader, model, optimizer, loss_fn):
     loop = tqdm(train_loader, leave=True)
     mean_loss = []
 
-    for batch_idx, (x, y) in enumerate(loop):
+    for batch_idx, (x, y) in enumerate(train_loader):
         x, y = x.to(DEVICE), y.to(DEVICE)
         out = model(x)
         loss = loss_fn(out, y)
@@ -73,14 +72,14 @@ def train_fn(train_loader, model, optimizer, loss_fn):
 
 def main():
     model = YoloV1(split_size=7, num_boxes=2, num_classes=20).to(DEVICE)
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
-    loss_fn = YoloLoss()
 
     if LOAD_MODEL:
-        load_checkpoint(torch.load(LOAD_MODEL_FILE), model, optimizer)
+        load_checkpoint(torch.load(LOAD_MODEL_FILE), model)
+    else:
+        print("Model should be specified")
+        sys.exit()
 
     train_dataset = VOCDataset("data/100examples.csv", IMG_DIR, LABEL_DIR, transform=transforms)
-    test_dataset = VOCDataset("data/test.csv", IMG_DIR, LABEL_DIR, transform=transforms)
 
     train_loader = DataLoader(
         dataset=train_dataset,
@@ -91,21 +90,16 @@ def main():
         drop_last=True,
     )
 
-    for epoch in range(EPOCHS):
-        pred_boxes, target_boxes = get_bboxes(train_loader, model, 0.5, 0.4)
-        mAP = mean_average_precision(
-            pred_boxes, target_boxes, iou_threshold=0.5, box_format="midpoint"
-        )
-        print(f"Epoch {epoch} - Trained mAP: {mAP}")
+    for x, y in train_loader:
+        x = x.to(DEVICE)
+        for idx in range(10):
+            bboxes = cellboxes_to_boxes(model(x))
+            bboxes = non_max_suppression(
+                bboxes[idx], iou_threshold=0.5, threshold=0.4, box_format="midpoint"
+            )
+            plot_image(x[idx].permute(1, 2, 0).to("cpu"), bboxes)
 
-        if epoch % 50 == 0:
-            checkpoint = {
-                "state_dict": model.state_dict(),
-            }
-            save_checkpoint(checkpoint, filename=f"trial2_100_epochs{epoch}.pth.tar")
-            time.sleep(15)
-
-        train_fn(train_loader, model, optimizer, loss_fn)
+        sys.exit()
 
 
 if __name__ == "__main__":
