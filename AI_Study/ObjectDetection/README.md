@@ -2,6 +2,7 @@
 [Source](https://youtu.be/n9_XyCGr-MI?si=cBLS4TzexliYWuni)
 
 # YoloV3 From Scratch
+[Source](https://youtu.be/Grir6TZbc1M?si=qT9NWKqlQLcYQgfx)
 
 ## Memos
 ### Runtime Error
