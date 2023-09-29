@@ -27,7 +27,7 @@ LEARNING_RATE = 2e-5
 DEVICE = "mps" if torch.backends.mps.is_available() else "cpu"
 BATCH_SIZE = 16
 WEIGHT_DECAY = 0
-EPOCHS = 100
+EPOCHS = 1000
 NUM_WORKERS = 2
 PIN_MEMORY = True
 
@@ -56,7 +56,7 @@ def train_fn(train_loader, model, optimizer, loss_fn):
     loop = tqdm(train_loader, leave=True)
     mean_loss = []
 
-    for batch_idx, (x, y) in enumerate(loop):
+    for batch_idx, (x, y) in enumerate(train_loader):
         x, y = x.to(DEVICE), y.to(DEVICE)
         out = model(x)
         loss = loss_fn(out, y)
@@ -88,7 +88,7 @@ def main():
         num_workers=NUM_WORKERS,
         pin_memory=PIN_MEMORY,
         shuffle=True,
-        drop_last=False,
+        drop_last=True,
     )
     test_loader = DataLoader(
         dataset=test_dataset,
@@ -118,12 +118,12 @@ def main():
         )
         print(f"Epoch {epoch} - Trained mAP: {mAP}")
 
-        if epoch % 100 == 0 and epoch != 0:
+        if epoch % 50 == 0:
             checkpoint = {
                 "state_dict": model.state_dict(),
-                "optimizer": optimizer.state_dict(),
             }
             save_checkpoint(checkpoint, filename=f"trial2_100_epochs{epoch}.pth.tar")
+            time.sleep(15)
 
         train_fn(train_loader, model, optimizer, loss_fn)
 
