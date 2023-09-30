@@ -5,7 +5,7 @@
 import json
 from json.decoder import JSONDecodeError
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse, HttpResponseNotFound
 from django.forms.models import model_to_dict
 from tags.models import TagClass, Tag, TagPreset
 from tags.utils import (
@@ -125,3 +125,23 @@ def general_tag_preset(request):
         except (KeyError, JSONDecodeError, Tag.DoesNotExist):
             return HttpResponseBadRequest()
         return JsonResponse({"id": element.id, "name": element.name}, status=201)
+
+
+@require_http_methods(['PUT', 'DELETE'])
+def tag_preset_detail(request, tag_preset_id):
+    """
+    PUT : edit tag preset
+    DELETE : delete tag preset
+    """
+    tag_preset_id = int(tag_preset_id)
+
+    try:
+        tag_preset_obj = TagPreset.objects.get(pk=tag_preset_id)
+
+        if request.method == 'PUT':
+            return NotImplementedError()
+        else:  # DELETE REQUEST
+            tag_preset_obj.delete()
+            return JsonResponse({"message": "success"}, status=200)
+    except TagPreset.DoesNotExist:
+        return HttpResponseNotFound()

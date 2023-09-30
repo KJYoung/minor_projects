@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
-import { TagElement, fetchTagDetail, fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
+import { TagElement, deleteTagPreset, fetchTagDetail, fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
 import { TagBubbleCompact } from '../components/general/TagBubble';
 import { IPropsActive, IPropsColor } from '../utils/Interfaces';
 import { getContrastYIQ } from '../styles/color';
@@ -122,6 +122,7 @@ const TagMain = () => {
                       <div>
                         {preset.tags.map((tag) => <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>)}
                       </div>
+                      <span onClick={() => dispatch(deleteTagPreset({id: preset.id}))}>삭제</span>
                     </TagPresetListElement>
                   })} 
                 </TagPresetList>         

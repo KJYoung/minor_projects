@@ -5,6 +5,7 @@ import { RootState } from '..';
 import { ERRORSTATE } from './core';
 import { TrxnElement } from './trxn';
 import { TodoCategory, TodoElement } from './todo';
+import { IDReqType } from '../../utils/Interfaces';
 
 export type TagClassElement = {
   id: number,
@@ -112,6 +113,13 @@ export const createTagPreset = createAsyncThunk(
     return response.data;
   }
 );
+export const deleteTagPreset = createAsyncThunk(
+  "tag/deleteTagPreset",
+  async (payload: IDReqType) => {
+    const response = await client.delete(`/api/tag/preset/${payload.id}`);
+    return response.data;
+  }
+)
 
 export const TagSlice = createSlice({
   name: "tag",
@@ -135,7 +143,8 @@ export const TagSlice = createSlice({
       state.errorState = ERRORSTATE.NORMAL;
     }); 
     [
-      createTagClass, createTag, createTagPreset
+      createTagClass, createTag, createTagPreset,
+      deleteTagPreset
     ].forEach((reducer) => {
       builder.addCase(reducer.pending, (state, action) => {
         state.errorState = ERRORSTATE.DEFAULT;
