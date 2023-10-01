@@ -15,9 +15,9 @@ const NavDrawer = ({ toggleDrawer }: {toggleDrawer : any}) => {
       </div>
     </CloseRowDiv>
     <Button onClick={() => navigate('/home')}>Home</Button>
-    <Button onClick={() => navigate('/tag')}>Tag</Button>
-    <Button onClick={() => navigate('/trxn')}>Transaction</Button>
-    <Button onClick={() => navigate('/todo')}>Calendar</Button>
+    <Button onClick={() => navigate('/tag')}>태그(Tag)</Button>
+    <Button onClick={() => navigate('/trxn')}>가계부(Transaction)</Button>
+    <Button onClick={() => navigate('/todo')}>투두(Calendar)</Button>
     <Button onClick={() => navigate('/stockpile')}>Stockpile</Button>
     <Button onClick={() => navigate('/community')}>Community</Button>
   </NavDrawerDiv>

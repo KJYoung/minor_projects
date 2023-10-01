@@ -3,16 +3,13 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
-import { TagElement, deleteTagPreset, fetchTagDetail, fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
-import { TagBubbleCompact } from '../components/general/TagBubble';
-import { IPropsActive, IPropsColor } from '../utils/Interfaces';
-import { getContrastYIQ } from '../styles/color';
+import { TagElement, fetchTagDetail, fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
+import { IPropsActive } from '../utils/Interfaces';
 import { CondRendAnimState, defaultCondRendAnimState, toggleCondRendAnimState } from '../utils/Rendering';
-import { TagClassAdder, TagClassAdderHeight, TagClassEditor } from '../components/Tag/TagClassAdder';
-import { TagAdder, TagAdderHeight, TagEditor } from '../components/Tag/TagAdder';
-import { TagPresetAdder, TagPresetAdderHeight, TagPresetEditor } from '../components/Tag/TagPresetAdder';
+import { TagDetail } from '../components/Tag/TagDetail';
+import { TagList } from '../components/Tag/TagList';
 
-enum TagViewerMode {
+export enum TagViewerMode {
   TagClass, Tag, TagPreset
 };
 
@@ -23,7 +20,7 @@ const TagMain = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const { elements, index, preset, errorState, tagDetail } = useSelector(selectTag);
+  const { errorState } = useSelector(selectTag);
 
   // Fetch Tag Related Things!
   useEffect(() => {
@@ -37,10 +34,6 @@ const TagMain = () => {
       dispatch(fetchTagDetail(selectedTag.id));
     }
   }, [dispatch, selectedTag]);
-
-  const classEditHandler = () => {
-
-  };
 
   const classAddToggleHandler = () => {
     toggleCondRendAnimState(addMode, setAddMode); // ON
@@ -73,73 +66,12 @@ const TagMain = () => {
                 <span className='clickable' onClick={classAddToggleHandler}>+</span>
               </div>
             </TagTabHeader>
-            {
-              tagViewerMode === TagViewerMode.TagClass && <TagClassListPosition>
-                {addMode.showElem && ( true ? 
-                  (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
-                :
-                  (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
-                )}
-                <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagClassAdderHeight})` } : { transform: "translateY(0px)" }}>
-                  {elements.map((tagClass) => {
-                    return <TagClassListElement key={tagClass.id}>
-                      <TagClassListElementHeader color={tagClass.color}>{tagClass.name}</TagClassListElementHeader>
-                      <div>
-                        {tagClass.tags?.map((tag) => {
-                          return <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>
-                        })}
-                      </div>
-                    </TagClassListElement>
-                  })}
-                </TagClassList>         
-              </TagClassListPosition>
-            }
-            {
-              tagViewerMode === TagViewerMode.Tag && <TagClassListPosition>
-                {addMode.showElem && ( true ? 
-                  (<TagAdder addMode={addMode} setAddMode={setAddMode} />)
-                :
-                  (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
-                )}
-                <TagList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagAdderHeight})` } : { transform: "translateY(0px)" }}>
-                  {index.map((tag) => {
-                    return <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>
-                  })}     
-                </TagList>         
-              </TagClassListPosition>
-            }
-            {
-              tagViewerMode === TagViewerMode.TagPreset && <TagClassListPosition>
-                {addMode.showElem && ( true ? 
-                  (<TagPresetAdder addMode={addMode} setAddMode={setAddMode} />)
-                :
-                  (elements[0] && <TagPresetEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
-                )}
-                <TagPresetList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagPresetAdderHeight})` } : { transform: "translateY(0px)" }}>
-                  {preset.map((preset) => {
-                    return <TagPresetListElement key={preset.id}>
-                      <span>{preset.name}</span>
-                      <div>
-                        {preset.tags.map((tag) => <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>)}
-                      </div>
-                      <span onClick={() => dispatch(deleteTagPreset({id: preset.id}))}>삭제</span>
-                    </TagPresetListElement>
-                  })} 
-                </TagPresetList>         
-              </TagClassListPosition>
-            }
+            
+            <TagList addMode={addMode} setAddMode={setAddMode} tagViewerMode={tagViewerMode} setTagViewerMode={setTagViewerMode} tagSelectHandler={tagSelectHandler}/>
           </ListWrapper>
         </LeftWrapper>
         <RightWrapper>
-          {selectedTag && <TagBubbleCompact color={selectedTag.color}>{selectedTag.name}</TagBubbleCompact>}
-          {tagDetail && <div>
-            {tagDetail.transaction.map((trxn) => {
-              return <div key={trxn.id}>Trxn {trxn.memo}</div>
-            })}  
-            {tagDetail.todo.map((todo) => {
-              return <div key={todo.id}>Todo {todo.name}</div>
-            })}
-          </div>}
+          <TagDetail selectedTag={selectedTag}/>
         </RightWrapper>
       </InnerWrapper>
     </Wrapper>
@@ -222,83 +154,3 @@ const TagTabName = styled.span<IPropsActive>`
   }
 `;
 
-const TagClassListPosition = styled.div`
-  width: 100%;
-  position: relative;
-`;
-
-const TagClassList = styled.div`
-  margin-bottom: 20px;
-
-  width: 100%;
-  position: absolute;
-  top: 0px;
-
-  transition-property: all;
-  transition-duration: 250ms;
-  transition-delay: 0s;
-`;
-
-const TagList = styled.div`
-  margin-top: 10px;
-  margin-bottom: 20px;
-
-  position: absolute;
-  top: 0px;
-
-  transition-property: all;
-  transition-duration: 250ms;
-  transition-delay: 0s;
-`;
-
-const TagPresetList = styled.div`
-  margin-top: 10px;
-  margin-bottom: 20px;
-
-  position: absolute;
-  top: 0px;
-
-  transition-property: all;
-  transition-duration: 250ms;
-  transition-delay: 0s;
-
-  width: 100%;
-`;
-
-const TagPresetListElement = styled.div`
-  padding: 10px;
-  border-bottom: 1px solid gray;
-
-  display: grid;
-  grid-template-columns: 4fr 10fr;
-  align-items: center;
-  span {
-
-  }
-`;
-
-const TagClassListElement = styled.div`
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-  padding-left: 10px;
-  border-bottom: 1px solid black;
-
-  &:first-child{
-    padding-top: 10px;
-  }
-`;
-
-const TagClassListElementHeader = styled.div<IPropsColor>`
-  padding: 6px 10px 6px 10px;
-  width: 200px;
-  border-radius: 10px;
-  text-align: center;
-
-  margin-bottom: 4px;
-  ${({ color }) =>
-    color &&
-    `
-      background: ${color};
-      color: ${getContrastYIQ(color)}
-    `}
-`;

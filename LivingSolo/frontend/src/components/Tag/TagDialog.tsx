@@ -74,18 +74,6 @@ export const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, set
                     </TagPresetTagWrapper>
                   </TagPresetElement>)
                 }
-                {preset.map((tagPreset) => 
-                  <TagPresetElement onClick={() => setTags((tags) => (tags.length >= tag_max_length) ? tags : [...tags, ...(tagPreset.tags)])}>
-                    <span>{tagPreset.name}</span>
-                    <span>|</span>
-                    <TagPresetTagWrapper>
-                      {tagPreset.tags.map((tagElem) => 
-                      <TagBubbleCompactPointer  key={tagElem.id} color={tagElem.color}>
-                        {tagElem.name}
-                      </TagBubbleCompactPointer>)}
-                    </TagPresetTagWrapper>
-                  </TagPresetElement>)
-                }
               </TagPresetListBody>
             </TagListWrapper>
             <TagListWrapper>
