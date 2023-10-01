@@ -89,3 +89,40 @@ export const TagBubbleCompact = styled.button<IPropsTagBubble>`
 export const TagBubbleCompactPointer = styled(TagBubbleCompact)`
   cursor: pointer;
 `;
+
+export const TagBubbleLarge = styled.button<IPropsTagBubble>`
+  height: fit-content;
+  width: fit-content;
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin: 1.5px 2px;
+  border: none;
+  white-space: nowrap;
+  font-size: 11px;
+  cursor: inherit;
+  ${({ color }) =>
+    color &&
+    `
+      background: ${color};
+      color: ${getContrastYIQ(color)}
+    `}
+`;
+
+export const TagBubbleHuge = styled.button<IPropsTagBubble>`
+  height: fit-content;
+  width: fit-content;
+  border-radius: 18px;
+  padding: 8px 42px;
+  margin: 1.5px 2px;
+  border: none;
+  white-space: nowrap;
+  font-size: 20px;
+  font-weight: 400;
+  cursor: inherit;
+  ${({ color }) =>
+    color &&
+    `
+      background: ${color};
+      color: ${getContrastYIQ(color, true)}
+    `}
+`;

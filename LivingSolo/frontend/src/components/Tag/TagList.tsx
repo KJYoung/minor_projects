@@ -1,5 +1,5 @@
 import { TagElement, deleteTagPreset, selectTag } from "../../store/slices/tag";
-import { TagBubbleCompact } from "../general/TagBubble";
+import { TagBubbleLarge } from "../general/TagBubble";
 import { useDispatch, useSelector } from "react-redux";
 import { TagClassAdder, TagClassAdderHeight, TagClassEditor } from "./TagClassAdder";
 import { CondRendAnimState } from "../../utils/Rendering";
@@ -29,64 +29,67 @@ export const TagList = ({ addMode, setAddMode, tagViewerMode, setTagViewerMode, 
 
     };
 
-    return <>
+    return <TagListWrapper>
         {
-              tagViewerMode === TagViewerMode.TagClass && <TagClassListPosition>
+            tagViewerMode === TagViewerMode.TagClass && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                  (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
+                    (<TagClassAdder addMode={addMode} setAddMode={setAddMode} />)
                 :
-                  (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
+                    (elements[0] && <TagClassEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
                 <TagClassList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagClassAdderHeight})` } : { transform: "translateY(0px)" }}>
-                  {elements.map((tagClass) => {
+                    {elements.map((tagClass) => {
                     return <TagClassListElement key={tagClass.id}>
-                      <TagClassListElementHeader color={tagClass.color}>{tagClass.name}</TagClassListElementHeader>
-                      <div>
+                        <TagClassListElementHeader color={tagClass.color}>{tagClass.name}</TagClassListElementHeader>
+                        <div>
                         {tagClass.tags?.map((tag) => {
-                          return <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>
+                            return <TagBubbleLarge color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleLarge>
                         })}
-                      </div>
+                        </div>
                     </TagClassListElement>
-                  })}
+                    })}
                 </TagClassList>         
-              </TagClassListPosition>
-            }
-            {
-              tagViewerMode === TagViewerMode.Tag && <TagClassListPosition>
+            </TagClassListPosition>
+        }
+        {
+            tagViewerMode === TagViewerMode.Tag && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                  (<TagAdder addMode={addMode} setAddMode={setAddMode} />)
+                    (<TagAdder addMode={addMode} setAddMode={setAddMode} />)
                 :
-                  (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
+                    (elements[0] && <TagEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
                 <TagLists style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagAdderHeight})` } : { transform: "translateY(0px)" }}>
-                  {index.map((tag) => {
-                    return <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>
-                  })}     
+                    {index.map((tag) => {
+                    return <TagBubbleLarge color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleLarge>
+                    })}     
                 </TagLists>         
-              </TagClassListPosition>
-            }
-            {
-              tagViewerMode === TagViewerMode.TagPreset && <TagClassListPosition>
+            </TagClassListPosition>
+        }
+        {
+            tagViewerMode === TagViewerMode.TagPreset && <TagClassListPosition>
                 {addMode.showElem && ( true ? 
-                  (<TagPresetAdder addMode={addMode} setAddMode={setAddMode} />)
+                    (<TagPresetAdder addMode={addMode} setAddMode={setAddMode} />)
                 :
-                  (elements[0] && <TagPresetEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
+                    (elements[0] && <TagPresetEditor addMode={addMode} setAddMode={setAddMode} editObj={elements[0]} editCompleteHandler={classEditHandler}/>)
                 )}
                 <TagPresetList style={addMode.showElem && addMode.isMounted ? { transform: `translateY(${TagPresetAdderHeight})` } : { transform: "translateY(0px)" }}>
-                  {preset.map((preset) => {
+                    {preset.map((preset) => {
                     return <TagPresetListElement key={preset.id}>
-                      <span>{preset.name}</span>
-                      <div>
-                        {preset.tags.map((tag) => <TagBubbleCompact color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleCompact>)}
-                      </div>
-                      <span onClick={() => dispatch(deleteTagPreset({id: preset.id}))}>삭제</span>
+                        <span>{preset.name}</span>
+                        <div>
+                        {preset.tags.map((tag) => <TagBubbleLarge color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleLarge>)}
+                        </div>
+                        <span onClick={() => dispatch(deleteTagPreset({id: preset.id}))}>삭제</span>
                     </TagPresetListElement>
-                  })} 
+                    })} 
                 </TagPresetList>         
-              </TagClassListPosition>
-            }
-    </>
+            </TagClassListPosition>
+        }
+    </TagListWrapper>
 }
+
+const TagListWrapper = styled.div`
+`;
 
 const TagClassListPosition = styled.div`
   width: 100%;
