@@ -115,7 +115,15 @@ export const createTagPreset = createAsyncThunk(
 );
 
 // Put
-
+export interface TagEditReqType extends IDReqType {
+  name: string,
+};
+export const editTag = createAsyncThunk(
+  "tag/editTag",
+  async (payload: TagEditReqType) => {
+    await client.put(`/api/tag/${payload.id}/`, payload);
+  }
+);
 // Delete
 export const deleteTag = createAsyncThunk(
   "tag/deleteTag",
@@ -155,6 +163,7 @@ export const TagSlice = createSlice({
     }); 
     [
       createTagClass, createTag, createTagPreset,
+      editTag,
       deleteTag, deleteTagPreset
     ].forEach((reducer) => {
       builder.addCase(reducer.pending, (state, action) => {

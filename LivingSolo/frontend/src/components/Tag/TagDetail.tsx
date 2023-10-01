@@ -1,36 +1,44 @@
 import styled from "styled-components";
-import { TagElement, deleteTag, selectTag } from "../../store/slices/tag";
+import { TagElement, deleteTag, editTag, selectTag } from "../../store/slices/tag";
 import { TagBubble, TagBubbleCompact, TagBubbleHuge } from "../general/TagBubble";
 import { useDispatch, useSelector } from "react-redux";
 import { GetDateTimeFormatFromDjango } from "../../utils/DateTime";
 import { DeleteBtn, EditBtn, EditCompleteBtn } from "../general/FuncButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppDispatch } from "../../store";
 
 interface TagDetailProps {
-    selectedTag: TagElement | undefined
+    selectedTag: TagElement | undefined,
+    setSelectedTag: React.Dispatch<React.SetStateAction<TagElement | undefined>>
 };
 
 
 // containers/TagMain.tsx에서 사용되는 TagDetail 패널.
-export const TagDetail = ({ selectedTag } : TagDetailProps) => {
+export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
     const dispath = useDispatch<AppDispatch>();
     const { tagDetail } = useSelector(selectTag);
+    const [editText, setEditText] = useState<string>('');
     const [editMode, setEditMode] = useState<boolean>(false);
 
-    const editCompleteHandler = () => {
+    useEffect(() => {
+        selectedTag && setEditText(selectedTag.name);
+    }, [selectedTag]);
 
+    const editCompleteHandler = (id: number) => {
+        (editText !== selectedTag?.name) && dispath(editTag({ id, name: editText }));
+        setSelectedTag(st => { return {...(st as TagElement), name: editText}}); // Fake Updating in SelectedTag Header
         setEditMode(false);
     };
     const deleteHandler = (id: number) => {
         dispath(deleteTag({ id }));
+        setSelectedTag(undefined);
     };
 
     return <>
         {selectedTag && <TagDetailHeaderWrapper>
-            <TagBubbleHuge color={selectedTag.color}>{selectedTag.name}</TagBubbleHuge>
+            <TagBubbleHuge color={selectedTag.color}>{editMode ? <input type="text" value={editText} onChange={(e) => setEditText(e.target.value)} /> : <span>{selectedTag.name}</span>}</TagBubbleHuge>
             <TagDetailHeaderFnWrapper>
-                {editMode ? <EditCompleteBtn handler={editCompleteHandler} /> : <EditBtn handler={() => { setEditMode(true); }} />}
+                {editMode ? <EditCompleteBtn disabled={editText === ''} handler={() => editCompleteHandler(selectedTag.id)} /> : <EditBtn handler={() => { setEditMode(true); }} />}
                 <DeleteBtn confirmText={`정말 ${selectedTag.name} 태그를 삭제하시겠습니까?`} handler={() => { deleteHandler(selectedTag.id) }} />
             </TagDetailHeaderFnWrapper>
         </TagDetailHeaderWrapper>}

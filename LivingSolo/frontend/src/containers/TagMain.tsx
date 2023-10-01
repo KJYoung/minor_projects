@@ -27,7 +27,6 @@ const TagMain = () => {
     dispatch(fetchTags());
     dispatch(fetchTagsIndex());
     dispatch(fetchTagPresets());
-    setSelectedTag(undefined);
   }, [dispatch, errorState]);
 
   useEffect(() => {
@@ -72,7 +71,7 @@ const TagMain = () => {
           </ListWrapper>
         </LeftWrapper>
         <RightWrapper>
-          <TagDetail selectedTag={selectedTag}/>
+          <TagDetail selectedTag={selectedTag} setSelectedTag={setSelectedTag}/>
         </RightWrapper>
       </InnerWrapper>
     </Wrapper>

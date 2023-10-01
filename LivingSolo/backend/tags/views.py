@@ -70,10 +70,11 @@ def general_tag(request):
 
 
 ## Tag Detail
-@require_http_methods(['GET', 'DELETE'])
+@require_http_methods(['GET', 'PUT', 'DELETE'])
 def tag_detail(request, tag_id):
     """
     GET : get tag detail
+    PUT : edit tag
     DELETE : delete tag
     """
     try:
@@ -90,11 +91,16 @@ def tag_detail(request, tag_id):
                 "todo": todos,
             }
             return JsonResponse({"elements": result}, safe=False)
+        elif request.method == 'PUT':
+            data = json.loads(request.body.decode())
+
+            tag_obj.name = data["name"]
+            tag_obj.save()
+
+            return JsonResponse({"message": "success"}, status=200)
         elif request.method == 'DELETE':
             tag_obj.delete()
             return JsonResponse({"message": "success"}, status=200)
-        else:
-            return HttpResponseBadRequest()
     except (KeyError, JSONDecodeError):
         print("ERROR from tag_detail")
         return HttpResponseBadRequest()
