@@ -53,7 +53,7 @@ export const TodoAdder = ({ addMode, setAddMode, curDay } : TodoAdderProps) => {
         </TodoAdderAddInputs>
         <TodoAdderAddInputs>
             <TodoPeriodicLabel>
-                <label htmlFor="periodInput">주기</label>
+                <label htmlFor="isPeriodic">주기</label>
                 <input  type="checkbox" id="isPeriodic" checked={isPeriodic}
                     onChange={(e) => {
                         setIsPeriodic((ip) => !ip);

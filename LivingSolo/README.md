@@ -6,10 +6,15 @@
    python manage.py prepare_tags
    python manage.py createsuperuser
 ```
-- 2023년 6월~8월경.
+- 2023년 6월~ 간간히 개발중
 
 #### Latest Screenshot
+##### Tag
+![Tag Image 1001](record/Tag_231001-15.59.00.png)
+##### Todo
 ![Todo Image 0730](record/Todo_230730-15.29.32.png)
+##### Trxn
+![Trxn Image 0719](record/Trxn_230719-22.22.38.png)
 
 #### Backend ERD Model Structure
 - [ERD Cloud Link](https://www.erdcloud.com/d/FicREAFG6x97kzDmw)

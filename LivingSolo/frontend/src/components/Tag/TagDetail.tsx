@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import { TagElement, selectTag } from "../../store/slices/tag";
-import { TagBubbleHuge } from "../general/TagBubble";
+import { TagBubble, TagBubbleCompact, TagBubbleHuge } from "../general/TagBubble";
 import { useSelector } from "react-redux";
+import { GetDateTimeFormatFromDjango } from "../../utils/DateTime";
 
 interface TagDetailProps {
     selectedTag: TagElement | undefined
@@ -17,9 +18,15 @@ export const TagDetail = ({ selectedTag } : TagDetailProps) => {
         <TodoWrapper>
             <h1>Todo</h1>
             <div>
-                
                 {tagDetail && tagDetail.todo.length > 0 && tagDetail.todo.map((todo) => {
-                    return <div key={todo.id}>{todo.name}</div>
+                    return <TodoElement key={todo.id}>
+                        <span>{GetDateTimeFormatFromDjango(todo.deadline, true)} </span>
+                        <TagBubble color={todo.category.color}>{todo.category.name}</TagBubble>
+                        {todo.name}
+                        <div>
+                            {todo.tag.map(t => <TagBubbleCompact color={t.color}>{t.name}</TagBubbleCompact>)}
+                        </div>
+                    </TodoElement>
                 })}
             </div>
             {tagDetail && tagDetail.todo.length === 0 && <>
@@ -31,7 +38,14 @@ export const TagDetail = ({ selectedTag } : TagDetailProps) => {
             <h1>Transaction</h1>
             <div>
                 {tagDetail && tagDetail.transaction.length > 0 && tagDetail?.transaction.map((trxn) => {
-                    return <div key={trxn.id}>{trxn.memo}</div>
+                    return <TrxnElement key={trxn.id}>
+                        <span>{GetDateTimeFormatFromDjango(trxn.date, true)}</span>
+                        <span>{trxn.memo}</span>
+                        <span>{trxn.amount} 원</span>
+                        <div>
+                            {trxn.tag.map(t => <TagBubbleCompact color={t.color}>{t.name}</TagBubbleCompact>)}
+                        </div>
+                    </TrxnElement>
                 })}  
             </div>
             {tagDetail && tagDetail.transaction.length === 0 && <>
@@ -55,10 +69,11 @@ const AbstractContentWrapper = styled.div`
         font-size: 24px;
         font-weight: 400;
         color: var(--ls-gray_darker1);
-        margin: 5px 0px 0px 5px;
+        margin: 8px 0px 0px 8px;
     };
     > div {
         padding: 10px 20px;
+        width: 100%;
 
         display: flex;
         flex-direction: column;
@@ -78,4 +93,37 @@ const AbstractContentWrapper = styled.div`
 const TodoWrapper = styled(AbstractContentWrapper)`
 `;
 const TrxnWrapper = styled(AbstractContentWrapper)`
+`;
+
+const TodoElement = styled.div`
+  display: grid;
+  grid-template-columns: 3fr 4fr 10fr 6fr;
+  align-items: center;
+
+  min-height: 20px;
+  width: 100%;
+  padding: 5px 0px 0px 0px;
+
+  border-top: 1px solid var(--ls-gray_lighter);
+  margin-top: 5px;
+  &:first-child {
+    border: none;
+    margin-top: 0px;
+  };
+`;
+const TrxnElement = styled.div`
+  display: grid;
+  grid-template-columns: 3fr 4fr 10fr 6fr;
+  align-items: center;
+
+  min-height: 20px;
+  width: 100%;
+  padding: 5px 0px 0px 0px;
+
+  border-top: 1px solid var(--ls-gray_lighter);
+  margin-top: 5px;
+  &:first-child {
+    border: none;
+    margin-top: 0px;
+  };
 `;
