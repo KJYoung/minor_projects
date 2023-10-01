@@ -27,6 +27,7 @@ const TagMain = () => {
     dispatch(fetchTags());
     dispatch(fetchTagsIndex());
     dispatch(fetchTagPresets());
+    setSelectedTag(undefined);
   }, [dispatch, errorState]);
 
   useEffect(() => {

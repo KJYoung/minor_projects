@@ -1,8 +1,11 @@
 import styled from "styled-components";
-import { TagElement, selectTag } from "../../store/slices/tag";
+import { TagElement, deleteTag, selectTag } from "../../store/slices/tag";
 import { TagBubble, TagBubbleCompact, TagBubbleHuge } from "../general/TagBubble";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GetDateTimeFormatFromDjango } from "../../utils/DateTime";
+import { DeleteBtn, EditBtn, EditCompleteBtn } from "../general/FuncButton";
+import { useState } from "react";
+import { AppDispatch } from "../../store";
 
 interface TagDetailProps {
     selectedTag: TagElement | undefined
@@ -11,10 +14,26 @@ interface TagDetailProps {
 
 // containers/TagMain.tsx에서 사용되는 TagDetail 패널.
 export const TagDetail = ({ selectedTag } : TagDetailProps) => {
+    const dispath = useDispatch<AppDispatch>();
     const { tagDetail } = useSelector(selectTag);
+    const [editMode, setEditMode] = useState<boolean>(false);
+
+    const editCompleteHandler = () => {
+
+        setEditMode(false);
+    };
+    const deleteHandler = (id: number) => {
+        dispath(deleteTag({ id }));
+    };
 
     return <>
-        {selectedTag && <TagBubbleHuge color={selectedTag.color}>{selectedTag.name}</TagBubbleHuge>}
+        {selectedTag && <TagDetailHeaderWrapper>
+            <TagBubbleHuge color={selectedTag.color}>{selectedTag.name}</TagBubbleHuge>
+            <TagDetailHeaderFnWrapper>
+                {editMode ? <EditCompleteBtn handler={editCompleteHandler} /> : <EditBtn handler={() => { setEditMode(true); }} />}
+                <DeleteBtn confirmText={`정말 ${selectedTag.name} 태그를 삭제하시겠습니까?`} handler={() => { deleteHandler(selectedTag.id) }} />
+            </TagDetailHeaderFnWrapper>
+        </TagDetailHeaderWrapper>}
         <TodoWrapper>
             <h1>Todo</h1>
             <div>
@@ -54,6 +73,17 @@ export const TagDetail = ({ selectedTag } : TagDetailProps) => {
         </TrxnWrapper>
     </>
 };
+
+const TagDetailHeaderWrapper = styled.div`
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+`;
+const TagDetailHeaderFnWrapper = styled.div`
+    display: flex;
+`;
 
 const AbstractContentWrapper = styled.div`
     width:100%;

@@ -113,6 +113,17 @@ export const createTagPreset = createAsyncThunk(
     return response.data;
   }
 );
+
+// Put
+
+// Delete
+export const deleteTag = createAsyncThunk(
+  "tag/deleteTag",
+  async (payload: IDReqType) => {
+    const response = await client.delete(`/api/tag/${payload.id}`);
+    return response.data;
+  }
+)
 export const deleteTagPreset = createAsyncThunk(
   "tag/deleteTagPreset",
   async (payload: IDReqType) => {
@@ -144,7 +155,7 @@ export const TagSlice = createSlice({
     }); 
     [
       createTagClass, createTag, createTagPreset,
-      deleteTagPreset
+      deleteTag, deleteTagPreset
     ].forEach((reducer) => {
       builder.addCase(reducer.pending, (state, action) => {
         state.errorState = ERRORSTATE.DEFAULT;

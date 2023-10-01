@@ -140,7 +140,7 @@ const TagPresetListElement = styled.div`
   border-bottom: 1px solid gray;
 
   display: grid;
-  grid-template-columns: 4fr 10fr;
+  grid-template-columns: 4fr 6fr 4fr;
   align-items: center;
   span {
 

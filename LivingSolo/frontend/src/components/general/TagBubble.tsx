@@ -113,7 +113,7 @@ export const TagBubbleHuge = styled.button<IPropsTagBubble>`
   width: fit-content;
   border-radius: 18px;
   padding: 8px 42px;
-  margin: 1.5px 2px;
+  margin: 0px 2px;
   border: none;
   white-space: nowrap;
   font-size: 20px;

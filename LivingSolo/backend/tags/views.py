@@ -70,16 +70,16 @@ def general_tag(request):
 
 
 ## Tag Detail
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'DELETE'])
 def tag_detail(request, tag_id):
     """
     GET : get tag detail
+    DELETE : delete tag
     """
-    if request.method == 'GET':
-        try:
-            tag_id = int(tag_id)
-            tag_obj = Tag.objects.get(pk=tag_id)
-
+    try:
+        tag_id = int(tag_id)
+        tag_obj = Tag.objects.get(pk=tag_id)
+        if request.method == 'GET':
             trxns = [
                 get_transaction_dict_from_obj(trxn_elem) for trxn_elem in tag_obj.transaction.all()
             ]
@@ -90,10 +90,13 @@ def tag_detail(request, tag_id):
                 "todo": todos,
             }
             return JsonResponse({"elements": result}, safe=False)
-        except (KeyError, JSONDecodeError):
-            print("ERROR from tag_detail")
+        elif request.method == 'DELETE':
+            tag_obj.delete()
+            return JsonResponse({"message": "success"}, status=200)
+        else:
             return HttpResponseBadRequest()
-    else:
+    except (KeyError, JSONDecodeError):
+        print("ERROR from tag_detail")
         return HttpResponseBadRequest()
 
 
