@@ -10,6 +10,7 @@ import { TagPresetAdder, TagPresetAdderHeight, TagPresetEditor } from "./TagPres
 import { AppDispatch } from "../../store";
 import { IPropsColor } from "../../utils/Interfaces";
 import { getContrastYIQ } from "../../styles/color";
+import { DeleteBtn } from "../general/FuncButton";
 
 interface TagListProps {
     addMode: CondRendAnimState,
@@ -79,7 +80,7 @@ export const TagList = ({ addMode, setAddMode, tagViewerMode, setTagViewerMode, 
                         <div>
                         {preset.tags.map((tag) => <TagBubbleLarge color={tag.color} key={tag.id} onClick={() => tagSelectHandler(tag)}>{tag.name}</TagBubbleLarge>)}
                         </div>
-                        <span onClick={() => dispatch(deleteTagPreset({id: preset.id}))}>삭제</span>
+                        <DeleteBtn confirmText="정말 TagPreset을 삭제하시겠습니까?" handler={() => dispatch(deleteTagPreset({id: preset.id}))} />
                     </TagPresetListElement>
                     })} 
                 </TagPresetList>         

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from 'styled-components';
-import { Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { SortState, TrxnActions, TrxnElement, TrxnSortState, TrxnSortTarget, deleteTrxn, editTrxn, selectTrxn } from '../../store/slices/trxn';
 import { AppDispatch } from '../../store';
@@ -8,13 +7,11 @@ import { TagBubbleCompact } from '../general/TagBubble';
 import { GetDateTimeFormatFromDjango } from '../../utils/DateTime';
 import { EditAmountInput } from './AmountInput';
 import { ViewMode } from '../../containers/TrxnMain';
-import { RoundButton } from '../../utils/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faX } from '@fortawesome/free-solid-svg-icons';
 import { TrxnGridGraphicHeader, TrxnGridGraphicItem } from './TrxnGridGraphics';
 import { TagInputForGridHeader } from '../Tag/TagInput';
 import { TagElement } from '../../store/slices/tag';
 import { IPropsActive } from '../../utils/Interfaces';
+import { DeleteBtn, EditBtn, EditCompleteBtn } from '../general/FuncButton';
 
 interface TrxnGridHeaderProps {
     viewMode: ViewMode
@@ -162,17 +159,14 @@ export function TrxnGridItem({ index, item, isEditing, setEditID, viewMode }: Tr
             : 
             <span>{item.memo}</span>
         }
-        <div>
-            {isEditing && <Button variant={"contained"} disabled={trxnItem.memo === ""} onClick={() => {
+        <FuncRow>
+            {isEditing && <EditCompleteBtn disabled={trxnItem.memo === ""} handler={() => {
                     dispatch(editTrxn(trxnItem));
                     setEditID(-1);
-                }}>수정 완료</Button>}
-            {!isEditing && <RoundButton onClick={async () => { setEditID(item.id); setTrxnItem(item); }}><FontAwesomeIcon icon={faPencil}/></RoundButton>}
-            {!isEditing && <RoundButton onClick={async () => {
-                if (window.confirm('정말 기록을 삭제하시겠습니까?')) {
-                    dispatch(deleteTrxn(item.id));
-                }}}><FontAwesomeIcon icon={faX}/></RoundButton>}
-        </div>
+            }}/>}
+            {!isEditing && <EditBtn handler={async () => { setEditID(item.id); setTrxnItem(item); }} />}
+            {!isEditing && <DeleteBtn confirmText={'정말 기록을 삭제하시겠습니까?'} handler={() => dispatch(deleteTrxn(item.id))} />}
+        </FuncRow>
     </TrxnGridDetailItemDiv>);
   }else if(viewMode === ViewMode.Graph){
     return (<TrxnGridGraphicItem item={item}/>);
@@ -232,6 +226,10 @@ const TrxnGridDetailItemDiv = styled(TrxnGridDetailTemplate)`
         width: 100%;
         height: 100%;
     }
+`;
+
+const FuncRow = styled.div`
+    display: flex;
 `;
 
 interface CombinedTrxnGridItemProps {
