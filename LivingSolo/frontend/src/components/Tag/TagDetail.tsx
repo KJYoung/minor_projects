@@ -6,6 +6,7 @@ import { GetDateTimeFormatFromDjango } from "../../utils/DateTime";
 import { DeleteBtn, EditBtn, EditCompleteBtn } from "../general/FuncButton";
 import { useEffect, useState } from "react";
 import { AppDispatch } from "../../store";
+import { AutogrowInputWrapper, HiddenTextforAutogrowInput } from "../../utils/Rendering";
 
 interface TagDetailProps {
     selectedTag: TagElement | undefined,
@@ -36,7 +37,13 @@ export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
 
     return <>
         {selectedTag && <TagDetailHeaderWrapper>
-            <TagBubbleHuge color={selectedTag.color}>{editMode ? <input type="text" value={editText} onChange={(e) => setEditText(e.target.value)} /> : <span>{selectedTag.name}</span>}</TagBubbleHuge>
+            <TagBubbleHuge color={selectedTag.color}>{editMode ? (
+                <AutogrowInputWrapper>
+                    <HiddenTextforAutogrowInput>{editText}</HiddenTextforAutogrowInput>
+                    <TagHeadInput type="text" value={editText} onChange={(e) => setEditText(e.target.value)} />
+                </AutogrowInputWrapper>        
+                // <TagHeadInput type="text" value={editText} onChange={(e) => setEditText(e.target.value)} />
+            ) : <span>{selectedTag.name}</span>}</TagBubbleHuge>
             <TagDetailHeaderFnWrapper>
                 {editMode ? <EditCompleteBtn disabled={editText === ''} handler={() => editCompleteHandler(selectedTag.id)} /> : <EditBtn handler={() => { setEditMode(true); }} />}
                 <DeleteBtn confirmText={`정말 ${selectedTag.name} 태그를 삭제하시겠습니까?`} handler={() => { deleteHandler(selectedTag.id) }} />
@@ -51,7 +58,7 @@ export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
                         <TagBubble color={todo.category.color}>{todo.category.name}</TagBubble>
                         {todo.name}
                         <div>
-                            {todo.tag.map(t => <TagBubbleCompact color={t.color}>{t.name}</TagBubbleCompact>)}
+                            {todo.tag.map(t => <TagBubbleCompact color={t.color} key={t.id}>{t.name}</TagBubbleCompact>)}
                         </div>
                     </TodoElement>
                 })}
@@ -70,7 +77,7 @@ export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
                         <span>{trxn.memo}</span>
                         <span>{trxn.amount} 원</span>
                         <div>
-                            {trxn.tag.map(t => <TagBubbleCompact color={t.color}>{t.name}</TagBubbleCompact>)}
+                            {trxn.tag.map(t => <TagBubbleCompact color={t.color} key={t.id}>{t.name}</TagBubbleCompact>)}
                         </div>
                     </TrxnElement>
                 })}  
@@ -81,6 +88,14 @@ export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
         </TrxnWrapper>
     </>
 };
+
+const TagHeadInput = styled.input`
+    all: unset;
+    border-bottom: 1px solid var(--ls-blue);
+    position: absolute;
+    width: 100%;
+    left: 0;
+`;
 
 const TagDetailHeaderWrapper = styled.div`
     width: 100%;

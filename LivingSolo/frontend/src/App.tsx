@@ -14,6 +14,7 @@ import TodoMain from './containers/TodoMain';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { ReactNotifications } from 'react-notifications-component';
 import TagMain from './containers/TagMain';
+import { Experiment } from './containers/Experiment';
 
 function App() {
   return <>
@@ -77,6 +78,7 @@ const WebComponent = () => {
             <Route path="todo" element={<TodoMain />} />
             <Route path="trxn" element={<TrxnMain />} />
             <Route path="tag" element={<TagMain />} />
+            <Route path="experiment" element={<Experiment />} />
             <Route path="*" element={<span>Home</span>} />
         </Routes>
         

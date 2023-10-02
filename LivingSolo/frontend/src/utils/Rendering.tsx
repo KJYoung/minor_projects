@@ -1,3 +1,12 @@
+import styled from "styled-components";
+
+export const AutogrowInputWrapper = styled.span`
+    position: relative;
+`;
+export const HiddenTextforAutogrowInput = styled.span`
+    visibility: hidden;
+    padding: 0 1rem;
+`;
 
 export type CondRendAnimState = {
     isMounted: boolean,
