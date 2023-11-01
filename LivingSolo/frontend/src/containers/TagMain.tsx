@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
-import { TagElement, fetchTagDetail, fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
+import { TagActions, TagElement, fetchTagDetail, fetchTagPresets, fetchTags, fetchTagsIndex, selectTag } from '../store/slices/tag';
 import { IPropsActive } from '../utils/Interfaces';
 import { CondRendAnimState, defaultCondRendAnimState, toggleCondRendAnimState } from '../utils/Rendering';
 import { TagDetail } from '../components/Tag/TagDetail';
@@ -32,6 +32,8 @@ const TagMain = () => {
   useEffect(() => {
     if(selectedTag){
       dispatch(fetchTagDetail(selectedTag.id));
+    }else{
+      dispatch(TagActions.clearTagDetail());
     }
   }, [dispatch, selectedTag]);
 

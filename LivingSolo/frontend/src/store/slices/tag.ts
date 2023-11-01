@@ -143,7 +143,11 @@ export const deleteTagPreset = createAsyncThunk(
 export const TagSlice = createSlice({
   name: "tag",
   initialState,
-  reducers: {},
+  reducers: {
+    clearTagDetail: (state) => {
+      state.tagDetail = undefined;
+    },
+  },
   extraReducers(builder) {
     builder.addCase(fetchTags.fulfilled, (state, action) => {
       state.elements = action.payload.elements;
