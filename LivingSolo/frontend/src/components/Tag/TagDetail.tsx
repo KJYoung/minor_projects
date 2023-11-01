@@ -7,6 +7,9 @@ import { DeleteBtn, EditBtn, EditCompleteBtn } from "../general/FuncButton";
 import { useEffect, useState } from "react";
 import { AppDispatch } from "../../store";
 import { AutogrowInputWrapper, HiddenTextforAutogrowInput } from "../../utils/Rendering";
+import { CharNumSpan } from "../general/FuncSpan";
+import { TAG_NAME_LENGTH } from "../../utils/Constants";
+import { notificationWarning } from "../../utils/sendNoti";
 
 interface TagDetailProps {
     selectedTag: TagElement | undefined,
@@ -35,15 +38,27 @@ export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
         setSelectedTag(undefined);
     };
 
+    const TagNameInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newText = e.target.value;
+        if(newText.length > TAG_NAME_LENGTH){
+            notificationWarning('Tag', `Tag Name Length Should be < ${TAG_NAME_LENGTH}`);
+        }else{
+            setEditText(newText);
+        }
+    };
     return <>
         {selectedTag && <TagDetailHeaderWrapper>
-            <TagBubbleHuge color={selectedTag.color}>{editMode ? (
-                <AutogrowInputWrapper>
-                    <HiddenTextforAutogrowInput>{editText}</HiddenTextforAutogrowInput>
-                    <TagHeadInput type="text" value={editText} onChange={(e) => setEditText(e.target.value)} />
-                </AutogrowInputWrapper>        
-                // <TagHeadInput type="text" value={editText} onChange={(e) => setEditText(e.target.value)} />
-            ) : <span>{selectedTag.name}</span>}</TagBubbleHuge>
+            <TagBubbleHuge color={selectedTag.color}>
+                {editMode ? (
+                    <AutogrowInputWrapper>
+                        <HiddenTextforAutogrowInput>{editText}</HiddenTextforAutogrowInput>
+                        <TagHeadInput type="text" value={editText} onChange={TagNameInputChangeHandler} />
+                    </AutogrowInputWrapper>) 
+                : 
+                    <span>{selectedTag.name}</span>
+                }
+            </TagBubbleHuge>
+            <CharNumSpan currentNum={editText.length} maxNum={TAG_NAME_LENGTH}/>
             <TagDetailHeaderFnWrapper>
                 {editMode ? <EditCompleteBtn disabled={editText === ''} handler={() => editCompleteHandler(selectedTag.id)} /> : <EditBtn handler={() => { setEditMode(true); }} />}
                 <DeleteBtn confirmText={`정말 ${selectedTag.name} 태그를 삭제하시겠습니까?`} handler={() => { deleteHandler(selectedTag.id) }} />
