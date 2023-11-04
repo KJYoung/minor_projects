@@ -9,13 +9,24 @@ import { fetchTodoCategory, fetchTodos, selectTodo } from '../store/slices/todo'
 import { DailyTodo } from '../components/Todo/DailyTodo';
 import { ERRORSTATE } from '../store/slices/core';
 import { fetchTagPresets, fetchTags, fetchTagsIndex } from '../store/slices/tag';
+import { useSearchParams } from 'react-router-dom';
 
 const TodoMain = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const [params] = useSearchParams();
 
   const today = new Date();
   const [curDay, setCurDay] = useState<CalTodoDay>({year: today.getFullYear(), month: today.getMonth(), day: today.getDate()});
   const { errorState } = useSelector(selectTodo);
+
+  useEffect(() => {
+    const year = params.get('year');
+    const month = params.get('month');
+    const day = params.get('day');
+    if(year && month && day){
+      setCurDay({ year: Number(year), month: Number(month) - 1, day: Number(day)});
+    };
+  }, [params]);
 
   useEffect(() => {
     dispatch(fetchTodos({

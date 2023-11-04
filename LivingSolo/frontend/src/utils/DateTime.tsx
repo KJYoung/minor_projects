@@ -8,6 +8,7 @@
  * 
  */
 
+// Month: 0 ~ 11!!!!
 export type CalTodoDay = {
     year: number;
     month: number; // Month: 0 ~ 11.
@@ -58,6 +59,7 @@ export const A_EQUAL_B_CalTodoDay = (a: CalTodoDay, b: CalTodoDay): boolean => {
     return a.year === b.year && a.month === b.month && a.day === b.day;
 };
 
+// month: 1 ~ 12!!!
 export type CalMonth = {
     year: number;
     month?: number;
@@ -71,6 +73,11 @@ export const CUR_YEAR: CalMonth = {
     year: (new Date()).getFullYear()
 };
 
+// ****************************************************
+// (1) Django Style string: 2023-11-03 10:30:57
+// (2) CalTodoDay object:
+// (3) Date object:
+// ****************************************************
 // (3) Date => (1) Django String
 export const GetDateTimeFormat2Django = (dt: Date, fullTime?: boolean): string => {
     if(fullTime){

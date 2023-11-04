@@ -9,6 +9,7 @@ import { TrxnNav } from '../components/Trxn/TrxnNav';
 import { TrxnDetail } from './Trxn/TrxnDetail';
 import { TrxnCombined } from './Trxn/TrxnCombined';
 import { TrxnGraphic } from './Trxn/TrxnGraphic';
+import { useSearchParams } from 'react-router-dom';
 
 export enum ViewMode {
   Detail, Combined, Graph
@@ -17,9 +18,19 @@ export enum ViewMode {
 function TrxnMain() {
   const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.Detail);
   const [curMonth, setCurMonth] = useState<CalMonth>(CUR_MONTH);
+  const [params] = useSearchParams();
 
   const dispatch = useDispatch<AppDispatch>();
   const { errorState } = useSelector(selectTrxn);
+
+  useEffect(() => {
+    const year = params.get('year');
+    const month = params.get('month');
+    const day = params.get('day');
+    if(year && month && day){
+      setCurMonth({ year: Number(year), month: Number(month)});
+    };
+  }, [params]);
 
   useEffect(() => {
     dispatch(fetchTrxns({yearMonth: curMonth}));

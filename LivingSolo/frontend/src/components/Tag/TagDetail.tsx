@@ -8,8 +8,9 @@ import { useEffect, useState } from "react";
 import { AppDispatch } from "../../store";
 import { AutogrowInputWrapper, HiddenTextforAutogrowInput } from "../../utils/Rendering";
 import { CharNumSpan } from "../general/FuncSpan";
-import { TAG_NAME_LENGTH } from "../../utils/Constants";
+import { TAG_NAME_LENGTH, TODO_URLS_BY_DJANGO_STRING, TRXN_URLS_BY_DJANGO_STRING } from "../../utils/Constants";
 import { notificationWarning } from "../../utils/sendNoti";
+import { useNavigate } from "react-router-dom";
 
 interface TagDetailProps {
     selectedTag: TagElement | undefined,
@@ -20,6 +21,7 @@ interface TagDetailProps {
 // containers/TagMain.tsx에서 사용되는 TagDetail 패널.
 export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
     const dispath = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
     const { tagDetail } = useSelector(selectTag);
     const [editText, setEditText] = useState<string>('');
     const [editMode, setEditMode] = useState<boolean>(false);
@@ -70,7 +72,7 @@ export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
             <h1>Todo</h1>
             <div>
                 {tagDetail && tagDetail.todo.length > 0 && tagDetail.todo.map((todo) => {
-                    return <TodoElement key={todo.id}>
+                    return <TodoElement key={todo.id} onClick={() => navigate(TODO_URLS_BY_DJANGO_STRING(todo.deadline))}>
                         <span>{GetDateTimeFormatFromDjango(todo.deadline, true)} </span>
                         <TagBubble color={todo.category.color}>{todo.category.name}</TagBubble>
                         {todo.name}
@@ -89,7 +91,7 @@ export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
             <h1>Transaction</h1>
             <div>
                 {tagDetail && tagDetail.transaction.length > 0 && tagDetail?.transaction.map((trxn) => {
-                    return <TrxnElement key={trxn.id}>
+                    return <TrxnElement key={trxn.id} onClick={() => navigate(TRXN_URLS_BY_DJANGO_STRING(trxn.date))}>
                         <span>{GetDateTimeFormatFromDjango(trxn.date, true)}</span>
                         <span>{trxn.memo}</span>
                         <span>{trxn.amount} 원</span>
@@ -184,20 +186,22 @@ const TodoElement = styled.div`
     border: none;
     margin-top: 0px;
   };
-`;
+  cursor:pointer;
+  `;
 const TrxnElement = styled.div`
   display: grid;
   grid-template-columns: 3fr 4fr 10fr 6fr;
   align-items: center;
-
+  
   min-height: 20px;
   width: 100%;
   padding: 5px 0px 0px 0px;
-
+  
   border-top: 1px solid var(--ls-gray_lighter);
   margin-top: 5px;
   &:first-child {
     border: none;
     margin-top: 0px;
   };
+  cursor:pointer;
 `;
