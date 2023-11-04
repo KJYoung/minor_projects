@@ -147,15 +147,15 @@ export const DailyTodo = ({ curDay, setCurDay }: DailyTodoProps) => {
                                 <TodoCategoryHeader>
                                     <TodoElementColorCircle color={categoryElement.color} ishard='false' />
                                     <span>{categoryElement.name}</span>
-                                    {
+                                    {categoryElement.id !== -1 && (
                                         fastAddCategID === categoryElement.id ?
                                             <span className='clickable noselect' onClick={() => setFastAddCategID(-1)}>-</span>
                                         :  
                                             <span className='clickable noselect' onClick={() => setFastAddCategID(categoryElement.id)}>+</span>
-                                    }
+                                    )}
                                 </TodoCategoryHeader>
                                 <TodoCategoryBody>
-                                    {fastAddCategID === categoryElement.id && 
+                                    {fastAddCategID === categoryElement.id && fastAddCategID >= 0 && 
                                         <TodoFastAdder categ={categories.find((e) => e.id === categoryElement.id)!} addCompleteHandler={() => setFastAddCategID(-1)} curDay={curDay} />
                                     }
                                     {categoryElement.todos // For Read Only Array Sort, We have to copy that.
