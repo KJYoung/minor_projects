@@ -22,6 +22,7 @@ interface TagDetailProps {
 export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
     const dispath = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+
     const { tagDetail } = useSelector(selectTag);
     const [editText, setEditText] = useState<string>('');
     const [editMode, setEditMode] = useState<boolean>(false);
@@ -61,7 +62,7 @@ export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
                         <span>{selectedTag.name}</span>
                     }
                 </TagBubbleHuge>
-                <CharNumSpan currentNum={editText.length} maxNum={TAG_NAME_LENGTH}/>
+                {editMode && <CharNumSpan currentNum={editText.length} maxNum={TAG_NAME_LENGTH}/>}
             </TagDetailIconWrapperWithCharNum>
             <TagDetailHeaderFnWrapper>
                 {editMode ? <EditCompleteBtn disabled={editText === ''} handler={() => editCompleteHandler(selectedTag.id)} /> : <EditBtn handler={() => { setEditMode(true); }} />}

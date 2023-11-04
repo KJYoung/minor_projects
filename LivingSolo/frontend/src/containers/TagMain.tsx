@@ -8,6 +8,7 @@ import { IPropsActive } from '../utils/Interfaces';
 import { CondRendAnimState, defaultCondRendAnimState, toggleCondRendAnimState } from '../utils/Rendering';
 import { TagDetail } from '../components/Tag/TagDetail';
 import { TagList } from '../components/Tag/TagList';
+import { useSearchParams } from 'react-router-dom';
 
 export enum TagViewerMode {
   TagClass, Tag, TagPreset
@@ -17,10 +18,11 @@ const TagMain = () => {
   const [addMode, setAddMode] = useState<CondRendAnimState>(defaultCondRendAnimState);
   const [tagViewerMode, setTagViewerMode] = useState<TagViewerMode>(TagViewerMode.TagClass);
   const [selectedTag, setSelectedTag] = useState<TagElement | undefined>();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const { errorState } = useSelector(selectTag);
+  const { errorState, index } = useSelector(selectTag);
 
   // Fetch Tag Related Things!
   useEffect(() => {
@@ -30,11 +32,29 @@ const TagMain = () => {
   }, [dispatch, errorState]);
 
   useEffect(() => {
+    const tagID = searchParams.get('tag');
+    if(tagID) {
+      if((selectedTag && tagID !== selectedTag.id.toString()) || !selectedTag){
+        setSelectedTag(index.find((t) => t.id === Number(tagID))); // Assume there is a valid tag.
+        dispatch(fetchTagDetail(Number(tagID)));
+      }else{
+        // TODO..
+      }
+    } 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, searchParams]);
+
+  useEffect(() => {
     if(selectedTag){
       dispatch(fetchTagDetail(selectedTag.id));
+
+      // Set Query String.
+      searchParams.set('tag', selectedTag.id.toString());
+      setSearchParams(searchParams);
     }else{
       dispatch(TagActions.clearTagDetail());
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, selectedTag]);
 
   const classAddToggleHandler = () => {
