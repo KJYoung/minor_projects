@@ -1,75 +1,64 @@
 import {
-    Store,
-    NOTIFICATION_INSERTION,
-    NOTIFICATION_CONTAINER,
-    iNotificationDismiss,
-  } from 'react-notifications-component';
+  Store,
+  NOTIFICATION_INSERTION,
+  NOTIFICATION_CONTAINER,
+  iNotificationDismiss,
+  NOTIFICATION_TYPE,
+} from 'react-notifications-component';
+import { NOTI_MAX_COUNT } from './Constants';
   
-  export const notification: {
-    insert: NOTIFICATION_INSERTION;
-    container: NOTIFICATION_CONTAINER;
-    dismiss: iNotificationDismiss;
-  } = {
-    insert: 'top',
-    container: 'top-right',
-    dismiss: {
-      duration: 1500,
-    },
-  };
+export const notification: {
+  insert: NOTIFICATION_INSERTION;
+  container: NOTIFICATION_CONTAINER;
+  dismiss: iNotificationDismiss;
+} = {
+  insert: 'top',
+  container: 'bottom-center',
+  dismiss: {
+    duration: 1200,
+  },
+};
   
-  // success, danger, info, default, warning
-  
-  export const notificationSuccess = (title: string, message: string) => {
+// success, danger, info, default, warning
+let notiCount = 0;
+const notifiactionBase = (title: string, message: string, type: NOTIFICATION_TYPE) => {
+  if(notiCount >= NOTI_MAX_COUNT){
+    return;
+  }else{
     Store.addNotification({
       ...notification,
-      title: title,
-      message: message,
-      type: 'success',
+      title,
+      message,
+      type,
     });
-  };
-  
-  export const notificationDanger = (title: string, message: string) => {
-    Store.addNotification({
-      ...notification,
-      title: title,
-      message: message,
-      type: 'danger',
-    });
-  };
+    notiCount += 1;
+    setTimeout(() => {
+      notiCount -= 1;
+    }, 1200);
+  }
+};
 
-  export const notificationDefault = (title: string, message: string) => {
-    Store.addNotification({
-      ...notification,
-      title: title,
-      message: message,
-      type: 'default',
-    });
-  };
-  
-  export const notificationWarning = (title: string, message: string) => {
-    Store.addNotification({
-      ...notification,
-      title: title,
-      message: message,
-      type: 'warning',
-    });
-  };
-  
-  export const notificationFailure = (title: string, message: string) => {
-    Store.addNotification({
-      ...notification,
-      title: title,
-      message: message,
-      type: 'danger',
-    });
-  };
-  
-  export const notificationInfo = (title: string, message: string) => {
-    Store.addNotification({
-      ...notification,
-      title: title,
-      message: message,
-      type: 'info',
-    });
-  };
+export const notificationSuccess = (title: string, message: string) => {
+  notifiactionBase(title, message, 'success');
+};
+
+export const notificationDanger = (title: string, message: string) => {
+  notifiactionBase(title, message, 'danger');
+};
+
+export const notificationDefault = (title: string, message: string) => {
+  notifiactionBase(title, message, 'default');
+};
+
+export const notificationWarning = (title: string, message: string) => {
+  notifiactionBase(title, message, 'warning');
+};
+
+export const notificationFailure = (title: string, message: string) => {
+  notifiactionBase(title, message, 'danger');
+};
+
+export const notificationInfo = (title: string, message: string) => {
+  notifiactionBase(title, message, 'info');
+};
   

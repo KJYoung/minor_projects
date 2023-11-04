@@ -173,9 +173,9 @@
     z-index:9000
 }
 .rnc__notification-item{
-    border-radius:3px;
+    border-radius:10px;
+    opacity: 0.9;
     box-shadow:1px 3px 4px rgba(0,0,0,.2);
-    cursor:pointer;
     display:flex;
     margin-bottom:15px;
     position:relative

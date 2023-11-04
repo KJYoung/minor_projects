@@ -48,17 +48,19 @@ export const TagDetail = ({ selectedTag, setSelectedTag } : TagDetailProps) => {
     };
     return <>
         {selectedTag && <TagDetailHeaderWrapper>
-            <TagBubbleHuge color={selectedTag.color}>
-                {editMode ? (
-                    <AutogrowInputWrapper>
-                        <HiddenTextforAutogrowInput>{editText}</HiddenTextforAutogrowInput>
-                        <TagHeadInput type="text" value={editText} onChange={TagNameInputChangeHandler} />
-                    </AutogrowInputWrapper>) 
-                : 
-                    <span>{selectedTag.name}</span>
-                }
-            </TagBubbleHuge>
-            <CharNumSpan currentNum={editText.length} maxNum={TAG_NAME_LENGTH}/>
+            <TagDetailIconWrapperWithCharNum>
+                <TagBubbleHuge color={selectedTag.color}>
+                    {editMode ? (
+                        <AutogrowInputWrapper>
+                            <HiddenTextforAutogrowInput>{editText}</HiddenTextforAutogrowInput>
+                            <TagHeadInput type="text" value={editText} onChange={TagNameInputChangeHandler} />
+                        </AutogrowInputWrapper>) 
+                    : 
+                        <span>{selectedTag.name}</span>
+                    }
+                </TagBubbleHuge>
+                <CharNumSpan currentNum={editText.length} maxNum={TAG_NAME_LENGTH}/>
+            </TagDetailIconWrapperWithCharNum>
             <TagDetailHeaderFnWrapper>
                 {editMode ? <EditCompleteBtn disabled={editText === ''} handler={() => editCompleteHandler(selectedTag.id)} /> : <EditBtn handler={() => { setEditMode(true); }} />}
                 <DeleteBtn confirmText={`정말 ${selectedTag.name} 태그를 삭제하시겠습니까?`} handler={() => { deleteHandler(selectedTag.id) }} />
@@ -117,6 +119,10 @@ const TagDetailHeaderWrapper = styled.div`
     height: fit-content;
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
+`;
+const TagDetailIconWrapperWithCharNum = styled.div`
+    display: flex;
     align-items: flex-end;
 `;
 const TagDetailHeaderFnWrapper = styled.div`
