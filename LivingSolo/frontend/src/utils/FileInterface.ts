@@ -1,6 +1,25 @@
 import * as xlsx from "xlsx";
 import client from "../store/apis/client";
 
+// Import xlsx -------------------------------------------------------------------------------------------
+export type worksheet = xlsx.WorkSheet;
+export type workbook = xlsx.WorkBook;
+export type xlsxUploadCallback = (workbook : xlsx.WorkBook) => void;
+export const xlsxFileImporter = async (e: React.ChangeEvent<HTMLInputElement>, callback: xlsxUploadCallback ) => {
+  const reader = new FileReader()
+  reader.onload = (e: ProgressEvent<FileReader>) => {
+      const data = e.target!.result;
+      const workbook = xlsx.read(data, {type: "array"});
+      callback(workbook);
+  };
+  if(e.target && e.target.files && e.target.files.length > 0){
+    reader.readAsArrayBuffer(e.target.files[0]);
+  }
+};
+export const xlsxParser = (workSheet: xlsx.WorkSheet) => {
+  return xlsx.utils.sheet_to_json(workSheet);
+}
+// Export xlsx -------------------------------------------------------------------------------------------
 const downloadBlob = (content : string, filename : string , contentType: string) => {
   // Create a blob
   const blob = new Blob([content], { type: contentType });
