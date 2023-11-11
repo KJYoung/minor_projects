@@ -3,7 +3,18 @@ import { IPropsActive } from "../../utils/Interfaces";
 
 interface BtnProps {
     handler: () => void,
-    disabled?: boolean
+    disabled?: boolean,
+};
+
+interface GeneralBtnProps extends BtnProps {
+    text: string,
+};
+
+export const GeneralBtn = ({ handler, disabled, text } : GeneralBtnProps ) => {
+    const active = (disabled ? false : true).toString();
+    return <GeneralBtnWrapper active={active} onClick={handler}>
+        <span>{text}</span>
+    </GeneralBtnWrapper>
 };
 
 interface EditBtnProps extends BtnProps{
@@ -58,6 +69,11 @@ const AbstractBtn = styled.div<IPropsActive>`
     color: ${props => ((props.active === 'true') ? 'var(--ls-black)' : 'var(--ls-gray)')};
 `;
 
+const GeneralBtnWrapper = styled(AbstractBtn)`
+    width: fit-content;
+    padding: 6px 12px;
+    background-color: var(--ls-blue_gray);
+`;
 const EditBtnWrapper = styled(AbstractBtn)`
     background-color: var(--ls-blue_gray);
 `;

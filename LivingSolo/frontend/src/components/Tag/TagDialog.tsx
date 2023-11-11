@@ -63,7 +63,7 @@ export const TagDialog = ({open, handleClose, tags, setTags, tagClassSelect, set
                 {/* TODO1: Tag Preset 선택해서 추가할 때 이미 있는건 또 더하면 안됨. */}
                 {/* TODO2: Tag Preset 선택해서 추가할 때 총 개수가 초과하게 되면 더하면 안됨. */}
                 {preset.map((tagPreset) => 
-                  <TagPresetElement onClick={() => setTags((tags) => (tags.length >= tag_max_length) ? tags : [...tags, ...(tagPreset.tags)])}>
+                  <TagPresetElement onClick={() => setTags((tags) => (tags.length >= tag_max_length) ? tags : [...tags, ...(tagPreset.tags)])} key={tagPreset.id}>
                     <span>{tagPreset.name}</span>
                     <span>|</span>
                     <TagPresetTagWrapper>
