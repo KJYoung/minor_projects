@@ -148,3 +148,10 @@ export const GetDateObjFromDjango = (dateString: string): Date => {
     // ex. input format: 2023-07-22T12:00:00
     return new Date(dateString);
 };
+
+export const GetDateByAddingDatesFromExcel = (dateNum: number) => {
+    const result = new Date(1900, 0, -1);
+    result.setDate(result.getDate() + dateNum);
+    // return result.toISOString();
+    return `${result.getFullYear()}.${result.getMonth() + 1}.${result.getDate()}`;
+}

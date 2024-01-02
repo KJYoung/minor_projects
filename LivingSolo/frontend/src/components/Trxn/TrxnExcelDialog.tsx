@@ -4,6 +4,8 @@ import { Button, DialogActions, DialogContent } from "@mui/material";
 import { workbook, xlsxParser } from "../../utils/FileInterface";
 import { useState } from "react";
 import { DEFAULT_OPTION } from "../../utils/Constants";
+import { IPropsActive, IPropsVarGrid } from "../../utils/Interfaces";
+import { GetDateByAddingDatesFromExcel } from "../../utils/DateTime";
 
 interface TrxnExcelDialogProps {
     open: boolean,
@@ -18,28 +20,40 @@ export const TrxnExcelDialog = ({open, handleClose, workbook} : TrxnExcelDialogP
     const parsedSheet = xlsxParser(workbook.Sheets[sheetSelect]);
     const keys_ = Object.keys(parsedSheet[0] as any);
     let [keys, setKeys] = useState<string[]>([...keys_]);
+
+    const colNameDivOnClickListener = (key: string, idx: number) => {
+      if(keys.some((k) => k === key)){
+        setKeys(keys.filter((k) => key !== k));
+      }else{
+        setKeys(k => {
+          const new_list = [...k];
+          new_list.splice(idx, 0, key);
+          return new_list;
+        });
+      }
+    }
     if(sheetSelect !== DEFAULT_OPTION){
         if(parsedSheet.length > 0){
-            console.log(parsedSheet);
-            console.log(keys);
+            // console.log(parsedSheet);
+            // console.log(keys);
             return <>
-              <ColNameDiv>
-                {keys_.map((key) => <div key={key} onClick={() => {
-                  if(keys.some((k) => k === key)){
-                    setKeys(keys.filter((k) => key !== k));
-                  }else{
-                    setKeys(k => [...k, key]);
-                  }
-                }}>{key} </div>)}
-              </ColNameDiv>
-                {parsedSheet.map((row: any) => {
-                    return <>
-                        {keys.map((key) => {
-                            return <span key={key}>{row[key] && row[key]}, </span>
-                        })}
-                        <br />
-                    </>
-                })}
+              <HeaderWrapper>
+                {keys_.map((key, idx) => 
+                  <HeaderNameDiv active={(keys.includes(key).toString())} key={key} onClick={() => colNameDivOnClickListener(key, idx)}>
+                    {key}
+                  </HeaderNameDiv>
+                )}
+              </HeaderWrapper>
+              <RowWrapper gridlength={keys.length}>
+                {keys.map((key) => <ColNameDiv key={key}>{key}</ColNameDiv>)}
+              </RowWrapper>
+              {parsedSheet.map((row: any) => {
+                  return <RowWrapper gridlength={keys.length}>
+                      {keys.map((key) => {
+                          return <span key={key}>{row[key] && (key === '일자') ? GetDateByAddingDatesFromExcel(row[key]) : row[key]}</span>
+                      })}
+                  </RowWrapper>
+              })}
             </> 
         }
     }
@@ -64,6 +78,9 @@ export const TrxnExcelDialog = ({open, handleClose, workbook} : TrxnExcelDialogP
           </select>
         </BootstrapDialogTitle>
         <DialogContent dividers> 
+          <span>
+            * 주의사항: Header 바로 다음 행의 내용이 비어있는 경우 Column으로 인식되지 않습니다.
+          </span>
           {sheetSelect !== DEFAULT_OPTION && <SheetContent />}  
         </DialogContent>
         <DialogActions>
@@ -80,7 +97,30 @@ const DialogBody = styled.div`
   width: 100%;
 `;
 
-const ColNameDiv = styled.div`
+const HeaderWrapper = styled.div`
   display: flex;
-  flex-direction: row;
+  text-align: center;
+  padding: 2px;
+`;
+
+const RowWrapper = styled.div<IPropsVarGrid>`
+  display: grid;
+  grid-template-columns: ${props => ((props.gridlength) ? `repeat(${props.gridlength}, 1fr)` : '1fr')};
+  text-align: center;
+
+  padding: 2px;
+`;
+
+const HeaderNameDiv = styled.div<IPropsActive>`
+  padding: 5px;
+  margin-right: 12px;
+  border-radius: 4px;
+  background-color: ${props => ((props.active === 'true') ? 'var(--ls-green)' : 'var(--ls-gray)')};
+  border: 1px solid black;
+  color: ${props => ((props.active === 'true') ? 'var(--ls-black)' : 'var(--ls-white)')};
+  cursor: pointer;
+`;
+
+const ColNameDiv = styled.div`
+  border: 1px solid grey;
 `;
